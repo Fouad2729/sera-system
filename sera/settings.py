@@ -1,10 +1,13 @@
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 import os
+import dj_database_url
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-only-change-me')
-DEBUG = True
+DEBUG = os.environ.get('RENDER') != 'true'
 ALLOWED_HOSTS = ['*']
+if os.environ.get('RENDER_EXTERNAL_HOSTNAME'):
+    ALLOWED_HOSTS = [os.environ['RENDER_EXTERNAL_HOSTNAME']]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,6 +21,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -47,21 +51,30 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sera.wsgi.application'
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sera_db',
-        'USER': 'sera_user',
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL', ''),
+        conn_max_age=600,
+    )
 }
+
+if not os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'sera_db',
+            'USER': 'sera_user',
+            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
+        }
+    }
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Gmail SMTP - SERA Password Reset
