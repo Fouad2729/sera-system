@@ -1,0 +1,19 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+
+# Backups / temporary copies
+*backup*
+*before_*
+*before-*
+*.bak
+*.backup
+*.backup-*
+*.json.backup
+PY
+
+# Ignore uppercase backup folders/files
+FINAL_BACKUP_*/
+*BACKUP*
+*BACKUP_*
