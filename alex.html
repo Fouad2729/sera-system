@@ -43,12 +43,9 @@ body.dark .searchicon{color:#8fa8a0}
 .num-seg{width:30px;text-align:center;border:none;outline:none;background:transparent;font:inherit;color:inherit}
 /* ===== إضافات: الطباعة وتصدير PDF ===== */
 #printFrame{display:none}
-@media screen{
-  body.printing-report #printFrame{display:block!important;position:static;padding:24px}
-}
 @media print{
   body.printing-report>*:not(#printFrame){display:none!important}
-  body.printing-report #printFrame{display:block!important;position:static;padding:24px;background:#fff!important;color:#10211e!important}
+  body.printing-report #printFrame{display:block!important;position:static;padding:24px}
   body.printing-report{background:#fff!important}
 }
 </style>
@@ -394,23 +391,8 @@ function openPermissions(){if(!currentUser||currentUser.role!=='admin'){alert('�
 function logout(){currentUser=null;document.body.classList.remove('viewer-mode');document.getElementById('mapSection').classList.add('hidden');document.getElementById('loginScreen').style.display='flex';document.getElementById('currentUserPill').textContent='غير مسجل';}
 function buildCSV(data){const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor,'منشئ المخالفة','تاريخ إنشاء السجل','آخر تعديل بواسطة','تاريخ آخر تعديل','خط العرض','خط الطول'];const lines=[cols.map(x=>'"'+x.replace(/"/g,'""')+'"').join(',')].concat(data.map(r=>cols.map(c=>'"'+v(r,c).replace(/"/g,'""').replace(/\n/g,' ')+'"').join(',')));return lines.join('\n');}
 function exportCSV(){const data=filteredRows();if(!data.length){alert('لا توجد نتائج للتصدير.');return;}const csv=buildCSV(data);const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='SERA_المخالفات_المفلترة.csv';a.click();URL.revokeObjectURL(a.href);}
-function printHTML(innerHTML,titleText){
-  const w=window.open('','_blank','width=900,height=700');
-  if(!w){
-    alert('يرجى السماح بفتح النوافذ المنبثقة للطباعة.');
-    return;
-  }
-
-  w.document.open();
-  w.document.write('<!doctype html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><title>'+esc(titleText)+'</title><style>body{font-family:Tajawal,Tahoma,Arial,sans-serif;direction:rtl;background:#fff;color:#10211e;margin:0;padding:30px;line-height:1.8}.report-card{background:#fff!important;color:#10211e!important;max-width:900px;margin:auto}.report-card textarea{border:1px solid #999;width:100%;min-height:190px;box-sizing:border-box;font:inherit;color:#10211e;background:#fff}.signature-canvas{max-width:100%;height:auto;border:1px solid #999;background:#fff}.report-actions,.login-help{display:none!important}@media print{body{padding:0}.report-card{max-width:none}}</style></head><body>'+innerHTML+'</body></html>');
-  w.document.close();
-
-  setTimeout(()=>{
-    w.focus();
-    w.print();
-    setTimeout(()=>w.close(),500);
-  },300);
-}function exportPDF(){const data=filteredRows();if(!data.length){alert('لا توجد نتائج للتصدير.');return;}const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor];let html='<div style="font-family:Tajawal,Tahoma,Arial,sans-serif;direction:rtl;color:#10211e"><h2 style="margin:0 0 4px">تقرير مخالفات SERA</h2><div style="font-size:12px;color:#555;margin-bottom:12px">تاريخ التصدير: '+esc(new Date().toLocaleString('ar-SA'))+' — عدد السجلات: '+data.length+'</div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>'+cols.map(c=>'<th style="border:1px solid #999;padding:6px;background:#0a202b;color:#fff">'+esc(c.replace(/\s*\(MM\/DD\/YYYY\)/,''))+'</th>').join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+cols.map(c=>'<td style="border:1px solid #ccc;padding:6px">'+esc(v(r,c))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';printHTML(html,'تقرير_مخالفات_SERA');}
+function printHTML(innerHTML,titleText){const frame=document.getElementById('printFrame');frame.innerHTML=innerHTML;const oldTitle=document.title;document.title=titleText;document.body.classList.add('printing-report');window.print();setTimeout(()=>{document.body.classList.remove('printing-report');document.title=oldTitle;},600);}
+function exportPDF(){const data=filteredRows();if(!data.length){alert('لا توجد نتائج للتصدير.');return;}const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor];let html='<div style="font-family:Tajawal,Tahoma,Arial,sans-serif;direction:rtl;color:#10211e"><h2 style="margin:0 0 4px">تقرير مخالفات SERA</h2><div style="font-size:12px;color:#555;margin-bottom:12px">تاريخ التصدير: '+esc(new Date().toLocaleString('ar-SA'))+' — عدد السجلات: '+data.length+'</div><table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr>'+cols.map(c=>'<th style="border:1px solid #999;padding:6px;background:#0a202b;color:#fff">'+esc(c.replace(/\s*\(MM\/DD\/YYYY\)/,''))+'</th>').join('')+'</tr></thead><tbody>'+data.map(r=>'<tr>'+cols.map(c=>'<td style="border:1px solid #ccc;padding:6px">'+esc(v(r,c))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';printHTML(html,'تقرير_مخالفات_SERA');}
 async function shareResults(){const data=filteredRows();if(!data.length){alert('لا توجد نتائج للمشاركة.');return;}try{const csv=buildCSV(data);const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const file=new File([blob],'SERA_مخالفات.csv',{type:'text/csv'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'تقرير مخالفات SERA',text:data.length+' مخالفة',files:[file]});return;}}catch(e){}exportCSV();showToast('تم تجهيز الملف للتنزيل — شاركه من مجلد التنزيلات.');}
 function applyTheme(t){document.body.classList.toggle('dark',t==='dark');try{localStorage.setItem('sera_theme',t);}catch(e){}const btn=document.getElementById('themeToggleBtn');if(btn)btn.textContent=t==='dark'?'☀ الوضع النهاري':'🌙 الوضع الليلي';}
 function toggleTheme(){applyTheme(document.body.classList.contains('dark')?'light':'dark');}
