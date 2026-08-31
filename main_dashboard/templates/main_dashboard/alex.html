@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
@@ -81,8 +82,8 @@ body.dark .searchicon{color:#8fa8a0}
 .minutes-field textarea{min-height:100px;resize:vertical}
 .minutes-preview{background:#ddd;padding:12px;overflow:auto}
 .minutes-page{position:relative;width:720px;height:1008px;margin:0 auto 16px;background:#fff center top/100% 100% no-repeat;box-shadow:0 2px 12px rgba(0,0,0,.18)}
-.minutes-page.page2{height:1005px;background-image:url('/static/main_dashboard/forms/sera_minutes_page2.jpg')}
-.minutes-page.page1{background-image:url('/static/main_dashboard/forms/sera_minutes_page1.jpg')}
+.minutes-page.page2{height:1005px;background-image:url("{% static 'main_dashboard/forms/sera_minutes_page2.jpg' %}")}
+.minutes-page.page1{background-image:url("{% static 'main_dashboard/forms/sera_minutes_page1.jpg' %}")}
 .minutes-text{position:absolute;direction:rtl;text-align:right;white-space:pre-wrap;overflow:hidden;font-family:Arial,Tahoma,sans-serif;color:#111;line-height:1.45}
 .minutes-print-page{
   position:relative!important;
@@ -2847,9 +2848,15 @@ async function saveEdit(i){
   }
 
   const d=collectForm();
+  const dbId=rows[i]._db_id;
+
+  if(!dbId){
+    alert('تعذر تحديد سجل قاعدة البيانات.');
+    return;
+  }
 
   try{
-    const saved=await updateViolationInAPI(rows[i].id,d);
+    const saved=await updateViolationInAPI(dbId,d);
     rows[i]=saved;
     closeDrawer();
     render();
@@ -3674,7 +3681,7 @@ function fitMinutesText(root){
   });
 }
 function minutesPage1(o){
-  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="/static/main_dashboard/forms/sera_minutes_page1.jpg" alt="">'+
+  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static 'main_dashboard/forms/sera_minutes_page1.jpg' %}" alt="">'+
 
   /* رقم المحضر: أسفل عنوان المحضر */
   mt(
@@ -3731,7 +3738,7 @@ function minutesPage1(o){
   '</div>';
 }
 function minutesPage2(o){
- return '<div class="minutes-print-page"><img class="minutes-template-bg" src="/static/main_dashboard/forms/sera_minutes_page2.jpg" alt="">'+
+ return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static 'main_dashboard/forms/sera_minutes_page2.jpg' %}" alt="">'+
 
  mt(o.description,'top:70px;right:55px;width:610px;height:180px;font-size:13px;')+
  mt(o.damage,'top:255px;right:55px;width:610px;height:95px;font-size:13px;')+
