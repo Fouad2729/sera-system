@@ -132,13 +132,18 @@ def api_violation_update(request, pk):
             "error": str(e)
         }, status=500)
 
-    return JsonResponse({
-        "ok": True,
-        "result": {
-            f.name: getattr(violation, f.name)
-            for f in Violation._meta.fields
-        }
-    })
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "result": {
+                f.name: getattr(violation, f.name)
+                for f in Violation._meta.fields
+            }
+        },
+        encoder=DjangoJSONEncoder
+    )
 
 def api_violations(request):
     from django.core.serializers.json import DjangoJSONEncoder
