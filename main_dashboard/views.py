@@ -122,7 +122,15 @@ def api_violation_update(request, pk):
         if key in allowed:
             setattr(violation, key, value)
 
-    violation.save()
+    try:
+        violation.save()
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            "ok": False,
+            "error": str(e)
+        }, status=500)
 
     return JsonResponse({
         "ok": True,
