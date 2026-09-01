@@ -2647,9 +2647,10 @@ async function saveEdit(i){
   }
 
   const d=collectForm();
-  const dbId=rows[i]._db_id;
+  const dbId=Number(rows[i]?._db_id);
 
-  if(!dbId){
+  if(!Number.isInteger(dbId) || dbId <= 0){
+    console.error('SERA UPDATE: invalid database id', rows[i]);
     alert('تعذر تحديد سجل قاعدة البيانات.');
     return;
   }
@@ -2661,10 +2662,17 @@ async function saveEdit(i){
       body:JSON.stringify(seraToDbPayload(d))
     });
 
-    const data=await res.json();
+    const responseText=await res.text();
+    let data={};
+
+    try{
+      data=JSON.parse(responseText);
+    }catch(parseError){
+      data={error:responseText || ('HTTP '+res.status)};
+    }
 
     if(!res.ok || !data.ok){
-      throw new Error(data.error || 'UPDATE_FAILED');
+      throw new Error(data.error || ('HTTP '+res.status));
     }
 
     rows[i]={...rows[i],...seraFromDb(data.result)};
