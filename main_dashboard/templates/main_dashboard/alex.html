@@ -2667,7 +2667,7 @@ async function saveEdit(i){
       throw new Error(data.error || 'UPDATE_FAILED');
     }
 
-    rows[i]=seraFromDb(data.result);
+    rows[i]={...rows[i],...seraFromDb(data.result)};
 
     closeDrawer();
     render();
