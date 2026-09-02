@@ -2542,6 +2542,28 @@ html,
 <script>
 
 
+
+<script>
+window.saveEdit = function(i) {
+    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
+    if (!targetRow && typeof filteredRows === "function") {
+        var fl = filteredRows();
+        if (fl && fl[i]) targetRow = fl[i];
+    }
+    if (!targetRow) {
+        alert("تعذر تحديد المخالفة المراد تعديلها.");
+        return;
+    }
+
+    var d = (typeof collectForm === "function") ? collectForm() : {};
+    Object.assign(targetRow, d);
+
+    if (typeof closeDrawer === "function") closeDrawer();
+    if (typeof render === "function") render();
+    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
+};
+</script>
+
 </body>
 </html>
   `);
@@ -3322,7 +3344,29 @@ function exportPDF(){
           ${rowsHTML}
         </tbody>
       </table>
-    </body>
+    
+<script>
+window.saveEdit = function(i) {
+    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
+    if (!targetRow && typeof filteredRows === "function") {
+        var fl = filteredRows();
+        if (fl && fl[i]) targetRow = fl[i];
+    }
+    if (!targetRow) {
+        alert("تعذر تحديد المخالفة المراد تعديلها.");
+        return;
+    }
+
+    var d = (typeof collectForm === "function") ? collectForm() : {};
+    Object.assign(targetRow, d);
+
+    if (typeof closeDrawer === "function") closeDrawer();
+    if (typeof render === "function") render();
+    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
+};
+</script>
+
+</body>
     </html>
   `;
 
@@ -3849,6 +3893,28 @@ window.addEventListener('afterprint',()=>{
 });
 <\/script>
 
+
+<script>
+window.saveEdit = function(i) {
+    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
+    if (!targetRow && typeof filteredRows === "function") {
+        var fl = filteredRows();
+        if (fl && fl[i]) targetRow = fl[i];
+    }
+    if (!targetRow) {
+        alert("تعذر تحديد المخالفة المراد تعديلها.");
+        return;
+    }
+
+    var d = (typeof collectForm === "function") ? collectForm() : {};
+    Object.assign(targetRow, d);
+
+    if (typeof closeDrawer === "function") closeDrawer();
+    if (typeof render === "function") render();
+    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
+};
+</script>
+
 </body>
 </html>
   `);
@@ -3964,4 +4030,26 @@ function init(){
 }
 init();
 </script>
+
+<script>
+window.saveEdit = function(i) {
+    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
+    if (!targetRow && typeof filteredRows === "function") {
+        var fl = filteredRows();
+        if (fl && fl[i]) targetRow = fl[i];
+    }
+    if (!targetRow) {
+        alert("تعذر تحديد المخالفة المراد تعديلها.");
+        return;
+    }
+
+    var d = (typeof collectForm === "function") ? collectForm() : {};
+    Object.assign(targetRow, d);
+
+    if (typeof closeDrawer === "function") closeDrawer();
+    if (typeof render === "function") render();
+    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
+};
+</script>
+
 </body></html>
