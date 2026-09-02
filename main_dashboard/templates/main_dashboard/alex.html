@@ -2542,28 +2542,6 @@ html,
 <script>
 
 
-
-<script>
-window.saveEdit = function(i) {
-    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
-    if (!targetRow && typeof filteredRows === "function") {
-        var fl = filteredRows();
-        if (fl && fl[i]) targetRow = fl[i];
-    }
-    if (!targetRow) {
-        alert("تعذر تحديد المخالفة المراد تعديلها.");
-        return;
-    }
-
-    var d = (typeof collectForm === "function") ? collectForm() : {};
-    Object.assign(targetRow, d);
-
-    if (typeof closeDrawer === "function") closeDrawer();
-    if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
-};
-</script>
-
 </body>
 </html>
   `);
@@ -2662,7 +2640,7 @@ async function saveNew(){
   }
 }
 
-window.saveEdit = async function(i){
+async function saveEdit(i){
   if(!isOwner(rows[i])){
     alert('ليس لديك صلاحية التعديل.');
     return;
@@ -3344,29 +3322,7 @@ function exportPDF(){
           ${rowsHTML}
         </tbody>
       </table>
-    
-<script>
-window.saveEdit = function(i) {
-    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
-    if (!targetRow && typeof filteredRows === "function") {
-        var fl = filteredRows();
-        if (fl && fl[i]) targetRow = fl[i];
-    }
-    if (!targetRow) {
-        alert("تعذر تحديد المخالفة المراد تعديلها.");
-        return;
-    }
-
-    var d = (typeof collectForm === "function") ? collectForm() : {};
-    Object.assign(targetRow, d);
-
-    if (typeof closeDrawer === "function") closeDrawer();
-    if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
-};
-</script>
-
-</body>
+    </body>
     </html>
   `;
 
@@ -3893,28 +3849,6 @@ window.addEventListener('afterprint',()=>{
 });
 <\/script>
 
-
-<script>
-window.saveEdit = function(i) {
-    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
-    if (!targetRow && typeof filteredRows === "function") {
-        var fl = filteredRows();
-        if (fl && fl[i]) targetRow = fl[i];
-    }
-    if (!targetRow) {
-        alert("تعذر تحديد المخالفة المراد تعديلها.");
-        return;
-    }
-
-    var d = (typeof collectForm === "function") ? collectForm() : {};
-    Object.assign(targetRow, d);
-
-    if (typeof closeDrawer === "function") closeDrawer();
-    if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
-};
-</script>
-
 </body>
 </html>
   `);
@@ -4030,43 +3964,24 @@ function init(){
 }
 init();
 </script>
-
 </body></html>
 <script>
-window.saveEdit = async function(i) {
+window.saveEdit = function(i) {
     var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
     if (!targetRow && typeof filteredRows === "function") {
         var fl = filteredRows();
         if (fl && fl[i]) targetRow = fl[i];
     }
     if (!targetRow) {
-        alert(".تعذر تحديد المخالفة المراد تعديلها");
+        alert("تعذر تحديد المخالفة المراد تعديلها.");
         return;
     }
 
     var d = (typeof collectForm === "function") ? collectForm() : {};
-    const dbId = Number(targetRow._db_id || targetRow.id);
-
-    if (dbId) {
-        try {
-            await fetch('/api/violations/' + dbId + '/', {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
-                },
-                body: JSON.stringify(typeof seraToDbPayload === 'function' ? seraToDbPayload(d) : d)
-            });
-        } catch(e) {
-            console.error('Database save error:', e);
-        }
-    }
-
     Object.assign(targetRow, d);
+
     if (typeof closeDrawer === "function") closeDrawer();
     if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast(".تم حفظ التعديل بنجاح");
+    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
 };
 </script>
-</body>
-</html>
