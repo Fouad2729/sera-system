@@ -2782,7 +2782,25 @@ function printReportDoc(){
 }
 
 
-function openEdit(i){const r=rows[i],can=isOwner(r);if(!isOwner(r)){alert('ليس لديك صلاحية تعديل هذه المخالفة. منشئ المخالفة أو مدير النظام فقط يستطيع التعديل.');return;}document.getElementById('drawerTitle').textContent='تعديل المخالفة '+v(r,C.num);document.getElementById('form').innerHTML='<div class="form-grid">'+editable.map(c=>'<div class="field '+((c===C.location||c===C.law||c===C.transaction||c===C.notes)?'full':'')+'"><label>'+esc(c)+'</label>'+inputFor(c,r)+'</div>').join('')+'</div><div class="field full"><label>تحديث الموقع من الخريطة</label><div class="location-pick"><input id="pickedCoords" placeholder="الموقع الحالي: '+esc(v(r,'خط العرض'))+' , '+esc(v(r,'خط الطول'))+'" readonly><button type="button" class="btn btn-soft" onclick="openPickMap()">⌖ تغيير الموقع</button></div><div id="pickMap" class="mini-map"></div></div>';document.getElementById('saveBtn').style.display='block';document.getElementById('saveBtn').textContent='حفظ التعديل';document.getElementById('saveBtn').onclick=()=>saveEdit(i);document.getElementById('overlay').style.display='block';}
+function openEdit(i){
+    let r = rows[i];
+    if(!r && typeof filteredRows === "function"){
+        const fl = filteredRows();
+        if(fl[i]) r = fl[i];
+    }
+    if(!r){ alert("تعذر تحديد المخالفة المراد تعديلها."); return; }
+    if(!isOwner(r)){
+        alert("ليس لديك صلاحية تعديل هذه المخالفة. منشئ المخالفة أو مدير النظام فقط يستطيع التعديل.");
+        return;
+    }
+    const realIdx = rows.indexOf(r);
+    document.getElementById("drawerTitle").textContent = "تعديل المخالفة " + v(r, C.num);
+    document.getElementById("form").innerHTML = "<div class=\"form-grid\">" + editable.map(c => "<div class=\"field " + ((c===C.location||c===C.law||c===C.transaction||c===C.notes)?"full":"") + "\"><label>" + esc(c) + "</label>" + inputFor(c, r) + "</div>").join("") + "</div><div class=\"field full\"><label>تحديث الموقع من الخريطة</label><div class=\"location-pick\"><input id=\"pickedCoords\" placeholder=\"الموقع الحالي: " + esc(v(r,"خط العرض")) + " , " + esc(v(r,"خط الطول")) + "\" readonly><button type=\"button\" class=\"btn btn-soft\" onclick=\"openPickMap()\">⌖ تغيير الموقع</button></div><div id=\"pickMap\" class=\"mini-map\"></div></div>";
+    document.getElementById("saveBtn").style.display = "block";
+    document.getElementById("saveBtn").textContent = "حفظ التعديل";
+    document.getElementById("saveBtn").onclick = () => saveEdit(realIdx);
+    document.getElementById("overlay").style.display = "block";
+}
 
 function collectForm(){const r={};document.querySelectorAll('#form [data-k]').forEach(e=>r[e.dataset.k]=e.value);const bs=document.getElementById('branchSelect'),cb=document.getElementById('customBranch');if(bs&&bs.value==='__custom__')r[C.branch]=(cb?.value||'').trim();const coord=(document.getElementById('pickedCoords')||{}).value||'';const m=coord.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);if(m){r['خط العرض']=m[1];r['خط الطول']=m[2];}return r;}
 function seqOf(numStr){const raw=(numStr||'').replace(/[()]/g,'');const n=parseInt(raw.split('/')[0],10);return Number.isFinite(n)?n:null;}
