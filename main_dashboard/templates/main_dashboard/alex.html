@@ -2662,7 +2662,7 @@ async function saveNew(){
   }
 }
 
-async function saveEdit(i){
+window.saveEdit = async function(i){
   if(!isOwner(rows[i])){
     alert('ليس لديك صلاحية التعديل.');
     return;
@@ -4031,25 +4031,42 @@ function init(){
 init();
 </script>
 
+</body></html>
 <script>
-window.saveEdit = function(i) {
+window.saveEdit = async function(i) {
     var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
     if (!targetRow && typeof filteredRows === "function") {
         var fl = filteredRows();
         if (fl && fl[i]) targetRow = fl[i];
     }
     if (!targetRow) {
-        alert("تعذر تحديد المخالفة المراد تعديلها.");
+        alert(".تعذر تحديد المخالفة المراد تعديلها");
         return;
     }
 
     var d = (typeof collectForm === "function") ? collectForm() : {};
-    Object.assign(targetRow, d);
+    const dbId = Number(targetRow._db_id || targetRow.id);
 
+    if (dbId) {
+        try {
+            await fetch('/api/violations/' + dbId + '/', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || ''
+                },
+                body: JSON.stringify(typeof seraToDbPayload === 'function' ? seraToDbPayload(d) : d)
+            });
+        } catch(e) {
+            console.error('Database save error:', e);
+        }
+    }
+
+    Object.assign(targetRow, d);
     if (typeof closeDrawer === "function") closeDrawer();
     if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
+    if (typeof showToast === "function") showToast(".تم حفظ التعديل بنجاح");
 };
 </script>
-
-</body></html>
+</body>
+</html>
