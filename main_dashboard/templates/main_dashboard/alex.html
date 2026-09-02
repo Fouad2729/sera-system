@@ -2675,7 +2675,9 @@ async function saveEdit(i){
       throw new Error(data.error || ('HTTP '+res.status));
     }
 
+    console.log('BEFORE UPDATE:', {old_dbId: rows[i]?._db_id, new_result: data.result, seraFromDb_output: seraFromDb(data.result)});
     rows[i]={...rows[i],...seraFromDb(data.result)};
+    console.log('AFTER UPDATE:', {dbId: rows[i]?._db_id});
 
     closeDrawer();
     render();
@@ -2810,70 +2812,6 @@ async function updateViolationInAPI(id,payload){
   return data.result;
 }
 
-async function saveNew(){
-  const d=collectForm();
-  if(!d[C.num]||!d[C.type]){
-    alert('أدخل رقم المخالفة ونوع المخالفة على الأقل.');
-    return;
-  }
-
-  const newSeq=seqOf(d[C.num]);
-  const expected=maxSeq()+1;
-
-  if(newSeq===null){
-    alert('أكمل خانة رقم المحضر بالكامل.');
-    return;
-  }
-
-  if(newSeq!==expected){
-    alert('رقم المحضر غير متسلسل. الرقم الجديد المطلوب هو '+expected+'.');
-    return;
-  }
-
-  d['منشئ المخالفة']=currentUser.name;
-  d['تاريخ إنشاء السجل']=new Date().toLocaleString('ar-SA');
-  d['آخر تعديل بواسطة']='';
-  d['تاريخ آخر تعديل']='';
-
-  if(pendingReport)d['المحضر']=pendingReport;
-
-  try{
-    const saved=await saveViolationToAPI(d);
-    rows.unshift(saved);
-    pendingReport=null;
-    closeDrawer();
-    render();
-    showToast('تم حفظ المخالفة في قاعدة البيانات بنجاح.');
-  }catch(e){
-    console.error(e);
-    alert('تعذر حفظ المخالفة في قاعدة البيانات.');
-  }
-}
-async function saveEdit(i){
-  if(!isOwner(rows[i])){
-    alert('ليس لديك صلاحية التعديل.');
-    return;
-  }
-
-  const d=collectForm();
-  const dbId=rows[i]._db_id;
-
-  if(!dbId){
-    alert('تعذر تحديد سجل قاعدة البيانات.');
-    return;
-  }
-
-  try{
-    const saved=await updateViolationInAPI(dbId,d);
-    rows[i]=saved;
-    closeDrawer();
-    render();
-    showToast('تم حفظ التعديل في قاعدة البيانات.');
-  }catch(e){
-    console.error(e);
-    alert('تعذر حفظ التعديل في قاعدة البيانات.');
-  }
-}
 function openPickMap(){
 const box=document.getElementById('pickMap');
 if(!box)return;
