@@ -99,7 +99,7 @@ def api_violations(request):
     )
     if request.method != "GET":
         return JsonResponse({"ok": False, "error": "Method not allowed"}, status=405)
-    results = list(Violation.objects.values())
+    results = list(Violation.objects.order_by("id").values())
     return JsonResponse({"ok": True, "count": len(results), "results": results})
 
 
