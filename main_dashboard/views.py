@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404, render
+from django.db import connection
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
@@ -87,6 +88,15 @@ def translate_payload(data, allowed_fields):
 
 
 def api_violations(request):
+    # SERA_DB_CONNECTION_DIAGNOSTIC_V1
+    import logging
+    _sera_logger = logging.getLogger("django.request")
+    _sera_logger.warning(
+        "SERA_DB_DIAGNOSTIC vendor=%s engine=%s host=%s",
+        connection.vendor,
+        connection.settings_dict.get("ENGINE"),
+        connection.settings_dict.get("HOST") or "(local)",
+    )
     if request.method != "GET":
         return JsonResponse({"ok": False, "error": "Method not allowed"}, status=405)
     results = list(Violation.objects.values())
