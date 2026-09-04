@@ -197,6 +197,69 @@ body{
     page-break-after:always;
   }
 }
+
+/* السماح بالنزول إلى سطر جديد في خانات بيانات المخالفة المحددة فقط */
+.multiline-enter-field {
+  white-space: pre-wrap !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+\n
+.multiline-enter-field{
+  box-sizing:border-box !important;
+  display:block !important;
+
+  border:1px solid #35564d !important;
+  border-radius:12px !important;
+
+  background:rgba(10,25,21,.92) !important;
+
+  padding:10px 12px !important;
+  margin:0 !important;
+
+  direction:rtl !important;
+  text-align:right !important;
+
+  font-family:Arial,Tahoma,sans-serif !important;
+  font-size:16px !important;
+  line-height:1.7 !important;
+
+  white-space:pre-wrap !important;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+
+  resize:none !important;
+  outline:none !important;
+
+  color:#e8eee9 !important;
+  caret-color:#ffffff !important;
+
+  z-index:30 !important;
+}
+
+.multiline-enter-field:focus{
+  border:1px solid #4d806f !important;
+  outline:none !important;
+  box-shadow:0 0 0 2px rgba(77,128,111,.15) !important;
+}
+
+
+/* السماح بالكتابة على عدة أسطر للخانات المطلوبة فقط */
+.multiline-enter-field{
+  white-space:pre-wrap !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overflow-wrap:anywhere !important;
+  word-break:break-word !important;
+  line-height:1.5 !important;
+  resize:none !important;
+  text-align:right !important;
+  direction:rtl !important;
+}
+
 </style>
 </head>
 
@@ -228,27 +291,27 @@ body{
          style="left:544px;top:96px;width:74px;height:25px">
 
   <!-- بيانات المخالفة -->
-  <textarea class="write table-field" data-key="entity"
+  <textarea class="write table-field multiline-enter-field" data-key="entity"
             style="left:285px;top:258px;width:178px;height:37px"></textarea>
 
   <textarea class="write table-field" data-key="unifiedNo"
             style="left:55px;top:258px;width:116px;height:37px"></textarea>
 
-  <textarea class="write table-field" data-key="type"
+  <textarea class="write table-field multiline-enter-field" data-key="type"
             style="left:285px;top:301px;width:178px;height:52px"></textarea>
 
-  <textarea class="write table-field" data-key="location"
+  <textarea class="write table-field multiline-enter-field" data-key="location"
             style="left:55px;top:301px;width:116px;height:52px"></textarea>
 
   <textarea class="write table-field" data-key="reportDate"
             style="left:285px;top:362px;width:178px;height:25px"></textarea>
 
-  <textarea class="write table-field" data-key="incidentDate"
+  <textarea class="write table-field multiline-enter-field" data-key="incidentDate"
             style="left:55px;top:362px;width:116px;height:25px"></textarea>
 
   <!-- أولاً: يكتب تحت العبارة، وليس فوقها -->
   <textarea class="write basis-field" data-key="basis"
-            style="left:55px;top:455px;width:610px;height:210px"></textarea>
+            style="left:55px;top:535px;width:610px;height:210px"></textarea>
 
   <!-- ثانياً / أ. وقائع المخالفة -->
   <textarea class="write" data-key="facts"
@@ -470,6 +533,13 @@ const TOP_CELL_KEYS = [
 function fitTopCell(el){
   if(!el || !TOP_CELL_KEYS.includes(el.dataset.key)) return;
 
+  if(el.classList.contains('multiline-enter-field')){
+    el.style.fontSize = '16px';
+    el.style.overflowY = 'auto';
+    el.style.overflowX = 'hidden';
+    return;
+  }
+
   const maxSize = parseFloat(
     el.dataset.userFontSize || '14'
   );
@@ -477,15 +547,11 @@ function fitTopCell(el){
   const minSize = 8;
 
   el.style.boxSizing = 'border-box';
-  el.style.width = el.style.width;
-  el.style.height = el.style.height;
-
   el.style.padding = '2px 4px';
   el.style.margin = '0';
 
   el.style.direction = 'rtl';
   el.style.textAlign = 'center';
-
   el.style.lineHeight = '1.2';
 
   el.style.whiteSpace = 'pre-wrap';
@@ -496,25 +562,17 @@ function fitTopCell(el){
   el.style.overflow = 'hidden';
 
   let size = maxSize;
-
   el.style.fontSize = size + 'px';
 
-  /*
-   * نبحث عن أكبر حجم خط يسمح بعرض النص كاملًا
-   * داخل نفس الخانة.
-   */
   while(
     size > minSize &&
-    (
-      el.scrollHeight > el.clientHeight + 1 ||
-      el.scrollWidth > el.clientWidth + 1
-    )
+    el.scrollHeight > el.clientHeight + 1
   ){
     size -= 0.25;
     el.style.fontSize = size + 'px';
   }
 
-  el.scrollTop = 0;
+  /* لا نعيد المؤشر أو التمرير إلى أعلى الخانة أثناء الكتابة */
 }
 
 function fitAllTopCells(){
@@ -528,11 +586,6 @@ function fitAllTopCells(){
 }
 
 
-  TOP_CELL_KEYS.forEach(key=>{
-    const el=document.querySelector('[data-key="'+key+'"]');
-    if(el) fitTopCell(el);
-  });
-}
 
 document.querySelectorAll('.write').forEach(el=>{
   el.addEventListener('focus',()=>{

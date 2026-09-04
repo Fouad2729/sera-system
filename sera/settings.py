@@ -50,22 +50,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sera.wsgi.application'
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL', ''),
-        conn_max_age=600,
-    )
-}
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
 
-if not os.environ.get('DATABASE_URL'):
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
+else:
+    # التشغيل المحلي: استخدم db.sqlite3 الموجود داخل المشروع.
+    # عند النشر، ضع DATABASE_URL ليتم استخدام PostgreSQL تلقائيًا.
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'sera_db',
-            'USER': 'sera_user',
-            'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
 

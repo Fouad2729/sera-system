@@ -66,6 +66,20 @@ body.dark .searchicon{color:#8fa8a0}
   }
 }
 
+/* ===== Dubai Font للمحضر ===== */
+@font-face{
+  font-family:'Dubai';
+  src:url("{% static 'main_dashboard/fonts/Dubai-Regular.ttf' %}") format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+.minutes-field textarea.minutes-multiline{
+  font-family:'Dubai', Arial, Tahoma, sans-serif !important;
+  font-weight:400 !important;
+}
+
 /* ===== SERA محضر ضبط المخالفة ===== */
 .minutes-modal{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.62);overflow:auto}
 .minutes-modal.show{display:block}
@@ -78,13 +92,28 @@ body.dark .searchicon{color:#8fa8a0}
 .minutes-field{background:#fff;border:1px solid #c9d4ce;border-radius:10px;padding:10px}
 .minutes-field.full{grid-column:1/-1}
 .minutes-field label{display:block;font-weight:700;margin-bottom:6px;color:#12352a}
-.minutes-field input,.minutes-field textarea{width:100%;box-sizing:border-box;border:1px solid #b8c5be;border-radius:8px;padding:9px;font-family:Arial,Tahoma,sans-serif;font-size:14px;background:#fff;color:#111}
+.minutes-field input,.minutes-field textarea{width:100%;box-sizing:border-box;border:1px solid #b8c5be;border-radius:8px;padding:9px;font-family:'Dubai',Arial,Tahoma,sans-serif;font-size:13px;font-weight:400;letter-spacing:-0.15px;background:#fff;color:#111}
 .minutes-field textarea{min-height:100px;resize:vertical}
+
+.minutes-field textarea.minutes-multiline{
+  min-height:72px !important;
+  height:72px !important;
+  resize:vertical !important;
+  white-space:pre-wrap !important;
+  overflow-y:auto !important;
+  line-height:1.5 !important;
+  padding:10px !important;
+  box-sizing:border-box !important;
+}
 .minutes-preview{background:#ddd;padding:12px;overflow:auto}
 .minutes-page{position:relative;width:720px;height:1008px;margin:0 auto 16px;background:#fff center top/100% 100% no-repeat;box-shadow:0 2px 12px rgba(0,0,0,.18)}
+.minutes-page{
+  font-family:'Dubai',Arial,Tahoma,sans-serif !important;
+  font-weight:400 !important;
+}
 .minutes-page.page2{height:1005px;background-image:url("{% static 'main_dashboard/forms/sera_minutes_page2.jpg' %}")}
 .minutes-page.page1{background-image:url("{% static 'main_dashboard/forms/sera_minutes_page1.jpg' %}")}
-.minutes-text{position:absolute;direction:rtl;text-align:right;white-space:pre-wrap;overflow:hidden;font-family:Arial,Tahoma,sans-serif;color:#111;line-height:1.45}
+.minutes-text{position:absolute;direction:rtl;text-align:right;white-space:pre-wrap;overflow:hidden;font-family:'Dubai',Arial,Tahoma,sans-serif;font-weight:400;letter-spacing:-0.15px;color:#111;line-height:1.35}
 .minutes-print-page{
   position:relative!important;
   width:210mm!important;
@@ -109,7 +138,9 @@ body.dark .searchicon{color:#8fa8a0}
   z-index:0!important;
 }
 
-.minutes-print-page .minutes-text{font-family:inherit!important;
+.minutes-print-page .minutes-text{font-family:'Dubai',Arial,Tahoma,sans-serif!important;
+  font-weight:400!important;
+  letter-spacing:-0.15px!important;
   z-index:2!important;
 }
 
@@ -1562,7 +1593,7 @@ div{
 
         <div class="minutes-field">
           <label>اسم المنسوب له المخالفة</label>
-          <input id="m_name">
+          <textarea id="m_name" class="minutes-multiline" rows="3"></textarea>
         </div>
 
         <div class="minutes-field">
@@ -1572,12 +1603,12 @@ div{
 
         <div class="minutes-field">
           <label>نوع المخالفة</label>
-          <input id="m_type">
+          <textarea id="m_type" class="minutes-multiline" rows="3"></textarea>
         </div>
 
         <div class="minutes-field">
           <label>موقع المخالفة (إن وجد)</label>
-          <input id="m_location">
+          <textarea id="m_location" class="minutes-multiline" rows="3"></textarea>
         </div>
 
         <div class="minutes-field">
@@ -1587,7 +1618,7 @@ div{
 
         <div class="minutes-field">
           <label>تاريخ وقوع المخالفة</label>
-          <input id="m_occurrence">
+          <textarea id="m_occurrence" class="minutes-multiline" rows="3"></textarea>
         </div>
 
         <div class="minutes-field full">
@@ -1730,7 +1761,7 @@ function statusType(s){const t=norm(s);if(!t)return 'warn';if(t.includes('غير
 function badge(s){const cls=statusType(s);const text=s||'غير محددة';return '<span class="badge '+cls+'">● '+esc(text)+'</span>';}
 function isOwner(r){return currentUser&&(currentUser.role==='admin'||v(r,'منشئ المخالفة')===currentUser.name);}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display='none',2800);}
-function persist(){try{localStorage.setItem('sera_rows_v3',JSON.stringify(rows));}catch(e){}}
+function persist(){ /* قاعدة البيانات هي مصدر الحقيقة للمخالفات. */ }
 async function loadPersisted(){
   try{
     const res=await fetch('/api/violations/');
@@ -2027,8 +2058,77 @@ function renderMap(){
 
 function zoomRegion(lat,lng){map.setView([lat,lng],8);document.getElementById('mapSection').scrollIntoView({behavior:'smooth',block:'start'});}
 function focusMap(){if(!currentUser||currentUser.role!=='admin'){return;}document.getElementById('mapSection').scrollIntoView({behavior:'smooth'});setTimeout(()=>map&&map.invalidateSize(),400);}
-function inputFor(c,r){const val=v(r,c);if(c===C.num){const raw=val.replace(/[()]/g,'');const parts=raw.split('/');const yy=String(new Date().getFullYear()).slice(-2);const p=[parts[0]||'',parts[1]||'12',parts[2]||'01',parts[3]||yy];const segHtml=p.map((seg,idx)=>'<input class="num-seg" data-seg="'+idx+'" maxlength="2" inputmode="numeric" value="'+esc(seg)+'">').join('<span>/</span>');return '<div class="num-mask">('+segHtml+')</div><input type="hidden" data-k="'+esc(c)+'" class="numHidden" value="('+esc(p.join('/'))+')">';}if(c===C.type)return '<select data-k="'+esc(c)+'"><option value="">اختر نوع المخالفة</option>'+unique(c).map(x=>'<option '+(x===val?'selected':'')+'>'+esc(x)+'</option>').join('')+'</select>';if(c===C.branch){const options=[...new Set(fixedBranches.concat(unique(c)))].sort((a,b)=>a.localeCompare(b,'ar'));const isCustom=val && !options.includes(val);return '<div><select data-k="'+esc(c)+'" id="branchSelect" onchange="toggleCustomBranch(this)"><option value="">اختر الفرع</option>'+options.map(x=>'<option '+(x===val?'selected':'')+'>'+esc(x)+'</option>').join('')+'<option value="__custom__">مخصص — إدخال يدوي</option></select><input id="customBranch" data-custom-branch="1" value="'+(isCustom?esc(val):'')+'" placeholder="اكتب اسم الفرع" style="margin-top:7px;display:'+(isCustom?'block':'none')+'"></div>';}if(c===C.status)return '<select data-k="'+esc(c)+'"><option value="">غير محددة</option><option '+(val==='منجزة'?'selected':'')+'>منجزة</option><option '+(val==='غير منجزة'?'selected':'')+'>غير منجزة</option><option '+(val==='تحتاج متابعة'?'selected':'')+'>تحتاج متابعة</option></select>';if(c===C.date)return '<input data-k="'+esc(c)+'" type="date" value="'+esc(val)+'">';if(c===C.notes||c===C.law||c===C.transaction)return '<textarea data-k="'+esc(c)+'">'+esc(val)+'</textarea>';return '<input data-k="'+esc(c)+'" value="'+esc(val)+'" placeholder="أدخل '+esc(c)+'">';}
-function toggleCustomBranch(select){const input=document.getElementById('customBranch');if(!input)return;input.style.display=select.value==='__custom__'?'block':'none';if(select.value!=='__custom__')input.value='';}
+function inputFor(c,r){
+  const val=v(r,c);
+
+  if(c===C.num){
+    const raw=val.replace(/[()]/g,'');
+    const parts=raw.split('/');
+    const yy=String(new Date().getFullYear()).slice(-2);
+    const p=[parts[0]||'',parts[1]||'12',parts[2]||'01',parts[3]||yy];
+    const segHtml=p.map((seg,idx)=>
+      '<input class="num-seg" data-seg="'+idx+'" maxlength="2" inputmode="numeric" value="'+esc(seg)+'">'
+    ).join('<span>/</span>');
+    return '<div class="num-mask">('+segHtml+')</div><input type="hidden" data-k="'+esc(c)+'" class="numHidden" value="('+esc(p.join('/'))+')">';
+  }
+
+  if(c===C.type){
+    const options=unique(c);
+    const isCustom=val && !options.includes(val);
+
+    return '<div class="type-choice-wrap">' +
+      '<select data-k="'+esc(c)+'" id="typeSelect" onchange="toggleCustomType(this)">' +
+        '<option value="">اختر نوع المخالفة</option>' +
+        options.map(x=>
+          '<option '+(!isCustom && x===val?'selected':'')+'>'+esc(x)+'</option>'
+        ).join('') +
+        '<option value="__custom__" '+(isCustom?'selected':'')+'>مخصص — كتابة يدوية</option>' +
+      '</select>' +
+      '<input id="customType" data-custom-type="1" value="'+(isCustom?esc(val):'')+'" ' +
+        'placeholder="اكتب نوع المخالفة يدويًا" ' +
+        'style="margin-top:7px;display:'+(isCustom?'block':'none')+'">' +
+      '</div>';
+  }
+
+  if(c===C.branch){
+    const options=[...new Set(fixedBranches.concat(unique(c)))].sort((a,b)=>a.localeCompare(b,'ar'));
+    const isCustom=val && !options.includes(val);
+
+    return '<div><select data-k="'+esc(c)+'" id="branchSelect" onchange="toggleCustomBranch(this)">' +
+      '<option value="">اختر الفرع</option>' +
+      options.map(x=>'<option '+(x===val?'selected':'')+'>'+esc(x)+'</option>').join('') +
+      '<option value="__custom__">مخصص — إدخال يدوي</option></select>' +
+      '<input id="customBranch" data-custom-branch="1" value="'+(isCustom?esc(val):'')+'" ' +
+      'placeholder="اكتب اسم الفرع" style="margin-top:7px;display:'+(isCustom?'block':'none')+'"></div>';
+  }
+
+  if(c===C.status)
+    return '<select data-k="'+esc(c)+'"><option value="">غير محددة</option>' +
+      '<option '+(val==='منجزة'?'selected':'')+'>منجزة</option>' +
+      '<option '+(val==='غير منجزة'?'selected':'')+'>غير منجزة</option>' +
+      '<option '+(val==='تحتاج متابعة'?'selected':'')+'>تحتاج متابعة</option></select>';
+
+  if(c===C.date)
+    return '<input data-k="'+esc(c)+'" type="date" value="'+esc(val)+'">';
+
+  if(c===C.notes||c===C.law||c===C.transaction)
+    return '<textarea data-k="'+esc(c)+'">'+esc(val)+'</textarea>';
+
+  return '<input data-k="'+esc(c)+'" value="'+esc(val)+'" placeholder="أدخل '+esc(c)+'">';
+}
+function toggleCustomBranch(select){
+  const input=document.getElementById('customBranch');
+  if(!input)return;
+  input.style.display=select.value==='__custom__'?'block':'none';
+  if(select.value!=='__custom__')input.value='';
+}
+
+function toggleCustomType(select){
+  const input=document.getElementById('customType');
+  if(!input)return;
+  input.style.display=select.value==='__custom__'?'block':'none';
+  if(select.value!=='__custom__')input.value='';
+}
 let pendingReport=null;let reportEditingIndex=null;
 function openAdd(keepPending=false){if(!currentUser){alert('سجل الدخول أولاً.');return;}if(currentUser.role!=='admin'){alert('ليس لديك صلاحية إنشاء مخالفات جديدة. هذه الميزة مخصصة لمدير النظام فقط.');return;}if(!keepPending)pendingReport=null;document.getElementById('drawerTitle').textContent='إنشاء مخالفة جديدة';document.getElementById('form').innerHTML='<div class="form-grid">'+editable.map(c=>'<div class="field '+((c===C.location||c===C.law||c===C.transaction||c===C.notes)?'full':'')+'"><label>'+esc(c)+'</label>'+inputFor(c,{})+'</div>').join('')+'</div><div class="field full"><label>تحديد الموقع من الخريطة</label><div class="location-pick"><input id="pickedCoords" placeholder="اضغط الزر ثم اختر نقطة من الخريطة" readonly><button type="button" class="btn btn-soft" onclick="openPickMap()">⌖ تحديد الموقع</button></div><div id="pickMap" class="mini-map"></div></div>';document.getElementById('saveBtn').style.display='block';document.getElementById('saveBtn').textContent='حفظ المخالفة';document.getElementById('saveBtn').onclick=saveNew;document.getElementById('overlay').style.display='block';}
 function openView(i){const r=rows[i],can=isOwner(r);document.getElementById('drawerTitle').textContent='تفاصيل المخالفة '+v(r,C.num);let fields=Object.keys(r).filter(k=>!['خط العرض','خط الطول','المحضر'].includes(k));document.getElementById('form').innerHTML='<div class="view-grid">'+fields.map(k=>'<div class="view-field '+((k===C.location||k===C.law||k===C.notes)?'full':'')+'"><div class="view-label">'+esc(k)+'</div><div class="view-value">'+(k===C.status?badge(v(r,k)):esc(v(r,k))||'-')+'</div></div>').join('')+'</div>'+(v(r,'خط العرض')&&v(r,'خط الطول')?'<div style="margin-top:10px">الموقع الجغرافي: '+esc(v(r,'خط العرض'))+' , '+esc(v(r,'خط الطول'))+'</div>':'');document.getElementById('saveBtn').style.display=can?'block':'none';if(can){document.getElementById('saveBtn').textContent='تعديل وحفظ';document.getElementById('saveBtn').onclick=()=>openEdit(i);}document.getElementById('overlay').style.display='block';}
@@ -2546,22 +2646,68 @@ html,
 </html>
   `);
 
+  printWindow.document.close();
+  printWindow.document.body.appendChild(wrapper);
+
+  const images = Array.from(printWindow.document.images);
+
+  Promise.all(
+    images.map(img => {
+      if (img.complete) return Promise.resolve();
+      return new Promise(resolve => {
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    })
+  ).then(() => {
+    setTimeout(() => {
+      printWindow.focus();
+      printWindow.print();
+    }, 300);
+  });
+
+  printWindow.onafterprint = () => {
+    setTimeout(() => printWindow.close(), 200);
+  };
+}
+
 const SERA_DB_FIELDS={
   'رقم المحضر':'violation_number',
   'المنسوب له المخالفة':'attributed_person',
   'موقع المخالفة (المنطقة، المدينة)':'violation_location',
+  'موقع المخالفة':'violation_location',
   'اسم النظام أو اللائحة المستند عليها (وفق محضر ضبط المخالفة)':'regulation',
+  'اسم النظام أو اللائحة المستند عليها':'regulation',
   'تكرار الإحالة':'referral_repetition',
   'محرر المحضر':'report_editor',
   'الفرع':'branch',
   'تاريخ تحرير المحضر (MM/DD/YYYY)':'report_date',
+  'تاريخ تحرير المحضر':'report_date',
   'نوع المخالفة':'violation_type',
+  'تاريخ إشعار المنسوب له المخالفة (MM/DD/YYYY)':'notified_date',
+  'تاريخ إشعار المنسوب له المخالفة':'notified_date',
+  'تاريخ رد المنسوب له المخالفة (MM/DD/YYYY)':'person_response_date',
+  'تاريخ رد المنسوب له المخالفة':'person_response_date',
+  'تاريخ إحالتها إلى القطاع المختص  (MM/DD/YYYY)':'sector_referral_date',
+  'تاريخ إحالتها إلى القطاع المختص (MM/DD/YYYY)':'sector_referral_date',
+  'تاريخ إحالتها إلى القطاع المختص':'sector_referral_date',
+  'تاريخ رد القطاع المختص (MM/DD/YYYY)':'sector_response_date',
+  'تاريخ رد القطاع المختص':'sector_response_date',
+  'تاريخ إحالتها الى الأمانة (MM/DD/YYYY)':'secretariat_referral_date',
+  'تاريخ إحالتها الى الأمانة':'secretariat_referral_date',
+  'تاريخ رد الأمانة (MM/DD/YYYY)':'secretariat_response_date',
+  'تاريخ رد الأمانة':'secretariat_response_date',
   'حالة المخالفة (MM/DD/YYYY)':'violation_status',
+  'حالة المخالفة':'violation_status',
   'حالة المعاملة (MM/DD/YYYY)':'transaction_status',
+  'حالة المعاملة':'transaction_status',
+  'تاريخ إصدار قرار المخالفة من اللجنة (MM/DD/YYYY)':'committee_decision_date',
+  'تاريخ إصدار قرار المخالفة من اللجنة':'committee_decision_date',
   'ملاحظات':'notes',
   'خط العرض':'latitude',
   'خط الطول':'longitude',
   'منشئ المخالفة':'created_by',
+  'آخر تعديل بواسطة':'updated_by',
   'المحضر':'report_data'
 };
 
@@ -2571,7 +2717,8 @@ function seraToDbPayload(d){
     if(d[ui]!==undefined) out[db]=d[ui] ?? '';
   });
   if(currentUser && currentUser.name){
-    out.created_by=currentUser.name;
+    if(Object.prototype.hasOwnProperty.call(out,'created_by')) out.created_by=currentUser.name;
+    if(Object.prototype.hasOwnProperty.call(out,'updated_by')) out.updated_by=currentUser.name;
   }
   return out;
 }
@@ -2690,31 +2837,6 @@ async function saveEdit(i){
 }
 
 
-  printWindow.document.close();
-  printWindow.document.body.appendChild(wrapper);
-
-  // ننتظر تحميل صور المحضر قبل الطباعة
-  const images=Array.from(printWindow.document.images);
-
-  Promise.all(
-    images.map(img=>{
-      if(img.complete)return Promise.resolve();
-      return new Promise(resolve=>{
-        img.onload=resolve;
-        img.onerror=resolve;
-      });
-    })
-  ).then(()=>{
-    setTimeout(()=>{
-      printWindow.focus();
-      printWindow.print();
-    },300);
-  });
-
-  printWindow.onafterprint=()=>{
-    setTimeout(()=>printWindow.close(),200);
-  };
-}
 
 
 async function shareReportFromFrame(){
@@ -2802,7 +2924,34 @@ function openEdit(i){
     document.getElementById("overlay").style.display = "block";
 }
 
-function collectForm(){const r={};document.querySelectorAll('#form [data-k]').forEach(e=>r[e.dataset.k]=e.value);const bs=document.getElementById('branchSelect'),cb=document.getElementById('customBranch');if(bs&&bs.value==='__custom__')r[C.branch]=(cb?.value||'').trim();const coord=(document.getElementById('pickedCoords')||{}).value||'';const m=coord.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);if(m){r['خط العرض']=m[1];r['خط الطول']=m[2];}return r;}
+function collectForm(){
+  const r={};
+
+  document.querySelectorAll('#form [data-k]').forEach(e=>{
+    r[e.dataset.k]=e.value;
+  });
+
+  const bs=document.getElementById('branchSelect');
+  const cb=document.getElementById('customBranch');
+  if(bs&&bs.value==='__custom__'){
+    r[C.branch]=(cb?.value||'').trim();
+  }
+
+  const ts=document.getElementById('typeSelect');
+  const ct=document.getElementById('customType');
+  if(ts&&ts.value==='__custom__'){
+    r[C.type]=(ct?.value||'').trim();
+  }
+
+  const coord=(document.getElementById('pickedCoords')||{}).value||'';
+  const m=coord.match(/(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+  if(m){
+    r['خط العرض']=m[1];
+    r['خط الطول']=m[2];
+  }
+
+  return r;
+}
 function seqOf(numStr){const raw=(numStr||'').replace(/[()]/g,'');const n=parseInt(raw.split('/')[0],10);return Number.isFinite(n)?n:null;}
 function maxSeq(){let m=0;rows.forEach(r=>{const s=seqOf(v(r,C.num));if(s!==null&&s>m)m=s;});return m;}
 
@@ -3558,6 +3707,13 @@ function getMinutesSignatureData(){
   return hasInk ? canvas.toDataURL('image/png') : '';
 }
 
+
+function toWesternDigits(value){
+  return String(value ?? '')
+    .replace(/[٠-٩]/g, ch => String(ch.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, ch => String(ch.charCodeAt(0) - 0x06F0));
+}
+
 function readMinutes(){
   const obj={};
 
@@ -3615,7 +3771,7 @@ function fitMinutesText(root){
     const minSize=8.5;
     const maxSize=size;
 
-    el.style.fontFamily='Arial,sans-serif';
+    el.style.fontFamily="'Dubai',Arial,Tahoma,sans-serif";
     el.style.fontWeight='400';
     el.style.lineHeight='1.35';
 
@@ -3645,71 +3801,71 @@ function fitMinutesText(root){
   });
 }
 function minutesPage1(o){
-  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static 'main_dashboard/forms/sera_minutes_page1.jpg' %}" alt="">'+
+  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static "main_dashboard/forms/sera_minutes_page1.jpg" %}" alt="">'+
 
   /* رقم المحضر: أسفل عنوان المحضر */
   mt(
     o.reportNo,
-    'top:208px;left:255px;width:210px;height:30px;font-size:13px;text-align:center;'
+    'top:208px;left:255px;width:210px;height:30px;font-size:15.6px;text-align:center;'
   )+
 
   /* اسم المنسوب له المخالفة: المربع الأبيض الأوسط - الصف الأول */
   mt(
     o.name,
-    'top:257px;right:252px;width:178px;height:38px;font-size:12.5px;text-align:center;'
+    'top:257px;right:252px;width:178px;height:38px;font-size:15px;text-align:center;'
   )+
 
   /* الرقم الموحد: المربع الأبيض الأيسر - الصف الأول */
   mt(
     o.unified,
-    'top:257px;left:52px;width:123px;height:38px;font-size:12.5px;text-align:center;'
+    'top:257px;left:52px;width:123px;height:38px;font-size:15px;text-align:center;'
   )+
 
   /* نوع المخالفة: المربع الأبيض الأوسط - الصف الثاني */
   mt(
     o.type,
-    'top:301px;right:252px;width:178px;height:56px;font-size:11.5px;text-align:center;'
+    'top:301px;right:252px;width:178px;height:56px;font-size:13.8px;text-align:center;'
   )+
 
   /* موقع المخالفة: المربع الأبيض الأيسر - الصف الثاني */
   mt(
     o.location,
-    'top:301px;left:52px;width:123px;height:56px;font-size:11.5px;text-align:center;'
+    'top:301px;left:52px;width:123px;height:56px;font-size:13.8px;text-align:center;'
   )+
 
   /* يوم وتاريخ ووقت تحرير المحضر: المربع الأبيض الأوسط - الصف الثالث */
   mt(
-    o.datetime,
-    'top:361px;right:252px;width:178px;height:43px;font-size:12px;text-align:center;'
+    toWesternDigits(o.datetime),
+    'top:361px;right:252px;width:178px;height:43px;font-size:14.4px;text-align:center;'
   )+
 
   /* تاريخ وقوع المخالفة: المربع الأبيض الأيسر - الصف الثالث */
   mt(
     o.occurrence,
-    'top:361px;left:52px;width:123px;height:43px;font-size:12px;text-align:center;'
+    'top:361px;left:52px;width:123px;height:43px;font-size:14.4px;text-align:center;'
   )+
 
   mt(
     o.basis,
-    'top:463px;right:58px;width:602px;height:190px;font-size:12px;justify-content:flex-start;text-align:right;'
+    'top:463px;right:58px;width:602px;height:190px;font-size:14.4px;justify-content:flex-start;text-align:right;'
   )+
 
   mt(
     o.facts,
-    'top:708px;right:58px;width:602px;height:190px;font-size:12px;justify-content:flex-start;text-align:right;'
+    'top:708px;right:58px;width:602px;height:190px;font-size:14.4px;justify-content:flex-start;text-align:right;'
   )+
 
   '</div>';
 }
 function minutesPage2(o){
- return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static 'main_dashboard/forms/sera_minutes_page2.jpg' %}" alt="">'+
+ return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static "main_dashboard/forms/sera_minutes_page2.jpg" %}" alt="">'+
 
- mt(o.description,'top:70px;right:55px;width:610px;height:180px;font-size:13px;')+
- mt(o.damage,'top:255px;right:55px;width:610px;height:95px;font-size:13px;')+
- mt(o.documents,'top:355px;right:55px;width:610px;height:100px;font-size:13px;')+
- mt(o.requests,'top:455px;right:55px;width:610px;height:100px;font-size:13px;')+
- mt(o.defense,'top:555px;right:55px;width:610px;height:145px;font-size:13px;')+
- mt(o.inspector,'top:820px;right:410px;width:180px;height:45px;font-size:13px;')+
+ mt(o.description,'top:70px;right:55px;width:610px;height:180px;font-size:15.6px;')+
+ mt(o.damage,'top:255px;right:55px;width:610px;height:95px;font-size:15.6px;')+
+ mt(o.documents,'top:355px;right:55px;width:610px;height:100px;font-size:15.6px;')+
+ mt(o.requests,'top:455px;right:55px;width:610px;height:100px;font-size:15.6px;')+
+ mt(o.defense,'top:555px;right:55px;width:610px;height:145px;font-size:15.6px;')+
+ mt(o.inspector,'top:820px;right:410px;width:180px;height:45px;font-size:15.6px;')+
  (o.signature?
  '<img class="minutes-signature-image" src="'+escMinutes(o.signature)+'" alt="" style="position:absolute;top:818px;left:231px;width:121px;height:62px;object-fit:contain;z-index:3;">'
  : '')+
@@ -3751,6 +3907,14 @@ async function printMinutes(){
 <title>محضر ضبط مخالفة</title>
 
 <style>
+  @font-face{
+    font-family:'Dubai';
+    src:url("{% static 'main_dashboard/fonts/Dubai-Regular.ttf' %}") format('truetype');
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
+
   *{box-sizing:border-box}
 
   html,body{
@@ -3761,7 +3925,7 @@ async function printMinutes(){
   }
 
   body{
-    font-family:Arial,Tahoma,sans-serif;
+    font-family:'Dubai',Arial,Tahoma,sans-serif;
   }
 
   .minutes-print-page{
@@ -3796,7 +3960,7 @@ async function printMinutes(){
     text-align:right;
     white-space:pre-wrap;
     overflow:hidden;
-    font-family:Arial,Tahoma,sans-serif;
+    font-family:'Dubai',Arial,Tahoma,sans-serif;
     color:#111;
     line-height:1.45;
   }
@@ -3855,7 +4019,17 @@ window.addEventListener('afterprint',()=>{
 
   printWindow.document.close();
 }
-document.addEventListener('input',e=>{if(e.target&&e.target.id&&e.target.id.startsWith('m_'))renderMinutesPreview();});
+document.addEventListener('input',e=>{
+  if(e.target && e.target.id === 'm_datetime'){
+    const pos = e.target.selectionStart;
+    e.target.value = toWesternDigits(e.target.value);
+    try{ e.target.setSelectionRange(pos,pos); }catch(err){}
+  }
+
+  if(e.target && e.target.id && e.target.id.startsWith('m_')){
+    renderMinutesPreview();
+  }
+});
 
 async function shareResults(){const data=filteredRows();if(!data.length){alert('لا توجد نتائج للمشاركة.');return;}try{const csv=buildCSV(data);const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});const file=new File([blob],'SERA_مخالفات.csv',{type:'text/csv'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({title:'تقرير مخالفات SERA',text:data.length+' مخالفة',files:[file]});return;}}catch(e){}exportCSV();showToast('تم تجهيز الملف للتنزيل — شاركه من مجلد التنزيلات.');}
 function applyTheme(t){document.body.classList.toggle('dark',t==='dark');try{localStorage.setItem('sera_theme',t);}catch(e){}const btn=document.getElementById('themeToggleBtn');if(btn)btn.textContent=t==='dark'?'☀ الوضع النهاري':'🌙 الوضع الليلي';}
@@ -3964,24 +4138,333 @@ function init(){
 }
 init();
 </script>
-</body></html>
+
 <script>
-window.saveEdit = function(i) {
-    var targetRow = (typeof rows !== "undefined" && rows[i]) ? rows[i] : null;
-    if (!targetRow && typeof filteredRows === "function") {
-        var fl = filteredRows();
-        if (fl && fl[i]) targetRow = fl[i];
-    }
-    if (!targetRow) {
-        alert("تعذر تحديد المخالفة المراد تعديلها.");
+/* SERA_ISOLATED_EXCEL_EXPORT_V1 */
+(function(){
+
+  const OLD_EXPORT = window.exportCSV;
+
+  function loadStyledExcel(){
+    return new Promise((resolve, reject) => {
+
+      const old = document.getElementById('seraStyledExcelLoader');
+
+      if(old){
+        if(window.XLSX && window.XLSX.utils && window.XLSX.utils.aoa_to_sheet){
+          return resolve(window.XLSX);
+        }
+
+        old.addEventListener('load', () => resolve(window.XLSX));
+        old.addEventListener('error', reject);
         return;
+      }
+
+      const script = document.createElement('script');
+
+      script.id = 'seraStyledExcelLoader';
+      script.src = 'https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js';
+
+      script.onload = () => {
+        if(window.XLSX && window.XLSX.utils){
+          resolve(window.XLSX);
+        }else{
+          reject(new Error('XLSX library unavailable'));
+        }
+      };
+
+      script.onerror = () => {
+        reject(new Error('Excel style library failed to load'));
+      };
+
+      document.head.appendChild(script);
+    });
+  }
+
+  function cleanKey(x){
+    return String(x ?? '').trim();
+  }
+
+  function isEmpty(x){
+    return x === null ||
+           x === undefined ||
+           String(x).trim() === '';
+  }
+
+  function formatReportDate(x){
+
+    if(isEmpty(x)) return '';
+
+    const text = String(x).trim();
+
+    /*
+     * إذا كان التاريخ أصلًا بصيغة MM/DD/YYYY
+     */
+    if(/^\d{2}\/\d{2}\/\d{4}$/.test(text)){
+      return text;
     }
 
-    var d = (typeof collectForm === "function") ? collectForm() : {};
-    Object.assign(targetRow, d);
+    /*
+     * YYYY-MM-DD
+     */
+    const m = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
-    if (typeof closeDrawer === "function") closeDrawer();
-    if (typeof render === "function") render();
-    if (typeof showToast === "function") showToast("تم حفظ التعديل بنجاح.");
-};
+    if(m){
+      return m[2] + '/' + m[3] + '/' + m[1];
+    }
+
+    return text;
+  }
+
+  function completeFromOriginal(row){
+
+    const number = cleanKey(v(row,C.num));
+
+    if(!number || !Array.isArray(original)){
+      return row;
+    }
+
+    const source = original.find(x =>
+      cleanKey(x[C.num]) === number
+    );
+
+    if(!source){
+      return row;
+    }
+
+    const fields = [
+      C.num,
+      C.entity,
+      C.location,
+      C.law,
+      C.repeat,
+      C.editor,
+      C.branch,
+      C.date,
+      C.type
+    ];
+
+    const result = {...row};
+
+    fields.forEach(field => {
+
+      /*
+       * نستخدم قيمة قاعدة البيانات أولًا.
+       * لا نستبدلها إلا إذا كانت فارغة.
+       */
+      if(isEmpty(result[field]) && !isEmpty(source[field])){
+        result[field] = source[field];
+      }
+
+    });
+
+    return result;
+  }
+
+  window.exportCSV = async function(){
+
+    const data = filteredRows();
+
+    if(!data.length){
+      alert('لا توجد نتائج للتصدير.');
+      return;
+    }
+
+    try{
+
+      const X = await loadStyledExcel();
+
+      /*
+       * إكمال البيانات الناقصة من النسخة الأصلية
+       * بدون تعديل قاعدة البيانات.
+       */
+      const exportData = data.map(completeFromOriginal);
+
+      const cols = [
+        C.num,
+        C.entity,
+        C.location,
+        C.law,
+        C.repeat,
+        C.editor,
+        C.branch,
+        C.date,
+        C.type
+      ];
+
+      const headers = [
+        'رقم المحضر',
+        'المنسوب له المخالفة',
+        'موقع المخالفة (المنطقة، المدينة)',
+        'اسم النظام أو اللائحة المستند عليها (وفق محضر ضبط المخالفة)',
+        'تكرار الإحالة',
+        'محرر المحضر',
+        'الفرع',
+        'تاريخ تحرير المحضر (MM/DD/YYYY)',
+        'نوع المخالفة'
+      ];
+
+      const matrix = [
+        headers,
+        ...exportData.map(row =>
+          cols.map(col => {
+            const value = v(row,col);
+
+            return col === C.date
+              ? formatReportDate(value)
+              : value;
+          })
+        )
+      ];
+
+      const ws = X.utils.aoa_to_sheet(matrix);
+      const wb = X.utils.book_new();
+
+      wb.Workbook = wb.Workbook || {};
+      wb.Workbook.Views = [{RTL:true}];
+
+      ws['!cols'] = [
+        {wch:18},
+        {wch:36},
+        {wch:30},
+        {wch:48},
+        {wch:13},
+        {wch:18},
+        {wch:15},
+        {wch:21},
+        {wch:48}
+      ];
+
+      /*
+       * الصفوف الطويلة خصوصًا النظام واللائحة
+       * نعطيها مساحة أكبر.
+       */
+      ws['!rows'] = [
+        {hpt:34},
+        ...exportData.map(() => ({hpt:34}))
+      ];
+
+      const border = {
+        top:{
+          style:'thin',
+          color:{rgb:'666666'}
+        },
+        bottom:{
+          style:'thin',
+          color:{rgb:'666666'}
+        },
+        left:{
+          style:'thin',
+          color:{rgb:'666666'}
+        },
+        right:{
+          style:'thin',
+          color:{rgb:'666666'}
+        }
+      };
+
+      for(let r=0; r<matrix.length; r++){
+
+        for(let c=0; c<matrix[r].length; c++){
+
+          const ref = X.utils.encode_cell({
+            r:r,
+            c:c
+          });
+
+          const cell = ws[ref];
+
+          if(!cell) continue;
+
+          const header = r === 0;
+          const alternate = r % 2 === 0;
+
+          cell.s = {
+
+            font:{
+              name:'Arial',
+              sz:10,
+              bold:header
+            },
+
+            fill:{
+              patternType:'solid',
+              fgColor:{
+                rgb:
+                  header
+                    ? 'A8C98E'
+                    : (alternate ? 'E7F1DF' : 'F8FBF5')
+              }
+            },
+
+            alignment:{
+              horizontal:
+                (c===0 || c===4 || c===7)
+                  ? 'center'
+                  : 'right',
+
+              vertical:header
+                ? 'center'
+                : 'top',
+
+              wrapText:true,
+
+              readingOrder:2
+            },
+
+            border:border
+          };
+        }
+      }
+
+      ws['!autofilter'] = {
+        ref:ws['!ref']
+      };
+
+      ws['!freeze'] = {
+        xSplit:0,
+        ySplit:1
+      };
+
+      X.utils.book_append_sheet(
+        wb,
+        ws,
+        'متابعة المحاضر'
+      );
+
+      X.writeFile(
+        wb,
+        'SERA_متابعة_المحاضر.xlsx'
+      );
+
+      if(typeof showToast === 'function'){
+        showToast(
+          'تم تصدير ' +
+          exportData.length.toLocaleString('ar-SA') +
+          ' مخالفة إلى Excel.'
+        );
+      }
+
+    }catch(error){
+
+      console.error(
+        'SERA isolated Excel export failed:',
+        error
+      );
+
+      /*
+       * إذا حصل خطأ في التصدير الجديد،
+       * نرجع مباشرة للتصدير القديم.
+       */
+      if(typeof OLD_EXPORT === 'function'){
+        OLD_EXPORT();
+      }else{
+        alert('تعذر تصدير ملف Excel.');
+      }
+    }
+  };
+
+})();
 </script>
+
+</body></html>
