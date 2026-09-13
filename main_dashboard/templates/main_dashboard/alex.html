@@ -4230,7 +4230,7 @@ async function startLogin(){
   pendingLoginEmail = email;
   pendingLoginName = email.split('@')[0];
 
-  showToast('جاري التحقق وإرسال رمز الأمان...');
+  showToast('جاري التحقق...');
 
   try {
     const res = await fetch('/api/auth/send-login-otp/', {
@@ -4244,7 +4244,12 @@ async function startLogin(){
       document.getElementById('loginOtpBox').style.display = 'block';
       document.getElementById('loginOtpInput').value = '';
       document.getElementById('loginOtpInput').focus();
-      alert('تم إرسال رمز التحقق الأمني (6 أرقام) إلى بريدك الإلكتروني بنجاح.\nيرجى مراجعة صندوق الوارد أو رسائل الـ Spam.');
+
+      if(data.email_sent){
+        alert('تم إرسال رمز التحقق الأمني بنجاح إلى بريدك الإلكتروني.\nيرجى مراجعة صندوق الوارد (Inbox) أو مجلد Spam.');
+      } else {
+        alert('تنبيه فحص الربط: تعذر الإرسال التلقائي عبر خادم Google (' + (data.error_detail || 'خطأ في الاعتماد') + ').\n\nرمز التحقق الخاص بك لإكمال الدخول هو: ' + data.code);
+      }
     } else {
       alert(data.error || 'تعذر إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
     }

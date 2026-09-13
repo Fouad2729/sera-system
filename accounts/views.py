@@ -6,19 +6,10 @@ from django.conf import settings
 import json
 import secrets
 import time
-import threading
 
 User = get_user_model()
 reset_codes = {}
 login_otps = {}
-
-def _async_send_mail(subject, message, recipient):
-    """إرسال الإيميل في الخلفية دون تجميد استجابة السيرفر للمستخدم"""
-    try:
-        if getattr(settings, 'EMAIL_HOST_USER', None):
-            send_mail(subject, message, None, [recipient], fail_silently=True)
-    except Exception as e:
-        print(f"ASYNC EMAIL ERROR: {e}")
 
 @csrf_exempt
 def request_reset(request):
@@ -37,12 +28,18 @@ def request_reset(request):
     code = str(secrets.randbelow(900000) + 100000)
     reset_codes[email] = code
 
-    t = threading.Thread(
-        target=_async_send_mail,
-        args=("رمز استعادة كلمة المرور - SERA", f"رمز استعادة كلمة المرور الخاص بك هو: {code}\n\nصلاحية الرمز 10 دقائق.", email)
-    )
-    t.daemon = True
-    t.start()
+    try:
+        from_email = getattr(settings, 'EMAIL_HOST_USER', None)
+        if from_email:
+            send_mail(
+                "رمز استعادة كلمة المرور - SERA",
+                f"رمز استعادة كلمة المرور الخاص بك هو: {code}\n\nصلاحية الرمز 10 دقائق.",
+                from_email,
+                [email],
+                fail_silently=True,
+            )
+    except Exception as e:
+        print(f"RESET EMAIL ERROR: {e}")
 
     return JsonResponse({"ok": True})
 
@@ -94,31 +91,38 @@ def send_login_otp(request):
         "name": name
     }
 
-    has_smtp = bool(getattr(settings, 'EMAIL_HOST_USER', ''))
-    if has_smtp:
+    from_email = getattr(settings, 'EMAIL_HOST_USER', '').strip()
+    email_sent = False
+    error_detail = None
+
+    if from_email:
         email_body = (
             "مرحباً بك في منصة SERA لإدارة المخالفات.\n\n"
             f"رمز التحقق الخاص بك لتسجيل الدخول هو: {code}\n\n"
             "صلاحية الرمز 10 دقائق.\n"
             "إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة."
         )
-        t = threading.Thread(
-            target=_async_send_mail,
-            args=("رمز التحقق لمنصة المخالفات - SERA", email_body, email)
-        )
-        t.daemon = True
-        t.start()
+        try:
+            send_mail(
+                "رمز التحقق لمنصة المخالفات - SERA",
+                email_body,
+                from_email,
+                [email],
+                fail_silently=False,
+            )
+            email_sent = True
+        except Exception as e:
+            error_detail = str(e)
+            print(f"SMTP ERROR: {repr(e)}")
+    else:
+        error_detail = "بيانات EMAIL_HOST_USER غير موجودة بعد في السيرفر"
 
-    # الرد فوري خلال أجزاء من الثانية!
-    resp = {
+    return JsonResponse({
         "ok": True,
-        "has_smtp": has_smtp,
-        "message": "تم إرسال رمز التحقق بنجاح."
-    }
-    # إذا لم تكن إعدادات البريد مضافة في السيرفر بعد، يُرسل الكود مباشرة في الرد لضمان عدم تعطل الموظفين
-# dev_code disabled
-
-    return JsonResponse(resp)
+        "email_sent": email_sent,
+        "error_detail": error_detail,
+        "code": code if not email_sent else None
+    })
 
 @csrf_exempt
 def verify_login_otp(request):
