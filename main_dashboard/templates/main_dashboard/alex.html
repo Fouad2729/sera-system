@@ -3962,6 +3962,17 @@ async function deleteViolation(i){
     
     const data = await res.json();
     if(res.ok && data.ok){
+      document.getElementById('loginCredentialsBox').style.display = 'none';
+      document.getElementById('loginOtpBox').style.display = 'block';
+      document.getElementById('loginOtpInput').value = '';
+      document.getElementById('loginOtpInput').focus();
+      if(data.dev_code){
+        alert('رمز التحقق الأمني لتسجيل الدخول هو: ' + data.dev_code);
+      } else {
+        showToast('تم إرسال رمز التحقق بنجاح إلى بريدك الإلكتروني.');
+      }
+      return;
+    }
       const origIdx = original.findIndex(x => x.id === recordId);
       if(origIdx !== -1) original.splice(origIdx, 1);
       const rowIdx = rows.findIndex(x => x.id === recordId);

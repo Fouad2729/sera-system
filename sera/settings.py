@@ -116,3 +116,5 @@ LOGGING = {
         },
     },
 }
+
+EMAIL_TIMEOUT = 5

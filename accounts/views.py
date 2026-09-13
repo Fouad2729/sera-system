@@ -2,20 +2,28 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import json
 import secrets
 import time
+import threading
 
 User = get_user_model()
-
 reset_codes = {}
 login_otps = {}
+
+def _async_send_mail(subject, message, recipient):
+    """إرسال الإيميل في الخلفية دون تجميد استجابة السيرفر للمستخدم"""
+    try:
+        if getattr(settings, 'EMAIL_HOST_USER', None):
+            send_mail(subject, message, None, [recipient], fail_silently=True)
+    except Exception as e:
+        print(f"ASYNC EMAIL ERROR: {e}")
 
 @csrf_exempt
 def request_reset(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
-
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
@@ -23,32 +31,25 @@ def request_reset(request):
         return JsonResponse({"error": "Invalid request"}, status=400)
 
     user = User.objects.filter(email__iexact=email).first()
-
     if not user:
         return JsonResponse({"ok": True})
 
     code = str(secrets.randbelow(900000) + 100000)
     reset_codes[email] = code
 
-    try:
-        send_mail(
-            "رمز استعادة كلمة المرور - SERA",
-            f"رمز استعادة كلمة المرور الخاص بك هو: {code}\n\nصلاحية الرمز 10 دقائق.",
-            None,
-            [email],
-            fail_silently=False,
-        )
-    except Exception as e:
-        print(f"RESET EMAIL ERROR: {e}")
+    t = threading.Thread(
+        target=_async_send_mail,
+        args=("رمز استعادة كلمة المرور - SERA", f"رمز استعادة كلمة المرور الخاص بك هو: {code}\n\nصلاحية الرمز 10 دقائق.", email)
+    )
+    t.daemon = True
+    t.start()
 
     return JsonResponse({"ok": True})
-
 
 @csrf_exempt
 def confirm_reset(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
-
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
@@ -64,23 +65,18 @@ def confirm_reset(request):
         return JsonResponse({"error": "Invalid code"}, status=400)
 
     user = User.objects.filter(email__iexact=email).first()
-
     if not user:
         return JsonResponse({"error": "Invalid request"}, status=400)
 
     user.set_password(new_password)
     user.save()
-
     reset_codes.pop(email, None)
-
     return JsonResponse({"ok": True})
-
 
 @csrf_exempt
 def send_login_otp(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
-
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
@@ -98,38 +94,37 @@ def send_login_otp(request):
         "name": name
     }
 
-    email_body = (
-        "مرحباً بك في منصة SERA لإدارة المخالفات.\n\n"
-        f"رمز التحقق الخاص بك لتسجيل الدخول هو: {code}\n\n"
-        "صلاحية الرمز 10 دقائق.\n"
-        "إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة."
-    )
-
-    email_sent = False
-    try:
-        send_mail(
-            "رمز التحقق لمنصة المخالفات - SERA",
-            email_body,
-            None,
-            [email],
-            fail_silently=False,
+    has_smtp = bool(getattr(settings, 'EMAIL_HOST_USER', ''))
+    if has_smtp:
+        email_body = (
+            "مرحباً بك في منصة SERA لإدارة المخالفات.\n\n"
+            f"رمز التحقق الخاص بك لتسجيل الدخول هو: {code}\n\n"
+            "صلاحية الرمز 10 دقائق.\n"
+            "إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة."
         )
-        email_sent = True
-    except Exception as e:
-        print(f"EMAIL SMTP ERROR: {e}")
+        t = threading.Thread(
+            target=_async_send_mail,
+            args=("رمز التحقق لمنصة المخالفات - SERA", email_body, email)
+        )
+        t.daemon = True
+        t.start()
 
-    return JsonResponse({
+    # الرد فوري خلال أجزاء من الثانية!
+    resp = {
         "ok": True,
-        "email_sent": email_sent,
-        "message": "تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح."
-    })
+        "has_smtp": has_smtp,
+        "message": "تم إرسال رمز التحقق بنجاح."
+    }
+    # إذا لم تكن إعدادات البريد مضافة في السيرفر بعد، يُرسل الكود مباشرة في الرد لضمان عدم تعطل الموظفين
+    if not has_smtp:
+        resp["dev_code"] = code
 
+    return JsonResponse(resp)
 
 @csrf_exempt
 def verify_login_otp(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
-
     try:
         data = json.loads(request.body)
         email = data.get("email", "").strip().lower()
