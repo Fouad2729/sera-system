@@ -2345,7 +2345,6 @@ function render(){
 
 function updateStats(passedData){
   const data = passedData || filteredRows();
-const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor,'منشئ المخالفة'];document.getElementById('thead').innerHTML=cols.map(c=>'<th>'+esc(c.replace(/\s*\(MM\/DD\/YYYY\)/,''))+'</th>').join('')+'<th>الإجراء</th>';document.getElementById('tbody').innerHTML=filtered.map(r=>{const i=rows.indexOf(r);return '<tr><td><b>'+esc(v(r,C.num))+'</b></td><td class="company">'+esc(v(r,C.entity))+'</td><td class="location-text">'+esc(v(r,C.location))+'</td><td>'+esc(v(r,C.branch))+'</td><td>'+esc(v(r,C.type))+'</td><td>'+badge(v(r,C.status))+'</td><td>'+esc(v(r,C.editor))+'</td><td>'+esc(v(r,'منشئ المخالفة'))+'</td><td class="row-actions"><button class="btn btn-soft" onclick="openView('+i+')">عرض</button>'+(isOwner(r)?'<button class="btn btn-primary" onclick="openEdit('+i+')">تعديل</button><button class="btn btn-danger" style="background:#dc2626;color:#fff;margin-right:4px;" onclick="deleteViolation('+i+')">حذف</button>':'')+'</td></tr>';}).join('');document.getElementById('empty').classList.toggle('hidden',filtered.length>0);document.getElementById('resultHint').textContent='عرض '+filtered.length.toLocaleString('ar-SA')+' من '+rows.length.toLocaleString('ar-SA')+' مخالفة';updateStats();renderMap();document.getElementById('lastUpdated').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});}
 
 
   const done=data.filter(isDone).length,
