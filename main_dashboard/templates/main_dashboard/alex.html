@@ -1259,335 +1259,306 @@ div{
 
 
 <style>
-/* SERA STATUS DONUT — PREMIUM DASHBOARD DESIGN */
+/* SERA CYBER-GLASS DASHBOARD WIDGET — OFFICIAL DESIGN */
 
-.status-donut-kpi{
-  grid-column:1 / -1 !important;
-  width:100% !important;
-  min-height:330px !important;
-  padding:28px 32px !important;
-  box-sizing:border-box !important;
+.kpis {
+  display: block !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin-bottom: 24px !important;
+}
 
-  display:grid !important;
-  grid-template-columns:minmax(330px,1fr) minmax(430px,1.15fr) !important;
-  align-items:center !important;
-  gap:34px !important;
+#seraCyberDashboard {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 26px 34px;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(360px, 1.25fr) minmax(260px, 0.9fr);
+  align-items: center;
+  gap: 36px;
+  transition: all 0.3s ease;
+  direction: ltr; /* لضمان تطابق تموضع البطاقات والكرة كالصورة */
+}
 
-  position:relative !important;
-  overflow:hidden !important;
-
+/* ===== الوضع الليلي (Dark Mode) ===== */
+body.dark #seraCyberDashboard {
   background:
-    radial-gradient(circle at 82% 50%,rgba(0,255,150,.08),transparent 38%),
-    linear-gradient(135deg,#101b17 0%,#14221d 55%,#101914 100%) !important;
+    radial-gradient(circle at 82% 50%, rgba(0, 230, 153, 0.07), transparent 45%),
+    linear-gradient(135deg, #09171b 0%, #0e2025 50%, #071215 100%);
+  border: 1px solid rgba(16, 185, 129, 0.38);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
 
-  border:1px solid rgba(60,110,92,.34) !important;
-  border-radius:26px !important;
+body.dark .sera-cyber-badge {
+  color: #10b981;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
+
+body.dark .sera-cyber-card {
+  background: linear-gradient(180deg, rgba(24, 42, 48, 0.88) 0%, rgba(12, 23, 27, 0.96) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 5px 16px rgba(0, 0, 0, 0.35);
+}
+
+body.dark .sera-cyber-card:hover {
+  background: linear-gradient(180deg, rgba(30, 52, 60, 0.92) 0%, rgba(16, 29, 34, 0.98) 100%);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+
+body.dark .sera-card-num { color: #ffffff; }
+body.dark .sera-card-label { color: #cbd5e1; }
+
+body.dark .sera-svg-track { stroke: rgba(255, 255, 255, 0.05); }
+
+body.dark .sera-glass-sphere {
+  background: radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.24) 0%, rgba(20, 42, 48, 0.95) 55%, #081518 100%);
+  border: 2px solid rgba(255, 255, 255, 0.14);
   box-shadow:
-    0 18px 50px rgba(0,0,0,.24),
-    inset 0 1px 0 rgba(255,255,255,.025) !important;
+    inset 0 4px 12px rgba(255, 255, 255, 0.22),
+    inset 0 -6px 18px rgba(0, 0, 0, 0.85),
+    0 14px 35px rgba(0, 0, 0, 0.7);
 }
 
-.status-donut-kpi::after{
-  content:"";
-  position:absolute;
-  inset:auto 0 0 0;
-  height:2px;
-  background:linear-gradient(
-    90deg,
-    transparent,
-    rgba(22,163,74,.65),
-    rgba(34,197,94,.9),
-    transparent
-  );
-  opacity:.75;
+body.dark .sera-glass-sphere #statusDonutTotal {
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255, 255, 255, 0.45);
 }
 
-/* ===== DONUT ===== */
+body.dark .sera-glass-sphere span { color: #94a3b8; }
 
-.status-donut{
-  --done:0%;
-  --notdone:0%;
-  --needs:0%;
+body.dark .sera-orb-rail {
+  background: rgba(255, 255, 255, 0.08);
+}
 
-  width:250px;
-  height:250px;
-  justify-self:center;
-
-  flex:0 0 250px;
-  border-radius:50%;
-
+/* ===== الوضع النهاري (Light Mode) ===== */
+body:not(.dark) #seraCyberDashboard {
   background:
-    conic-gradient(
-      #16a34a 0 var(--done),
-      #ef233c var(--done) calc(var(--done) + var(--notdone)),
-      #f59e0b calc(var(--done) + var(--notdone)) 100%
-    );
+    radial-gradient(circle at 82% 50%, rgba(16, 185, 129, 0.08), transparent 45%),
+    linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06), inset 0 1px 0 #ffffff;
+}
 
-  display:grid;
-  place-items:center;
-  position:relative;
+body:not(.dark) .sera-cyber-badge {
+  color: #059669;
+}
 
+body:not(.dark) .sera-cyber-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+}
+
+body:not(.dark) .sera-cyber-card:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+}
+
+body:not(.dark) .sera-card-num { color: #0f172a; }
+body:not(.dark) .sera-card-label { color: #334155; }
+
+body:not(.dark) .sera-svg-track { stroke: rgba(0, 0, 0, 0.06); }
+
+body:not(.dark) .sera-glass-sphere {
+  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #f1f5f9 55%, #cbd5e1 100%);
+  border: 2px solid rgba(255, 255, 255, 0.95);
   box-shadow:
-    0 0 0 8px rgba(255,255,255,.018),
-    0 0 28px rgba(22,163,74,.13),
-    0 18px 45px rgba(0,0,0,.30);
-
-  transition:
-    transform .35s ease,
-    filter .35s ease,
-    box-shadow .35s ease;
+    inset 0 3px 8px rgba(255, 255, 255, 0.95),
+    inset 0 -3px 10px rgba(0, 0, 0, 0.08),
+    0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-.status-donut:hover{
-  transform:scale(1.025);
-  filter:saturate(1.08);
-  box-shadow:
-    0 0 0 8px rgba(255,255,255,.025),
-    0 0 38px rgba(22,163,74,.20),
-    0 22px 55px rgba(0,0,0,.34);
+body:not(.dark) .sera-glass-sphere #statusDonutTotal {
+  color: #0f172a;
 }
 
-.status-donut::before{
-  content:"";
-  position:absolute;
-  inset:22px;
-  border-radius:50%;
+body:not(.dark) .sera-glass-sphere span { color: #64748b; }
 
-  background:
-    radial-gradient(
-      circle at 35% 30%,
-      rgba(255,255,255,.045),
-      transparent 42%
-    ),
-    #101a17;
-
-  box-shadow:
-    inset 0 0 25px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.025);
+body:not(.dark) .sera-orb-rail {
+  background: rgba(0, 0, 0, 0.08);
 }
 
-.status-donut::after{
-  content:"";
-  position:absolute;
-  inset:-9px;
-  border-radius:50%;
-  border:1px dashed rgba(93,126,112,.24);
-  pointer-events:auto;
+/* ===== العناصر المشتركة ===== */
+.sera-cyber-badge {
+  position: absolute;
+  top: 13px;
+  left: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  font-family: monospace;
 }
 
-.status-donut-center{
-  position:relative;
-  z-index:2;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-
-  line-height:1;
-  text-align:center;
+.sera-cyber-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
 }
 
-.status-donut-center strong{
-  font-size:52px;
-  font-weight:950;
-  letter-spacing:-1px;
-  direction:ltr;
-  color:#f3f7f5;
-
-  text-shadow:
-    0 3px 15px rgba(0,0,0,.25);
+.sera-cyber-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  padding: 13px 22px;
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  direction: ltr;
 }
 
-.status-donut-center span{
-  font-size:14px;
-  font-weight:700;
-  color:#8fa19a;
-  margin-top:10px;
+.sera-cyber-card:hover {
+  transform: translateX(4px);
 }
 
-.status-donut-center span::after{
-  content:"";
-  display:block;
-  width:34px;
-  height:3px;
-  margin:10px auto 0;
-  border-radius:99px;
-  background:#16a34a;
-  box-shadow:0 0 10px rgba(22,163,74,.45);
+.sera-card-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 4px;
 }
 
-/* ===== STATUS CARDS ===== */
-
-.status-donut-legend{
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  min-width:0;
-  width:100%;
+.bar-green {
+  background: #00e699;
+  box-shadow: 0 0 12px #00e699;
 }
 
-.status-donut-legend > div{
-  position:relative;
-
-  display:grid;
-  grid-template-columns:48px 1fr auto;
-  align-items:center;
-  gap:14px;
-
-  min-height:78px;
-  padding:13px 18px;
-
-  box-sizing:border-box;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.035),
-      rgba(255,255,255,.012)
-    );
-
-  border:1px solid rgba(82,111,101,.25);
-  border-radius:17px;
-
-  transition:
-    transform .25s ease,
-    border-color .25s ease,
-    background .25s ease,
-    box-shadow .25s ease;
-
-  cursor:pointer;
-  overflow:hidden;
+.bar-red {
+  background: #ff2e5b;
+  box-shadow: 0 0 12px #ff2e5b;
 }
 
-.status-donut-legend > div::after{
-  content:"";
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:4px;
-  border-radius:4px 0 0 4px;
-  background:var(--status-color,#64748b);
+.bar-amber {
+  background: #f59e0b;
+  box-shadow: 0 0 12px #f59e0b;
 }
 
-.status-donut-legend > div:hover{
-  transform:translateX(-4px);
-  border-color:rgba(120,160,145,.42);
-  background:rgba(255,255,255,.055);
-  box-shadow:0 8px 24px rgba(0,0,0,.18);
+.sera-card-num {
+  font-size: 26px;
+  font-weight: 800;
+  min-width: 45px;
+  font-family: inherit;
 }
 
-.status-donut-legend > div.active{
-  transform:translateX(-5px);
-  border-color:rgba(255,255,255,.25);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.04),
-    0 10px 28px rgba(0,0,0,.22);
+.sera-card-label {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: right;
+  padding-right: 18px;
+  direction: rtl;
+  font-family: inherit;
 }
 
-.status-donut-legend > div:nth-child(1){
-  --status-color:#16a34a;
+.sera-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
 }
 
-.status-donut-legend > div:nth-child(2){
-  --status-color:#ef233c;
+/* ===== الأورب الدائري (Orb & Neon Gauge) ===== */
+.sera-cyber-orb-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-.status-donut-legend > div:nth-child(3){
-  --status-color:#f59e0b;
+.sera-donut-container {
+  width: 210px;
+  height: 210px;
+  position: relative;
+  display: grid;
+  place-items: center;
 }
 
-.status-donut-legend > div > span:nth-child(2){
-  font-size:14px;
-  font-weight:800;
-  color:#d7e1dc;
+.sera-donut-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
 }
 
-.status-donut-legend b{
-  direction:ltr;
-  font-size:25px;
-  font-weight:950;
-  color:#f1f5f3;
-  min-width:42px;
-  text-align:center;
+.sera-neon-arc {
+  transition: stroke-dasharray 0.7s ease, stroke-dashoffset 0.7s ease;
 }
 
-/* STATUS DOT / ICON */
-
-.status-donut-legend .dot{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  position:relative;
-
-  box-sizing:border-box;
-
-  border:2px solid currentColor;
-
-  box-shadow:
-    0 0 0 5px rgba(255,255,255,.025),
-    0 0 18px currentColor;
+.arc-green {
+  filter: drop-shadow(0 0 7px #00e699);
 }
 
-.status-donut-legend .dot::after{
-  content:"";
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:currentColor;
-  box-shadow:0 0 12px currentColor;
+.arc-amber {
+  filter: drop-shadow(0 0 7px #f59e0b);
 }
 
-.status-donut-legend .dot.green{
-  color:#16a34a;
-  background:rgba(22,163,74,.10);
+.arc-red {
+  filter: drop-shadow(0 0 8px #ff2e5b);
 }
 
-.status-donut-legend .dot.red{
-  color:#ef233c;
-  background:rgba(239,35,60,.10);
+.sera-glass-sphere {
+  width: 144px;
+  height: 144px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  transition: all 0.3s ease;
 }
 
-.status-donut-legend .dot.amber{
-  color:#f59e0b;
-  background:rgba(245,158,11,.10);
+.sera-glass-sphere #statusDonutTotal {
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 3px;
+  letter-spacing: -0.5px;
+  font-family: inherit;
 }
 
-/* ===== RESPONSIVE ===== */
-
-@media (max-width:900px){
-  .status-donut-kpi{
-    grid-template-columns:1fr !important;
-    padding:24px !important;
-  }
-
-  .status-donut{
-    width:220px;
-    height:220px;
-  }
+.sera-glass-sphere span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  font-family: inherit;
 }
 
-@media (max-width:700px){
-  .status-donut-kpi{
-    min-height:auto !important;
-    padding:20px !important;
-    gap:24px !important;
-  }
+.sera-orb-rail {
+  width: 150px;
+  height: 3px;
+  border-radius: 3px;
+  margin-top: 14px;
+  overflow: hidden;
+  position: relative;
+}
 
-  .status-donut{
-    width:190px;
-    height:190px;
-  }
+.sera-orb-rail-bar {
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, #00e699, #10b981);
+  border-radius: 3px;
+  box-shadow: 0 0 8px #00e699;
+  transition: width 0.7s ease;
+}
 
-  .status-donut-center strong{
-    font-size:42px;
-  }
-
-  .status-donut-legend > div{
-    min-height:70px;
+@media(max-width: 820px){
+  #seraCyberDashboard {
+    grid-template-columns: 1fr;
+    justify-items: center;
   }
 }
 
@@ -1897,6 +1868,25 @@ div{
 }
 </style>
 
+
+<style>
+/* SERA EXTREME PERFORMANCE OPTIMIZATIONS */
+.table-wrap {
+  contain: paint;
+  will-change: transform;
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
+}
+#tbody tr {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 45px;
+}
+#mainMap {
+  transform: translateZ(0);
+  will-change: transform;
+}
+</style>
+
 </head>
 <body>
 <div class="login" id="loginScreen" style="visibility:hidden;">
@@ -1947,21 +1937,84 @@ div{
   </section>
 
   <section class="kpis">
-    <div class="kpi"><div class="label">إجمالي المخالفات</div><div class="num" id="total">0</div></div>
-    <div class="kpi green"><div class="label">منجزة</div><div class="num" id="done">0</div></div>
-    <div class="kpi red"><div class="label">غير منجزة</div><div class="num" id="notdone">0</div></div>
-    <div class="kpi amber"><div class="label">تحتاج متابعة</div><div class="num" id="needs">0</div></div>
-    <div class="kpi status-donut-kpi">
-      <div class="status-donut" id="statusDonut">
-        <div class="status-donut-center">
-          <strong id="statusDonutTotal">0</strong>
-          <span>إجمالي</span>
+    <!-- حقول مخفية للحفاظ على توافق كل الدوال البرمجية القديمة 100% -->
+    <span id="total" style="display:none">0</span>
+    <span id="doneDonut" style="display:none">0</span>
+    <span id="notdoneDonut" style="display:none">0</span>
+    <span id="needsDonut" style="display:none">0</span>
+
+    <div id="seraCyberDashboard">
+      <div class="sera-cyber-badge">📊 DASHBOARD</div>
+
+      <!-- البطاقات الثلاث اليسرى -->
+      <div class="sera-cyber-cards">
+        <!-- منجزة -->
+        <div class="sera-cyber-card" onclick="filterByQuickStatus('منجزة')" title="اضغط لفلترة المنجزة">
+          <div class="sera-card-bar bar-green"></div>
+          <div class="sera-card-num" id="done">0</div>
+          <div class="sera-card-label">منجزة</div>
+          <div class="sera-card-icon">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="14" stroke="#00e699" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+              <circle cx="17" cy="17" r="9.5" stroke="#00e699" stroke-width="1.5" stroke-opacity="0.65"/>
+              <circle cx="17" cy="17" r="5" stroke="#00e699" stroke-width="2"/>
+              <circle cx="17" cy="17" r="2.5" fill="#00e699" filter="drop-shadow(0 0 4px #00e699)"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- غير منجزة -->
+        <div class="sera-cyber-card" onclick="filterByQuickStatus('غير منجزة')" title="اضغط لفلترة غير المنجزة">
+          <div class="sera-card-bar bar-red"></div>
+          <div class="sera-card-num" id="notdone">0</div>
+          <div class="sera-card-label">غير منجزة</div>
+          <div class="sera-card-icon">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <path d="M12 19V14C12 11.24 14.24 9 17 9C19.76 9 22 11.24 22 14V19H12Z" fill="#ff2e5b" fill-opacity="0.25" stroke="#ff2e5b" stroke-width="1.8"/>
+              <path d="M9 22H25V24C25 24.55 24.55 25 24 25H10C9.45 25 9 24.55 9 24V22Z" fill="#ff2e5b" stroke="#ff2e5b" stroke-width="1.5"/>
+              <circle cx="17" cy="14" r="2" fill="#ff2e5b" filter="drop-shadow(0 0 4px #ff2e5b)"/>
+              <path d="M7 11L5 9M27 11L29 9M17 6V3" stroke="#ff2e5b" stroke-width="1.8" stroke-linecap="round" filter="drop-shadow(0 0 4px #ff2e5b)"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- تحتاج متابعة -->
+        <div class="sera-cyber-card" onclick="filterByQuickStatus('تحتاج متابعة')" title="اضغط لفلترة التي تحتاج متابعة">
+          <div class="sera-card-bar bar-amber"></div>
+          <div class="sera-card-num" id="needs">0</div>
+          <div class="sera-card-label">تحتاج متابعة</div>
+          <div class="sera-card-icon">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="13" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="60 25" stroke-linecap="round" filter="drop-shadow(0 0 4px #f59e0b)"/>
+              <polyline points="12 17 15 20 22 13" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 3px #f59e0b)"/>
+            </svg>
+          </div>
         </div>
       </div>
-      <div class="status-donut-legend">
-        <div><span class="dot green"></span><span>منجزة</span><b id="doneDonut">0</b></div>
-        <div><span class="dot red"></span><span>غير منجزة</span><b id="notdoneDonut">0</b></div>
-        <div><span class="dot amber"></span><span>تحتاج متابعة</span><b id="needsDonut">0</b></div>
+
+      <!-- الكرة الزجاجية ثلاثية الأبعاد وعداد النيون -->
+      <div class="sera-cyber-orb-wrapper">
+        <div class="sera-donut-container" id="statusDonut">
+          <svg class="sera-donut-svg" width="200" height="200" viewBox="0 0 200 200">
+            <!-- مسار الحلقة الخلفي -->
+            <circle class="sera-svg-track" cx="100" cy="100" r="76" fill="none" stroke-width="12"/>
+            <!-- أقواس النيون المضيئة -->
+            <circle id="seraArcRed" class="sera-neon-arc arc-red" cx="100" cy="100" r="76" fill="none" stroke="#ff2e5b" stroke-width="12" stroke-linecap="round"/>
+            <circle id="seraArcAmber" class="sera-neon-arc arc-amber" cx="100" cy="100" r="76" fill="none" stroke="#f59e0b" stroke-width="12" stroke-linecap="round"/>
+            <circle id="seraArcGreen" class="sera-neon-arc arc-green" cx="100" cy="100" r="76" fill="none" stroke="#00e699" stroke-width="12" stroke-linecap="round"/>
+          </svg>
+
+          <!-- القبة الزجاجية ثلاثية الأبعاد (3D Glass Sphere) -->
+          <div class="sera-glass-sphere">
+            <strong id="statusDonutTotal">0</strong>
+            <span>إجمالي</span>
+          </div>
+        </div>
+
+        <!-- السلايدر الانزلاقي الأنيق أسفل الأورب -->
+        <div class="sera-orb-rail">
+          <div id="seraSliderBar" class="sera-orb-rail-bar"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -2250,9 +2303,50 @@ function isDone(r){return statusType(v(r,C.status))==='ok';}
 function isNotDone(r){return statusType(v(r,C.status))==='bad';}
 function filteredRows(){const q=norm(document.getElementById('q').value),b=document.getElementById('branch').value,t=document.getElementById('type').value,s=document.getElementById('status').value,quick=document.getElementById('quick').value;return rows.filter(r=>{const hay=norm(Object.values(r).join(' '));let ok=(!q||hay.includes(q))&&(!b||v(r,C.branch)===b)&&(!t||v(r,C.type)===t)&&(!s||v(r,C.status)===s);if(quick==='notdone')ok=ok&&isNotDone(r);if(quick==='done')ok=ok&&isDone(r);if(quick==='repeat')ok=ok&&Number(v(r,C.repeat))>0;if(quick==='today')ok=ok&&v(r,C.date)===todayISO();return ok;});}
 function todayISO(){const d=new Date();return d.toISOString().slice(0,10);}
-function render(){const filtered=filteredRows();const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor,'منشئ المخالفة'];document.getElementById('thead').innerHTML=cols.map(c=>'<th>'+esc(c.replace(/\s*\(MM\/DD\/YYYY\)/,''))+'</th>').join('')+'<th>الإجراء</th>';document.getElementById('tbody').innerHTML=filtered.map(r=>{const i=rows.indexOf(r);return '<tr><td><b>'+esc(v(r,C.num))+'</b></td><td class="company">'+esc(v(r,C.entity))+'</td><td class="location-text">'+esc(v(r,C.location))+'</td><td>'+esc(v(r,C.branch))+'</td><td>'+esc(v(r,C.type))+'</td><td>'+badge(v(r,C.status))+'</td><td>'+esc(v(r,C.editor))+'</td><td>'+esc(v(r,'منشئ المخالفة'))+'</td><td class="row-actions"><button class="btn btn-soft" onclick="openView('+i+')">عرض</button>'+(isOwner(r)?'<button class="btn btn-primary" onclick="openEdit('+i+')">تعديل</button><button class="btn btn-danger" style="background:#dc2626;color:#fff;margin-right:4px;" onclick="deleteViolation('+i+')">حذف</button>':'')+'</td></tr>';}).join('');document.getElementById('empty').classList.toggle('hidden',filtered.length>0);document.getElementById('resultHint').textContent='عرض '+filtered.length.toLocaleString('ar-SA')+' من '+rows.length.toLocaleString('ar-SA')+' مخالفة';updateStats();renderMap();document.getElementById('lastUpdated').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});}
-function updateStats(){
-  const data=filteredRows();
+let mapDebounceTimer = null;
+function debouncedRenderMap(){
+  if(mapDebounceTimer) clearTimeout(mapDebounceTimer);
+  mapDebounceTimer = setTimeout(() => {
+    if(typeof renderMap === 'function') renderMap();
+  }, 220);
+}
+
+function render(){
+  const filtered = filteredRows();
+  
+  // بناء الترويسة مرة واحدة فقط في الذاكرة دون تكرار
+  const theadEl = document.getElementById('thead');
+  if(theadEl && theadEl.children.length === 0){
+    const cols = [C.num, C.entity, C.location, C.branch, C.type, C.status, C.editor, 'منشئ المخالفة'];
+    theadEl.innerHTML = cols.map(c => '<th>' + esc(c.replace(/\s*\(MM\/DD\/YYYY\)/, '')) + '</th>').join('') + '<th>الإجراء</th>';
+  }
+
+  // رسم الصفوف بسرعة فائقة
+  const tbodyEl = document.getElementById('tbody');
+  if(tbodyEl){
+    tbodyEl.innerHTML = filtered.map(r => {
+      const i = rows.indexOf(r);
+      return '<tr><td><b>' + esc(v(r, C.num)) + '</b></td><td class="company">' + esc(v(r, C.entity)) + '</td><td class="location-text">' + esc(v(r, C.location)) + '</td><td>' + esc(v(r, C.branch)) + '</td><td>' + esc(v(r, C.type)) + '</td><td>' + badge(v(r, C.status)) + '</td><td>' + esc(v(r, C.editor)) + '</td><td>' + esc(v(r, 'منشئ المخالفة')) + '</td><td class="row-actions"><button class="btn btn-soft" onclick="openView(' + i + ')">عرض</button>' + (isOwner(r) ? '<button class="btn btn-primary" onclick="openEdit(' + i + ')">تعديل</button><button class="btn btn-danger" style="background:#dc2626;color:#fff;margin-right:4px;" onclick="deleteViolation(' + i + ')">حذف</button>' : '') + '</td></tr>';
+    }).join('');
+  }
+
+  const emptyEl = document.getElementById('empty');
+  if(emptyEl) emptyEl.classList.toggle('hidden', filtered.length > 0);
+
+  const hintEl = document.getElementById('resultHint');
+  if(hintEl) hintEl.textContent = 'عرض ' + filtered.length.toLocaleString('ar-SA') + ' من ' + rows.length.toLocaleString('ar-SA') + ' مخالفة';
+
+  updateStats(filtered);
+  debouncedRenderMap();
+
+  const timeEl = document.getElementById('lastUpdated');
+  if(timeEl) timeEl.textContent = 'آخر تحديث: ' + new Date().toLocaleTimeString('ar-SA', {hour:'2-digit', minute:'2-digit'});
+}
+
+function updateStats(passedData){
+  const data = passedData || filteredRows();
+const cols=[C.num,C.entity,C.location,C.branch,C.type,C.status,C.editor,'منشئ المخالفة'];document.getElementById('thead').innerHTML=cols.map(c=>'<th>'+esc(c.replace(/\s*\(MM\/DD\/YYYY\)/,''))+'</th>').join('')+'<th>الإجراء</th>';document.getElementById('tbody').innerHTML=filtered.map(r=>{const i=rows.indexOf(r);return '<tr><td><b>'+esc(v(r,C.num))+'</b></td><td class="company">'+esc(v(r,C.entity))+'</td><td class="location-text">'+esc(v(r,C.location))+'</td><td>'+esc(v(r,C.branch))+'</td><td>'+esc(v(r,C.type))+'</td><td>'+badge(v(r,C.status))+'</td><td>'+esc(v(r,C.editor))+'</td><td>'+esc(v(r,'منشئ المخالفة'))+'</td><td class="row-actions"><button class="btn btn-soft" onclick="openView('+i+')">عرض</button>'+(isOwner(r)?'<button class="btn btn-primary" onclick="openEdit('+i+')">تعديل</button><button class="btn btn-danger" style="background:#dc2626;color:#fff;margin-right:4px;" onclick="deleteViolation('+i+')">حذف</button>':'')+'</td></tr>';}).join('');document.getElementById('empty').classList.toggle('hidden',filtered.length>0);document.getElementById('resultHint').textContent='عرض '+filtered.length.toLocaleString('ar-SA')+' من '+rows.length.toLocaleString('ar-SA')+' مخالفة';updateStats();renderMap();document.getElementById('lastUpdated').textContent='آخر تحديث: '+new Date().toLocaleTimeString('ar-SA',{hour:'2-digit',minute:'2-digit'});}
+
 
   const done=data.filter(isDone).length,
         not=data.filter(isNotDone).length,
@@ -2274,31 +2368,59 @@ function updateStats(){
   updateStatusDonut(data.length,done,not,need);
 }
 function updateStatusDonut(total,done,notdone,need){
-  const donut=document.getElementById('statusDonut');
-  const totalEl=document.getElementById('statusDonutTotal');
-  if(!donut)return;
+  total = Number(total) || 0;
+  done = Number(done) || 0;
+  notdone = Number(notdone) || 0;
+  need = Number(need) || 0;
 
-  total=Number(total)||0;
-  done=Number(done)||0;
-  notdone=Number(notdone)||0;
-  need=Number(need)||0;
+  const totalEl = document.getElementById('statusDonutTotal');
+  if(totalEl) totalEl.textContent = total.toLocaleString('en-US');
 
-  if(total<=0){
-    donut.style.setProperty('--done','0%');
-    donut.style.setProperty('--notdone','0%');
-    donut.style.background='conic-gradient(#64748b 0 100%)';
-  }else{
-    const donePct=(done/total)*100;
-    const notPct=(notdone/total)*100;
+  const arcRed = document.getElementById('seraArcRed');
+  const arcGreen = document.getElementById('seraArcGreen');
+  const arcAmber = document.getElementById('seraArcAmber');
+  const sliderBar = document.getElementById('seraSliderBar');
 
-    donut.style.removeProperty('background');
-    donut.style.setProperty('--done',donePct+'%');
-    donut.style.setProperty('--notdone',notPct+'%');
+  const C = 2 * Math.PI * 76; // محيط الدائرة = ~477.5
+
+  if(total <= 0){
+    if(arcRed) arcRed.style.strokeDasharray = `0 ${C}`;
+    if(arcGreen) arcGreen.style.strokeDasharray = `0 ${C}`;
+    if(arcAmber) arcAmber.style.strokeDasharray = `0 ${C}`;
+    if(sliderBar) sliderBar.style.width = '0%';
+    return;
   }
 
-  if(totalEl){
-    totalEl.textContent=total.toLocaleString('en-US');
+  const doneLen = (done / total) * C;
+  const notdoneLen = (notdone / total) * C;
+  const needLen = (need / total) * C;
+
+  // تحديث أقواس النيون بنسبها الحقيقية المتناسقة
+  if(arcGreen){
+    arcGreen.style.strokeDasharray = `${Math.max(0, doneLen - 3)} ${C}`;
+    arcGreen.style.strokeDashoffset = '0';
   }
+  if(arcAmber){
+    arcAmber.style.strokeDasharray = `${Math.max(0, needLen - 3)} ${C}`;
+    arcAmber.style.strokeDashoffset = `-${doneLen}`;
+  }
+  if(arcRed){
+    arcRed.style.strokeDasharray = `${Math.max(0, notdoneLen - 3)} ${C}`;
+    arcRed.style.strokeDashoffset = `-${doneLen + needLen}`;
+  }
+
+  // تحديث المسار الانزلاقي أسفل الأورب
+  if(sliderBar){
+    const pct = ((done + need) / total) * 100;
+    sliderBar.style.width = `${Math.max(8, Math.min(100, pct))}%`;
+  }
+}
+
+function filterByQuickStatus(st){
+  const el = document.getElementById('status');
+  if(!el) return;
+  el.value = (el.value === st) ? '' : st;
+  render();
 }
 
 function clearFilters(){['q','branch','type','status','quick'].forEach(id=>document.getElementById(id).value='');render();}
@@ -3344,14 +3466,209 @@ function printReportDoc(){
 
 
 
+
+function showDeleteConfirmModal(vNum){
+  return new Promise((resolve) => {
+    // إزالة أي نافذة سابقة إن وجدت
+    const old = document.getElementById('seraCustomDeleteModal');
+    if(old) old.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'seraCustomDeleteModal';
+    overlay.style.cssText = `
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      font-family: inherit;
+      direction: rtl;
+    `;
+
+    overlay.innerHTML = `
+      <div id="seraModalCard" style="
+        background: linear-gradient(145deg, #1e293b, #0f172a);
+        border: 1px solid rgba(239, 68, 68, 0.35);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(220, 38, 38, 0.18);
+        border-radius: 20px;
+        width: 92%;
+        max-width: 440px;
+        padding: 30px 24px;
+        text-align: center;
+        transform: scale(0.92);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      ">
+        <!-- أيقونة الحذف المتوهجة -->
+        <div style="
+          width: 68px;
+          height: 68px;
+          margin: 0 auto 18px;
+          border-radius: 50%;
+          background: rgba(239, 68, 68, 0.12);
+          border: 1.5px solid rgba(239, 68, 68, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
+        ">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            <line x1="10" y1="11" x2="10" y2="17"></line>
+            <line x1="14" y1="11" x2="14" y2="17"></line>
+          </svg>
+        </div>
+
+        <!-- العنوان -->
+        <h3 style="
+          margin: 0 0 12px;
+          font-size: 20px;
+          font-weight: 800;
+          color: #f8fafc;
+          letter-spacing: -0.3px;
+        ">تأكيد حذف المخالفة</h3>
+
+        <!-- نص التأكيد مع رقم المحضر -->
+        <p style="
+          margin: 0 0 14px;
+          font-size: 15px;
+          line-height: 1.6;
+          color: #cbd5e1;
+        ">
+          هل أنت متأكد من رغبتك في حذف المخالفة رقم 
+          <span style="
+            color: #ef4444;
+            font-weight: 700;
+            background: rgba(239, 68, 68, 0.12);
+            padding: 3px 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            display: inline-block;
+            margin: 0 2px;
+            font-family: inherit;
+          ">${vNum}</span> 
+          نهائياً من قاعدة البيانات؟
+        </p>
+
+        <!-- تنبيه تحذيري -->
+        <div style="
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 13px;
+          color: #f87171;
+          background: rgba(239, 68, 68, 0.08);
+          padding: 8px 14px;
+          border-radius: 10px;
+          margin-bottom: 24px;
+          border: 1px dashed rgba(239, 68, 68, 0.25);
+        ">
+          <span>⚠️</span>
+          <span>هذا الإجراء نهائي ولا يمكن التراجع عنه.</span>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button id="seraCancelBtn" style="
+            flex: 1;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+          ">تراجع</button>
+
+          <button id="seraConfirmBtn" style="
+            flex: 1.2;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px solid rgba(254, 202, 202, 0.3);
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+            transition: all 0.2s;
+            font-family: inherit;
+          ">نعم، حذف نهائي</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const card = overlay.querySelector('#seraModalCard');
+    const cancelBtn = overlay.querySelector('#seraCancelBtn');
+    const confirmBtn = overlay.querySelector('#seraConfirmBtn');
+
+    // تأثيرات التحويم (Hover)
+    cancelBtn.onmouseenter = () => {
+      cancelBtn.style.background = 'rgba(255, 255, 255, 0.12)';
+      cancelBtn.style.color = '#fff';
+    };
+    cancelBtn.onmouseleave = () => {
+      cancelBtn.style.background = 'rgba(255, 255, 255, 0.07)';
+      cancelBtn.style.color = '#e2e8f0';
+    };
+
+    confirmBtn.onmouseenter = () => {
+      confirmBtn.style.transform = 'translateY(-1px)';
+      confirmBtn.style.boxShadow = '0 6px 20px rgba(239, 68, 68, 0.55)';
+    };
+    confirmBtn.onmouseleave = () => {
+      confirmBtn.style.transform = 'none';
+      confirmBtn.style.boxShadow = '0 4px 14px rgba(239, 68, 68, 0.4)';
+    };
+
+    // إظهار المودال بنعومة
+    requestAnimationFrame(() => {
+      overlay.style.opacity = '1';
+      card.style.transform = 'scale(1)';
+    });
+
+    function close(result){
+      overlay.style.opacity = '0';
+      card.style.transform = 'scale(0.92)';
+      setTimeout(() => {
+        overlay.remove();
+        document.removeEventListener('keydown', handleKey);
+        resolve(result);
+      }, 220);
+    }
+
+    function handleKey(e){
+      if(e.key === 'Escape') close(false);
+    }
+
+    document.addEventListener('keydown', handleKey);
+    cancelBtn.onclick = () => close(false);
+    confirmBtn.onclick = () => close(true);
+    overlay.onclick = (e) => {
+      if(e.target === overlay) close(false);
+    };
+  });
+}
+
+
 async function deleteViolation(i){
   const r = rows[i];
   if(!r) return;
   const vNum = v(r, C.num) || r.id || 'هذه المخالفة';
   
-  if(!confirm(`⚠️ تأكيد الحذف:\nهل أنت متأكد تماماً من رغبتك في حذف المخالفة رقم (${vNum}) نهائياً من قاعدة البيانات؟\nلا يمكن التراجع عن هذا الإجراء.`)){
-    return;
-  }
+  const confirmed = await showDeleteConfirmModal(vNum);
+  if(!confirmed) return;
   
   const recordId = r.id;
   if(!recordId){
@@ -4742,8 +5059,21 @@ function init(){
   fillSelect('type',C.type,'كل أنواع المخالفات');
   fillSelect('status',C.status,'كل الحالات');
 
-  ['q','branch','type','status','quick']
-    .forEach(id=>document.getElementById(id).addEventListener('input',render));
+  let searchDebounceTimer = null;
+  function triggerSmoothRender(delay){
+    if(searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => { render(); }, delay);
+  }
+
+  const searchInput = document.getElementById('q');
+  if(searchInput){
+    searchInput.addEventListener('input', () => triggerSmoothRender(130));
+  }
+
+  ['branch','type','status','quick'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('change', () => triggerSmoothRender(0));
+  });
 
   lp.addEventListener('keydown',e=>{
     if(e.key==='Enter')login();
@@ -4910,196 +5240,261 @@ init();
 
       const X = await loadStyledExcel();
 
-      /*
-       * إكمال البيانات الناقصة من النسخة الأصلية
-       * بدون تعديل قاعدة البيانات.
-       */
-      const exportData = data.map(completeFromOriginal);
-
-      const cols = [
-        C.num,
-        C.entity,
-        C.location,
-        C.law,
-        C.repeat,
-        C.editor,
-        C.branch,
-        C.date,
-        C.type
+      // نفس الحجم المصغر بالضبط مع ضبط العروض لإظهار الجمل كاملة بدون أي بتر
+      const COLS_SCHEMA = [
+        { h: 'رقم المحضر', db: 'violation_number', w: 18, align: 'center' },
+        { h: 'المنسوب له المخالفة', db: 'attributed_person', w: 30, align: 'center' },
+        { h: 'موقع المخالفة (المنطقة، المدينة)', db: 'violation_location', w: 36, align: 'center' },
+        { h: 'اسم النظام أو اللائحة المستند عليها (وفق محضر ضبط المخالفة)', db: 'regulation', w: 68, align: 'center' },
+        { h: 'تكرار الإحالة', db: 'referral_repetition', w: 16, align: 'center' },
+        { h: 'محرر المحضر', db: 'report_editor', w: 18, align: 'center' },
+        { h: 'الفرع', db: 'branch', w: 13, align: 'center' },
+        { h: 'تاريخ تحرير المحضر (MM/DD/YYYY)', db: 'report_date', w: 36, align: 'center' },
+        { h: 'نوع المخالفة', db: 'violation_type', w: 26, align: 'center' },
+        { h: 'تاريخ إشعار المنسوب له المخالفة (MM/DD/YYYY)', db: 'notified_date', w: 44, align: 'center' },
+        { h: 'تاريخ رد المنسوب له المخالفة (MM/DD/YYYY)', db: 'person_response_date', w: 40, align: 'center' },
+        { h: 'تاريخ إحالتها إلى القطاع المختص  (MM/DD/YYYY)', db: 'sector_referral_date', w: 44, align: 'center' },
+        { h: 'تاريخ رد القطاع المختص (MM/DD/YYYY)', db: 'sector_response_date', w: 38, align: 'center' },
+        { h: 'تاريخ إحالتها الى الأمانة (MM/DD/YYYY)', db: 'secretariat_referral_date', w: 38, align: 'center' },
+        { h: 'تاريخ رد الأمانة (MM/DD/YYYY)', db: 'secretariat_response_date', w: 32, align: 'center' },
+        { h: 'حالة المخالفة (MM/DD/YYYY)', db: 'violation_status', w: 26, align: 'center' },
+        { h: 'حالة المعاملة (MM/DD/YYYY)', db: 'transaction_status', w: 26, align: 'center' },
+        { h: 'تاريخ إصدار قرار المخالفة من اللجنة (MM/DD/YYYY)', db: 'committee_decision_date', w: 48, align: 'center' },
+        { h: 'ملاحظات', db: 'notes', w: 28, align: 'right' }
       ];
 
-      const headers = [
-        'رقم المحضر',
-        'المنسوب له المخالفة',
-        'موقع المخالفة (المنطقة، المدينة)',
-        'اسم النظام أو اللائحة المستند عليها (وفق محضر ضبط المخالفة)',
-        'تكرار الإحالة',
-        'محرر المحضر',
-        'الفرع',
-        'تاريخ تحرير المحضر (MM/DD/YYYY)',
-        'نوع المخالفة'
-      ];
+      function resolveCellVal(row, colDef){
+        const vNum = cleanKey(row['رقم المحضر'] || row.violation_number);
+        const orig = (Array.isArray(original) && vNum)
+          ? original.find(x => cleanKey(x['رقم المحضر'] || x.violation_number) === vNum)
+          : null;
+
+        let val = row[colDef.h];
+        if(isEmpty(val)) val = row[colDef.db];
+        if(isEmpty(val) && orig){
+          val = orig[colDef.h] || orig[colDef.h.replace('  ', ' ')];
+        }
+
+        if(isEmpty(val)) return '-';
+        val = String(val).trim();
+        if(/^\d{4}-\d{2}-\d{2}\s+00:00:00/.test(val)){
+          val = val.split(' ')[0];
+        }
+        val = val.replace(/[\r\n]+/g, ' - ').replace(/\s{2,}/g, ' ');
+        return val;
+      }
+
+      const headers = COLS_SCHEMA.map(c => c.h);
+      const dataRows = data.map(row => COLS_SCHEMA.map(def => resolveCellVal(row, def)));
+
+      // 40 سطراً فارغاً مقلماً أسفل الجدول
+      const emptyGridRows = Array.from({ length: 40 }, () => COLS_SCHEMA.map(() => ''));
 
       const matrix = [
         headers,
-        ...exportData.map(row =>
-          cols.map(col => {
-            const value = v(row,col);
-
-            return col === C.date
-              ? formatReportDate(value)
-              : value;
-          })
-        )
+        ...dataRows,
+        ...emptyGridRows
       ];
 
       const ws = X.utils.aoa_to_sheet(matrix);
       const wb = X.utils.book_new();
 
       wb.Workbook = wb.Workbook || {};
-      wb.Workbook.Views = [{RTL:true}];
+      wb.Workbook.Views = [{ RTL: true }];
+      ws['!views'] = [{ rightToLeft: true }];
 
-      ws['!cols'] = [
-        {wch:18},
-        {wch:36},
-        {wch:30},
-        {wch:48},
-        {wch:13},
-        {wch:18},
-        {wch:15},
-        {wch:21},
-        {wch:48}
-      ];
-
-      /*
-       * الصفوف الطويلة خصوصًا النظام واللائحة
-       * نعطيها مساحة أكبر.
-       */
+      ws['!cols'] = COLS_SCHEMA.map(c => ({ wch: c.w }));
+      
+      // نفس الارتفاع النحيف المصغر (19pt) تماماً دون أي تغيير
       ws['!rows'] = [
-        {hpt:48},
-        ...exportData.map(() => ({hpt:52}))
+        { hpt: 19 },
+        ...dataRows.map(() => ({ hpt: 16.5 })),
+        ...emptyGridRows.map(() => ({ hpt: 16 }))
       ];
 
-      const border = {
-        top:{
-          style:'thin',
-          color:{rgb:'666666'}
-        },
-        bottom:{
-          style:'thin',
-          color:{rgb:'666666'}
-        },
-        left:{
-          style:'thin',
-          color:{rgb:'666666'}
-        },
-        right:{
-          style:'thin',
-          color:{rgb:'666666'}
-        }
+      const headerBorder = {
+        top:    { style: 'thin', color: { rgb: '548235' } },
+        bottom: { style: 'thin', color: { rgb: '548235' } },
+        left:   { style: 'thin', color: { rgb: '548235' } },
+        right:  { style: 'thin', color: { rgb: '548235' } }
       };
 
-      for(let r=0; r<matrix.length; r++){
+      const dataBorder = {
+        top:    { style: 'thin', color: { rgb: 'D9D9D9' } },
+        bottom: { style: 'thin', color: { rgb: 'D9D9D9' } },
+        left:   { style: 'thin', color: { rgb: 'D9D9D9' } },
+        right:  { style: 'thin', color: { rgb: 'D9D9D9' } }
+      };
 
-        for(let c=0; c<matrix[r].length; c++){
-
-          const ref = X.utils.encode_cell({
-            r:r,
-            c:c
-          });
-
+      for(let r = 0; r < matrix.length; r++){
+        for(let c = 0; c < matrix[r].length; c++){
+          const ref = X.utils.encode_cell({ r: r, c: c });
           const cell = ws[ref];
-
           if(!cell) continue;
 
-          const header = r === 0;
-          const alternate = r % 2 === 0;
+          const isHeader = (r === 0);
+          const isDataRow = (r > 0 && r <= dataRows.length);
+          const isEmptyRow = (r > dataRows.length);
 
-          cell.s = {
+          if(isHeader){
+            // نفس الألوان والمقاس المصغر 8.5pt بالضبط
+            const isColA = (c === 0);
+            cell.s = {
+              font: {
+                name: 'SERA',
+                sz: 8.5,
+                bold: true,
+                color: { rgb: (c === 7 ? 'FFFF00' : 'FFFFFF') }
+              },
+              fill: {
+                patternType: 'solid',
+                fgColor: { rgb: isColA ? '8B0000' : '548235' }
+              },
+              alignment: {
+                horizontal: 'center',
+                vertical: 'center',
+                wrapText: false,
+                readingOrder: 2
+              },
+              border: headerBorder
+            };
+          } else if(isDataRow) {
+            const rawVal = String(cell.v ?? '').trim();
+            const repNum = parseInt(rawVal, 10);
+            const isRepeatCol = (c === 4);
+            const hasRepeatAlert = isRepeatCol && !isNaN(repNum) && repNum >= 2;
 
-            font:{
-              name:'Arial',
-              sz:10,
-              bold:header
-            },
-
-            fill:{
-              patternType:'solid',
-              fgColor:{
-                rgb:
-                  header
-                    ? 'A8C98E'
-                    : (alternate ? 'E7F1DF' : 'F8FBF5')
-              }
-            },
-
-            alignment:{
-              horizontal:
-                (c===0 || c===4 || c===7)
-                  ? 'center'
-                  : 'right',
-
-              vertical:header
-                ? 'center'
-                : 'top',
-
-              wrapText:true,
-
-              readingOrder:2
-            },
-
-            border:border
-          };
+            cell.s = {
+              font: {
+                name: 'SERA',
+                sz: 8.5,
+                bold: hasRepeatAlert,
+                color: { rgb: hasRepeatAlert ? '9C0006' : '000000' }
+              },
+              fill: {
+                patternType: 'solid',
+                fgColor: {
+                  rgb: hasRepeatAlert ? 'FFC7CE' : 'FFFFFF'
+                }
+              },
+              alignment: {
+                horizontal: COLS_SCHEMA[c].align,
+                vertical: 'center',
+                wrapText: false,
+                readingOrder: 2
+              },
+              border: dataBorder
+            };
+          } else if(isEmptyRow) {
+            const isEvenEmpty = (r % 2 === 0);
+            cell.s = {
+              fill: {
+                patternType: 'solid',
+                fgColor: { rgb: isEvenEmpty ? 'E2EFDA' : 'FFFFFF' }
+              },
+              border: dataBorder
+            };
+          }
         }
       }
 
-      ws['!autofilter'] = {
-        ref:ws['!ref']
-      };
+      ws['!autofilter'] = { ref: ws['!ref'] };
+      ws['!freeze'] = { xSplit: 0, ySplit: 1 };
 
-      ws['!freeze'] = {
-        xSplit:0,
-        ySplit:1
-      };
+      X.utils.book_append_sheet(wb, ws, 'متابعة المحاضر');
 
-      X.utils.book_append_sheet(
-        wb,
-        ws,
-        'متابعة المحاضر'
-      );
+      const wsDot = X.utils.aoa_to_sheet([
+        ['الفرع', 'حالة المخالفة', 'حالة المعاملة', 'حالة الإحالة'],
+        ['جدة', 'منجزة', 'تم إحالتها إلى المفتش', 'تمت الاحاله'],
+        ['ابها', 'غير منجزة', 'تم إحالتها إلى مكتب المحافظ', 'لم تتم الإحالة'],
+        ['جيزان', '', 'تم إشعار المنسوب له المخالفة', ''],
+        ['تبوك', '', 'تم إحالتها إلى قطاع شؤون المستهلكين', ''],
+        ['القصيم', '', 'تم إحالتها إلى قطاع الشؤون الفنية', ''],
+        ['الدمام', '', 'تم إحالتها إلى قطاع الدراسات والتراخيص', ''],
+        ['الاحساء', '', 'جاري إعداد الاستمارة', ''],
+        ['الرياض', '', 'تم إحالتها الى الإمانة', ''],
+        ['', '', 'تم إعادة المخالفة من قبل الامانة', ''],
+        ['', '', 'تم اعادتها إلى  قطاع شؤون المستهلكين', ''],
+        ['', '', 'تم اعادتها إلى قطاع الشؤون الفنية', ''],
+        ['', '', 'تم اعادتها إلى قطاع الدراسات والتراخيص', ''],
+        ['', '', 'تم رفضها من الأمانة', ''],
+        ['', '', 'تم إصدار المخالفة', ''],
+        ['', '', 'تم قبول الدفوع', ''],
+        ['', '', 'تم إحالة المحضر الى إدارة التفتيش', '']
+      ]);
+      X.utils.book_append_sheet(wb, wsDot, '.');
 
-      X.writeFile(
-        wb,
-        'SERA_متابعة_المحاضر.xlsx'
-      );
+      const wsDates = X.utils.aoa_to_sheet([
+        ['-'],
+        ...Array.from({length: 365}, (_, i) => {
+          const d = new Date(2026, 0, i + 1);
+          return [d.toISOString().slice(0, 10)];
+        })
+      ]);
+      X.utils.book_append_sheet(wb, wsDates, 'DATES');
+
+      X.writeFile(wb, 'SERA_متابعة_المحاضر.xlsx');
 
       if(typeof showToast === 'function'){
-        showToast(
-          'تم تصدير ' +
-          exportData.length.toLocaleString('ar-SA') +
-          ' مخالفة إلى Excel.'
-        );
+        showToast('تم تصدير ' + data.length.toLocaleString('ar-SA') + ' مخالفة إلى Excel.');
       }
 
     }catch(error){
-
-      console.error(
-        'SERA isolated Excel export failed:',
-        error
-      );
-
-      /*
-       * إذا حصل خطأ في التصدير الجديد،
-       * نرجع مباشرة للتصدير القديم.
-       */
-      if(typeof OLD_EXPORT === 'function'){
-        OLD_EXPORT();
-      }else{
-        alert('تعذر تصدير ملف Excel.');
-      }
+      console.error('SERA Excel export failed:', error);
+      alert('حدث خطأ أثناء التصدير: ' + error.message);
     }
   };
 
+})();
+</script>
+
+<script>
+/* SERA_REALTIME_LIVE_SYNC_V1 */
+(function(){
+  let lastFingerprint = null;
+  let isSyncing = false;
+
+  async function checkLiveSync(){
+    if(document.hidden || isSyncing) return;
+    try {
+      const res = await fetch('/api/violations/sync-check/');
+      if(!res.ok) return;
+      const data = await res.json();
+      if(!data.ok) return;
+
+      const currentFingerprint = `${data.count}_${data.latest_update}_${data.latest_id}`;
+
+      // التخزين لأول مرة عند فتح الصفحة
+      if(lastFingerprint === null){
+        lastFingerprint = currentFingerprint;
+        return;
+      }
+
+      // إذا حدث أي تعديل أو إضافة أو حذف من طرف آخر
+      if(lastFingerprint !== currentFingerprint){
+        lastFingerprint = currentFingerprint;
+        isSyncing = true;
+        
+        // تحديث البيانات صامتاً في الخلفية
+        if(typeof loadPersisted === 'function'){
+          await loadPersisted();
+          if(typeof render === 'function'){
+            render();
+          }
+          if(typeof showToast === 'function'){
+            showToast('🔔 تم تحديث البيانات لحظياً لمزامنة التغييرات الجديدة.');
+          }
+        }
+      }
+    } catch(e) {
+      // صامت في حال انقطاع الشبكة اللحظي
+    } finally {
+      isSyncing = false;
+    }
+  }
+
+  // نبض صامت خفيف كل 3.5 ثوانٍ
+  setInterval(checkLiveSync, 3500);
 })();
 </script>
 

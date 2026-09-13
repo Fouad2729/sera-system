@@ -167,3 +167,106 @@ def api_violation_delete(request, pk):
         })
     except Exception as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=500)
+
+
+@csrf_exempt
+def api_export_excel(request):
+    import os
+    import openpyxl
+    from django.http import HttpResponse, JsonResponse
+    from openpyxl.styles import PatternFill, Font
+    from io import BytesIO
+    import json
+
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "POST required"}, status=405)
+
+    try:
+        data = json.loads(request.body or "{}")
+        rows = data.get("rows", [])
+
+        template_path = os.path.join(os.path.dirname(__file__), "template_report.xlsx")
+        wb = openpyxl.load_workbook(template_path)
+        ws = wb['متابعة المحاضر']
+
+        # مسح البيانات السابقة مع الاحتفاظ بالتنسيق
+        for r in range(2, ws.max_row + 1):
+            for c in range(1, 20):
+                ws.cell(row=r, column=c).value = None
+
+        col_keys = [
+            'رقم المحضر',
+            'المنسوب له المخالفة',
+            'موقع المخالفة (المنطقة، المدينة)',
+            'اسم النظام أو اللائحة المستند عليها (وفق محضر ضبط المخالفة)',
+            'تكرار الإحالة',
+            'محرر المحضر',
+            'الفرع',
+            'تاريخ تحرير المحضر (MM/DD/YYYY)',
+            'نوع المخالفة',
+            'تاريخ إشعار المنسوب له المخالفة (MM/DD/YYYY)',
+            'تاريخ رد المنسوب له المخالفة (MM/DD/YYYY)',
+            'تاريخ إحالتها إلى القطاع المختص  (MM/DD/YYYY)',
+            'تاريخ رد القطاع المختص (MM/DD/YYYY)',
+            'تاريخ إحالتها الى الأمانة (MM/DD/YYYY)',
+            'تاريخ رد الأمانة (MM/DD/YYYY)',
+            'حالة المخالفة (MM/DD/YYYY)',
+            'حالة المعاملة (MM/DD/YYYY)',
+            'تاريخ إصدار قرار المخالفة من اللجنة (MM/DD/YYYY)',
+            'ملاحظات'
+        ]
+
+        pink_fill = PatternFill(start_color='FFC7CE', end_color='FFC7CE', fill_type='solid')
+        red_font = Font(name='SERA', size=16, color='9C0006', bold=True)
+
+        for idx, item in enumerate(rows):
+            r_num = 2 + idx
+            ws.row_dimensions[r_num].height = 42
+            for c_idx, key in enumerate(col_keys, start=1):
+                val = item.get(key, '')
+                cell = ws.cell(row=r_num, column=c_idx)
+                cell.value = val
+
+                # تمييز تكرار الإحالة عند وجود تكرار >= 2
+                if c_idx == 5:
+                    try:
+                        rep = int(str(val).strip())
+                        if rep >= 2:
+                            cell.fill = pink_fill
+                            cell.font = red_font
+                    except (ValueError, TypeError):
+                        pass
+
+        buf = BytesIO()
+        wb.save(buf)
+        buf.seek(0)
+
+        response = HttpResponse(
+            buf.getvalue(),
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response['Content-Disposition'] = "attachment; filename*=UTF-8''SERA_متابعة_المحاضر.xlsx"
+        return response
+
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=500)
+
+
+@csrf_exempt
+def api_sync_check(request):
+    from django.db.models import Max
+    from django.http import JsonResponse
+    try:
+        count = Violation.objects.count()
+        latest_update = Violation.objects.aggregate(Max('updated_at'))['updated_at__max']
+        latest_id = Violation.objects.aggregate(Max('id'))['id__max'] or 0
+        up_str = latest_update.isoformat() if latest_update else ""
+        
+        return JsonResponse({
+            "ok": True,
+            "count": count,
+            "latest_update": up_str,
+            "latest_id": latest_id
+        })
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=500)
