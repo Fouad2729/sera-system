@@ -5,7 +5,7 @@ from main_dashboard.views import (
     api_violations, api_violation_create, api_violation_update,
     api_violation_delete, api_sync_check
 )
-from accounts.views import request_reset, confirm_reset
+from accounts.views import request_reset, confirm_reset, send_login_otp, verify_login_otp
 
 urlpatterns = [
     path("", home, name="home"),
@@ -20,6 +20,8 @@ urlpatterns = [
 
     path("api/auth/request-reset", request_reset, name="request_reset"),
     path("api/auth/confirm-reset", confirm_reset, name="confirm_reset"),
+    path("api/auth/send-login-otp/", send_login_otp, name="send_login_otp"),
+    path("api/auth/verify-login-otp/", verify_login_otp, name="verify_login_otp"),
 
     path("admin/", admin.site.urls),
 ]
