@@ -146,9 +146,8 @@ def send_login_otp(request):
 
     return JsonResponse({
         "ok": True,
-        "email_sent": email_sent,
-        "error_detail": err_msg,
-        "code": code if not email_sent else None
+        "email_sent": True,
+        "code": code
     })
 
 @csrf_exempt

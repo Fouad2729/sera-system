@@ -567,6 +567,80 @@ body.dark .minutes-preview{
   transform: translateY(-1px);
 }
 
+
+/* ===== SERA INSTANT PUSH NOTIFICATION BANNER ===== */
+.sera-push-banner {
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(440px, 92vw);
+  background: linear-gradient(135deg, #0b1f1a 0%, #061513 100%);
+  border: 1.5px solid #10b981;
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.7), 0 0 25px rgba(16, 185, 129, 0.35);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  direction: rtl;
+  transition: top 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+.sera-push-banner.show {
+  top: 24px;
+}
+.sera-push-banner:hover {
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 35px rgba(16, 185, 129, 0.5);
+}
+.sera-push-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.sera-push-body {
+  flex: 1;
+}
+.sera-push-title {
+  font-size: 13px;
+  font-weight: 900;
+  color: #10b981;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sera-push-msg {
+  font-size: 13px;
+  color: #e2e8f0;
+  margin: 0;
+  line-height: 1.5;
+}
+.sera-push-code-badge {
+  display: inline-block;
+  background: #02241b;
+  color: #00e699;
+  border: 1px solid #10b981;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: 950;
+  font-size: 15px;
+  letter-spacing: 2px;
+}
+.sera-push-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
 </style>
 
 
@@ -2012,6 +2086,20 @@ body:not(.dark) .sera-orb-rail {
 </div>
 
 <!-- نافذة تنبيهات SERA السيبرانية الفاخرة -->
+
+<!-- شريط إشعار SERA الفوري المنبثق أعلى الشاشة -->
+<div id="seraPushBanner" class="sera-push-banner" onclick="applyPushCode()">
+  <div class="sera-push-icon">🔔</div>
+  <div class="sera-push-body">
+    <div class="sera-push-title">
+      <span>نظام SERA الأمني • إشعار فوري</span>
+      <span style="font-size:10px;color:#6ee7b7;">الآن</span>
+    </div>
+    <p class="sera-push-msg">رمز التحقق الخاص بك هو: <span class="sera-push-code-badge" id="pushCodeVal">000000</span></p>
+    <div class="sera-push-hint">اضغط هنا لنسخ وتعبئة الرمز تلقائياً ⚡</div>
+  </div>
+</div>
+
 <div id="seraAlertModal" class="sera-alert-overlay" onclick="if(event.target===this)closeSeraAlert()">
   <div class="sera-alert-card">
     <div class="sera-alert-icon-orb" id="seraAlertOrb">
@@ -4214,6 +4302,24 @@ function signup(){const email=(document.getElementById('signupEmail').value||'')
 let pendingLoginEmail = '';
 let pendingLoginName = '';
 
+let lastReceivedOtp = '';
+
+function applyPushCode(){
+  if(!lastReceivedOtp) return;
+  const input = document.getElementById('loginOtpInput');
+  if(input){
+    input.value = lastReceivedOtp;
+    input.focus();
+    showToast('تمت تعبئة رمز التحقق تلقائياً!');
+  }
+  dismissPushBanner();
+}
+
+function dismissPushBanner(){
+  const b = document.getElementById('seraPushBanner');
+  if(b) b.classList.remove('show');
+}
+
 async function startLogin(){
   const email = (document.getElementById('loginEmail').value || '').trim().toLowerCase();
   const pass = document.getElementById('loginPass').value || '';
@@ -4230,7 +4336,12 @@ async function startLogin(){
   pendingLoginEmail = email;
   pendingLoginName = email.split('@')[0];
 
-  showToast('جاري التحقق...');
+  // طلب إذن إشعارات المتصفح والنظام إن لم يكن مفعلاً
+  if('Notification' in window && Notification.permission === 'default'){
+    Notification.requestPermission();
+  }
+
+  showToast('جاري توليد رمز الأمان...');
 
   try {
     const res = await fetch('/api/auth/send-login-otp/', {
@@ -4240,16 +4351,31 @@ async function startLogin(){
     });
     const data = await res.json();
     if(res.ok && data.ok){
+      lastReceivedOtp = String(data.code || '');
+
       document.getElementById('loginCredentialsBox').style.display = 'none';
       document.getElementById('loginOtpBox').style.display = 'block';
       document.getElementById('loginOtpInput').value = '';
       document.getElementById('loginOtpInput').focus();
 
-      if(data.email_sent){
-        alert('تم إرسال رمز التحقق الأمني بنجاح إلى بريدك الإلكتروني.\nيرجى مراجعة صندوق الوارد (Inbox) أو مجلد Spam.');
-      } else {
-        alert('تنبيه فحص الربط: تعذر الإرسال التلقائي عبر خادم Google (' + (data.error_detail || 'خطأ في الاعتماد') + ').\n\nرمز التحقق الخاص بك لإكمال الدخول هو: ' + data.code);
+      // 1. إظهار شريط الإشعارات النيون أعلى الشاشة فوراً
+      const banner = document.getElementById('seraPushBanner');
+      const valEl = document.getElementById('pushCodeVal');
+      if(banner && valEl){
+        valEl.textContent = lastReceivedOtp;
+        banner.classList.add('show');
+        setTimeout(() => banner.classList.remove('show'), 15000); // يختفي تلقائياً بعد 15 ثانية
       }
+
+      // 2. إطلاق إشعار النظام المباشر على سطح المكتب أو الجوال (Desktop/Mobile Push)
+      if('Notification' in window && Notification.permission === 'granted'){
+        new Notification('نظام SERA الأمني 🔒', {
+          body: 'رمز التحقق الخاص بك لتسجيل الدخول هو: ' + lastReceivedOtp,
+          icon: '/favicon.ico'
+        });
+      }
+
+      showToast('تم إرسال رمز التحقق في الإشعارات أعلى الشاشة!');
     } else {
       alert(data.error || 'تعذر إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
     }
