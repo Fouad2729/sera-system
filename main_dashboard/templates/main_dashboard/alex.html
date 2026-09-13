@@ -2088,7 +2088,7 @@ body:not(.dark) .sera-orb-rail {
 <!-- نافذة تنبيهات SERA السيبرانية الفاخرة -->
 
 <!-- شريط إشعار SERA الفوري المنبثق أعلى الشاشة -->
-<div id="seraPushBanner" class="sera-push-banner" onclick="applyPushCode()">
+<div id="seraPushBanner" style="display:none !important;" class="sera-push-banner" onclick="applyPushCode()">
   <div class="sera-push-icon">🔔</div>
   <div class="sera-push-body">
     <div class="sera-push-title">
@@ -4358,24 +4358,8 @@ async function startLogin(){
       document.getElementById('loginOtpInput').value = '';
       document.getElementById('loginOtpInput').focus();
 
-      // 1. إظهار شريط الإشعارات النيون أعلى الشاشة فوراً
-      const banner = document.getElementById('seraPushBanner');
-      const valEl = document.getElementById('pushCodeVal');
-      if(banner && valEl){
-        valEl.textContent = lastReceivedOtp;
-        banner.classList.add('show');
-        setTimeout(() => banner.classList.remove('show'), 15000); // يختفي تلقائياً بعد 15 ثانية
-      }
-
-      // 2. إطلاق إشعار النظام المباشر على سطح المكتب أو الجوال (Desktop/Mobile Push)
-      if('Notification' in window && Notification.permission === 'granted'){
-        new Notification('نظام SERA الأمني 🔒', {
-          body: 'رمز التحقق الخاص بك لتسجيل الدخول هو: ' + lastReceivedOtp,
-          icon: '/favicon.ico'
-        });
-      }
-
-      showToast('تم إرسال رمز التحقق في الإشعارات أعلى الشاشة!');
+      // الاعتماد الحصري على إرسال الرمز للبريد الإلكتروني فقط
+      showToast('تم إرسال رمز التحقق إلى بريدك الإلكتروني بنجاح.');
     } else {
       alert(data.error || 'تعذر إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
     }
