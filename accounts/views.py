@@ -1,28 +1,26 @@
 from django.contrib.auth import get_user_model
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 import json
 import secrets
 import time
 import os
 import urllib.request
+import urllib.error
 
 User = get_user_model()
 reset_codes = {}
 login_otps = {}
 
 def send_via_https_api(recipient, subject, code):
-    """إرسال الإيميل مباشرة عبر HTTPS Port 443 لتجاوز حظر منافذ SMTP في Render"""
+    """إرسال الإيميل مباشرة إلى Resend عبر HTTPS Port 443"""
     api_key = os.environ.get('EMAIL_API_KEY', '').strip()
-    sender_email = os.environ.get('EMAIL_HOST_USER', 'asrciee@gmail.com').strip()
-    
     if not api_key:
-        print("API KEY MISSING: Please set EMAIL_API_KEY in Render environment.")
-        return False
+        print("EMAIL_API_KEY IS NOT SET IN RENDER")
+        return False, "EMAIL_API_KEY is missing in Render"
 
     html_content = f"""
-    <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; background: #071317; color: #e2e8f0; padding: 25px; border-radius: 18px; max-width: 500px; margin: auto; border: 1px solid #18bf72;">
+    <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; background: #071317; color: #e2e8f0; padding: 25px; border-radius: 18px; max-width: 500px; margin: auto; border: 1.5px solid #18bf72;">
         <h2 style="color: #00e699; margin-top: 0;">نظام SERA لإدارة المخالفات</h2>
         <p style="font-size: 15px; color: #cbd5e1;">رمز التحقق الأمني الخاص بك لتسجيل الدخول هو:</p>
         <div style="font-size: 34px; font-weight: 900; letter-spacing: 6px; color: #00e699; background: #0b1c22; padding: 16px; border-radius: 12px; text-align: center; border: 1.5px solid rgba(0, 230, 153, 0.4); margin: 20px 0;">
@@ -34,28 +32,48 @@ def send_via_https_api(recipient, subject, code):
     </div>
     """
 
-    # دعم Brevo API المباشر عبر المنفذ 443
-    url = "https://api.brevo.com/v3/smtp/email"
-    headers = {
-        "api-key": api_key,
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "User-Agent": "SERA-Platform/1.0"
-    }
-    payload = {
-        "sender": {"name": "نظام SERA الذكي", "email": sender_email},
-        "to": [{"email": recipient}],
-        "subject": subject,
-        "htmlContent": html_content
-    }
+    # 1. إذا كان المفتاح يبدأ بـ re_ فهو مفتاح Resend
+    if api_key.startswith('re_'):
+        url = "https://api.resend.com/emails"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "SERA-Platform/1.0"
+        }
+        payload = {
+            "from": "SERA Platform <onboarding@resend.dev>",
+            "to": [recipient],
+            "subject": subject,
+            "html": html_content
+        }
+    # 2. إذا كان مفتاح Brevo
+    else:
+        url = "https://api.brevo.com/v3/smtp/email"
+        headers = {
+            "api-key": api_key,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "SERA-Platform/1.0"
+        }
+        sender_email = os.environ.get('EMAIL_HOST_USER', 'asrciee@gmail.com').strip()
+        payload = {
+            "sender": {"name": "نظام SERA الذكي", "email": sender_email},
+            "to": [{"email": recipient}],
+            "subject": subject,
+            "htmlContent": html_content
+        }
 
     try:
         req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers)
-        with urllib.request.urlopen(req, timeout=6) as response:
-            return response.status in (200, 201)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return True, None
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode('utf-8', errors='ignore')
+        print(f"RESEND HTTP ERROR {e.code}: {err_body}")
+        return False, f"Resend API error ({e.code}): {err_body}"
     except Exception as e:
-        print(f"HTTPS API EMAIL ERROR: {e}")
-        return False
+        print(f"API ERROR: {repr(e)}")
+        return False, str(e)
 
 @csrf_exempt
 def request_reset(request):
@@ -124,14 +142,12 @@ def send_login_otp(request):
         "name": name
     }
 
-    # الإرسال المباشر عبر HTTPS
-    email_sent = send_via_https_api(email, "رمز التحقق لمنصة المخالفات - SERA", code)
-    has_key = bool(os.environ.get('EMAIL_API_KEY', ''))
+    email_sent, err_msg = send_via_https_api(email, "رمز التحقق لمنصة المخالفات - SERA", code)
 
     return JsonResponse({
         "ok": True,
         "email_sent": email_sent,
-        "error_detail": "يرجى ضبط EMAIL_API_KEY في Render" if not has_key else ("تعذر التسليم عبر Brevo" if not email_sent else None),
+        "error_detail": err_msg,
         "code": code if not email_sent else None
     })
 
