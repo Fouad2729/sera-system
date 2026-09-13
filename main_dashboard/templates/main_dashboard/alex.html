@@ -3323,6 +3323,166 @@ html,
 <script>
 
 
+
+<!-- ========================================================= -->
+<!-- نظام نوافذ تنبيهات SERA السيبرانية الفاخرة (بديل نوافذ المتصفح) -->
+<!-- ========================================================= -->
+<style id="sera-cyber-alert-style">
+.sera-alert-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 12, 16, 0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.sera-alert-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.sera-alert-card {
+  width: min(420px, 94vw);
+  background: linear-gradient(145deg, #0b1c22 0%, #071317 100%);
+  border: 1px solid rgba(24, 191, 114, 0.4);
+  border-radius: 24px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), 0 0 35px rgba(24, 191, 114, 0.15);
+  transform: scale(0.92);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #e2e8f0;
+  direction: rtl;
+}
+.sera-alert-overlay.active .sera-alert-card {
+  transform: scale(1);
+}
+.sera-alert-icon-orb {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(24, 191, 114, 0.2) 0%, rgba(10, 30, 25, 0.8) 100%);
+  border: 1.5px solid rgba(24, 191, 114, 0.5);
+  box-shadow: 0 0 22px rgba(24, 191, 114, 0.3);
+  transition: all 0.3s ease;
+}
+.sera-alert-title {
+  font-size: 16px;
+  font-weight: 950;
+  color: #ffffff;
+  margin: 0 0 10px;
+  letter-spacing: -0.3px;
+}
+.sera-alert-text {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #cbd5e1;
+  margin: 0 0 22px;
+  font-weight: 500;
+}
+.sera-alert-btn {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  transition: all 0.2s ease;
+}
+.sera-alert-btn:hover {
+  background: linear-gradient(135deg, #14c78d 0%, #08a373 100%);
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.5);
+  transform: translateY(-1px);
+}
+</style>
+
+<div id="seraAlertModal" class="sera-alert-overlay" onclick="if(event.target===this)closeSeraAlert()">
+  <div class="sera-alert-card">
+    <div class="sera-alert-icon-orb" id="seraAlertOrb">
+      <svg id="seraAlertSvg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"></polyline>
+      </svg>
+    </div>
+    <div class="sera-alert-title" id="seraAlertTitle">نظام SERA الذكي</div>
+    <div class="sera-alert-text" id="seraAlertText"></div>
+    <button class="sera-alert-btn" type="button" onclick="closeSeraAlert()">حسناً</button>
+  </div>
+</div>
+
+<script id="sera-cyber-alert-script">
+function showSeraAlert(msg, title){
+  var overlay = document.getElementById('seraAlertModal');
+  var textEl = document.getElementById('seraAlertText');
+  var titleEl = document.getElementById('seraAlertTitle');
+  var orbEl = document.getElementById('seraAlertOrb');
+  var svgEl = document.getElementById('seraAlertSvg');
+  if(!overlay || !textEl) return;
+
+  textEl.textContent = msg || '';
+  if(titleEl) titleEl.textContent = title || 'نظام SERA الأمني';
+
+  var textStr = String(msg || '');
+  var isPass = textStr.includes('كلمة المرور') || textStr.includes('الرمز') || textStr.includes('أمان') || textStr.includes('الاستعادة');
+  var isWarn = textStr.includes('يرجى') || textStr.includes('غير صحيح') || textStr.includes('خطأ') || textStr.includes('أدخل') || textStr.includes('طول');
+
+  if(orbEl && svgEl){
+    if(isPass){
+      orbEl.style.borderColor = 'rgba(245, 158, 11, 0.7)';
+      orbEl.style.boxShadow = '0 0 25px rgba(245, 158, 11, 0.4)';
+      svgEl.setAttribute('stroke', '#f59e0b');
+      svgEl.innerHTML = '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>';
+    } else if(isWarn){
+      orbEl.style.borderColor = 'rgba(239, 68, 68, 0.7)';
+      orbEl.style.boxShadow = '0 0 25px rgba(239, 68, 68, 0.4)';
+      svgEl.setAttribute('stroke', '#ef4444');
+      svgEl.innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>';
+    } else {
+      orbEl.style.borderColor = 'rgba(16, 185, 129, 0.7)';
+      orbEl.style.boxShadow = '0 0 25px rgba(16, 185, 129, 0.4)';
+      svgEl.setAttribute('stroke', '#10b981');
+      svgEl.innerHTML = '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"></polyline>';
+    }
+  }
+
+  overlay.classList.add('active');
+}
+
+function closeSeraAlert(){
+  var overlay = document.getElementById('seraAlertModal');
+  if(overlay) overlay.classList.remove('active');
+}
+
+// استبدال دالة alert في المتصفح بالكامل لتستخدم النافذة الفاخرة تلقائياً
+window.alert = function(msg){
+  showSeraAlert(msg);
+};
+
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' || e.key === 'Enter'){
+    var overlay = document.getElementById('seraAlertModal');
+    if(overlay && overlay.classList.contains('active')){
+      closeSeraAlert();
+      e.preventDefault();
+    }
+  }
+});
+</script>
+
 </body>
 </html>
   `);
