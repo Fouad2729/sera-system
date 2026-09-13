@@ -1981,13 +1981,13 @@ body:not(.dark) .sera-orb-rail {
       <button class="btn btn-primary" style="width:100%;margin-top:14px" type="button" onclick="startLogin()">إرسال رمز التحقق للدخول</button>
     </div>
 
-    <!-- صندوق إدخال كود التحقق الأمني 2FA -->
-    <div id="loginOtpBox" style="display:none;margin-top:14px;padding:16px;background:#f7fbf9;border:1px solid var(--line);border-radius:14px;">
-      <div style="font-size:14px;font-weight:900;color:var(--ink);margin-bottom:6px;">🔒 رمز التحقق الأمني (2FA)</div>
-      <p style="font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.6;">تم إرسال رمز تحقق مكوّن من 6 أرقام إلى بريدك الإلكتروني. أدخل الرمز للمتابعة:</p>
-      <input id="loginOtpInput" inputmode="numeric" maxlength="6" placeholder="مثال: 582194" style="font-size:20px;letter-spacing:6px;text-align:center;font-weight:950;margin-bottom:10px;">
-      <button class="btn btn-primary" style="width:100%;margin-top:4px" type="button" onclick="confirmLoginOtp()">تأكيد الدخول إلى المنصة</button>
-      <button class="btn btn-soft" style="width:100%;margin-top:8px" type="button" onclick="cancelLoginOtp()">رجوع لتعديل البريد</button>
+    <!-- صندوق إدخال كود التحقق الأمني 2FA (Dark Cyber Mode) -->
+    <div id="loginOtpBox" style="display:none;margin-top:16px;padding:20px;background:linear-gradient(145deg, #0b1c22 0%, #071317 100%);border:1.5px solid rgba(24, 191, 114, 0.4);border-radius:20px;box-shadow:0 15px 35px rgba(0,0,0,0.6);">
+      <div style="font-size:14px;font-weight:950;color:#ffffff;margin-bottom:6px;display:flex;align-items:center;gap:6px;">🔒 رمز التحقق الأمني (2FA)</div>
+      <p style="font-size:12px;color:#94a3b8;margin:0 0 14px;line-height:1.7;">تم إرسال رمز تحقق مكوّن من 6 أرقام إلى بريدك الإلكتروني. يرجى إدخال الرمز لإكمال الدخول:</p>
+      <input id="loginOtpInput" inputmode="numeric" maxlength="6" placeholder="ضع كود التحقق هنا" style="width:100%;box-sizing:border-box;font-size:18px;letter-spacing:3px;text-align:center;font-weight:950;margin-bottom:14px;background:#051115;border:1.5px solid rgba(24, 191, 114, 0.45);color:#00e699;border-radius:12px;padding:12px;outline:none;box-shadow:inset 0 2px 8px rgba(0,0,0,0.5);">
+      <button class="btn btn-primary" style="width:100%;margin-top:2px;padding:12px;font-weight:900;" type="button" onclick="confirmLoginOtp()">تأكيد الدخول إلى المنصة</button>
+      <button class="btn btn-soft" style="width:100%;margin-top:8px;padding:10px;background:#0c1d22;border:1px solid #1a3832;color:#94a3b8;" type="button" onclick="cancelLoginOtp()">رجوع لتعديل البريد</button>
     </div>
     <div class="login-switch"><button class="btn btn-soft" type="button" onclick="toggleSignup()">إنشاء حساب</button><button class="btn btn-soft" type="button" onclick="toggleForgot()">نسيت كلمة المرور؟</button></div>
     <div class="signup-box" id="signupBox">
@@ -4244,11 +4244,7 @@ async function startLogin(){
       document.getElementById('loginOtpBox').style.display = 'block';
       document.getElementById('loginOtpInput').value = '';
       document.getElementById('loginOtpInput').focus();
-      if(data.dev_code){
-        alert('رمز التحقق الأمني لتسجيل الدخول هو: ' + data.dev_code);
-      } else {
-        showToast('تم إرسال رمز التحقق بنجاح إلى بريدك الإلكتروني.');
-      }
+      alert('تم إرسال رمز التحقق الأمني (6 أرقام) إلى بريدك الإلكتروني بنجاح.\nيرجى مراجعة صندوق الوارد أو رسائل الـ Spam.');
     } else {
       alert(data.error || 'تعذر إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
     }

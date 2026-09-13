@@ -116,8 +116,7 @@ def send_login_otp(request):
         "message": "تم إرسال رمز التحقق بنجاح."
     }
     # إذا لم تكن إعدادات البريد مضافة في السيرفر بعد، يُرسل الكود مباشرة في الرد لضمان عدم تعطل الموظفين
-    if not has_smtp:
-        resp["dev_code"] = code
+# dev_code disabled
 
     return JsonResponse(resp)
 
