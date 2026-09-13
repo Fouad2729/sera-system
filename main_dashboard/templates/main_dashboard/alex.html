@@ -4241,7 +4241,7 @@ async function startLogin(){
   pendingLoginEmail = email;
   pendingLoginName = email.split('@')[0];
 
-  showToast('جاري التحقق وإرسال رمز الأمان إلى بريدك...');
+  showToast('جاري التحقق وإرسال رمز الأمان...');
 
   try {
     const res = await fetch('/api/auth/send-login-otp/', {
@@ -4255,12 +4255,15 @@ async function startLogin(){
       document.getElementById('loginOtpBox').style.display = 'block';
       document.getElementById('loginOtpInput').value = '';
       document.getElementById('loginOtpInput').focus();
-      showToast('تم إرسال رمز التحقق بنجاح إلى بريدك.');
+      if(data.dev_code){
+        alert('رمز التحقق الأمني لتسجيل الدخول هو: ' + data.dev_code);
+      } else {
+        showToast('تم إرسال رمز التحقق بنجاح إلى بريدك الإلكتروني.');
+      }
     } else {
       alert(data.error || 'تعذر إرسال رمز التحقق، يرجى المحاولة لاحقاً.');
     }
   } catch(e) {
-    // في حال تعذر الاتصال بالخادم يتم عرض إشعار للمستخدم
     alert('تعذر الاتصال بخادم التوثيق.');
   }
 }
