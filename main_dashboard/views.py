@@ -151,3 +151,19 @@ def api_violation_update(request, pk=None):
         return JsonResponse({"ok": False, "error": str(exc)}, status=400)
     except Exception as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=500)
+
+
+@csrf_exempt
+def api_violation_delete(request, pk):
+    if request.method not in {"POST", "DELETE"}:
+        return JsonResponse({"ok": False, "error": "طريقة الطلب غير مسموح بها"}, status=405)
+    try:
+        violation = get_object_or_404(Violation, pk=pk)
+        v_num = violation.violation_number or str(violation.pk)
+        violation.delete()
+        return JsonResponse({
+            "ok": True,
+            "message": f"تم حذف المخالفة رقم ({v_num}) بنجاح من قاعدة البيانات."
+        })
+    except Exception as exc:
+        return JsonResponse({"ok": False, "error": str(exc)}, status=500)

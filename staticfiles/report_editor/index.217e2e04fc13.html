@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>محضر ضبط مخالفة</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    padding:20px;
+    background:#e9eceb;
+    font-family:Arial,Tahoma,sans-serif;
+  }
+  .toolbar{
+    width:100%;
+    max-width:800px;
+    margin:0 auto 15px;
+    display:flex;
+    gap:10px;
+  }
+  .page-container {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto 20px;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    position: relative;
+    padding: 20mm;
+  }
+  textarea.write, input.write {
+    position: absolute;
+    background: transparent;
+    border: 1px dashed #007bff;
+    padding: 5px;
+    font-size: 14px;
+    resize: none;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    line-height: 1.5 !important;
+    font-family: Arial, Tahoma, sans-serif !important;
+  }
+  textarea.write:focus {
+    border: 1px solid #0056b3;
+    background: rgba(0,123,255,0.02);
+    outline: none;
+  }
+  /* إحداثيات مدفوعة للأسفل لتفادي التداخل مع العناوين نهائياً */
+  textarea[data-key="details"] { left: 55px; top: 340px; width: 680px; height: 110px; }
+  textarea[data-key="damages"] { left: 55px; top: 495px; width: 680px; height: 65px; }
+  textarea[data-key="documents"] { left: 55px; top: 605px; width: 680px; height: 75px; }
+  textarea[data-key="requests"] { left: 55px; top: 725px; width: 680px; height: 55px; }
+  textarea[data-key="defense"] { left: 55px; top: 815px; width: 680px; height: 80px; }
+  textarea[data-key="basis"] { left: 55px; top: 580px; width: 680px; height: 150px; }
+  textarea[data-key="facts"] { left: 55px; top: 770px; width: 680px; height: 140px; }
+
+  @media print {
+    body { background: none; padding: 0; }
+    .toolbar { display: none; }
+    .page-container { box-shadow: none; margin: 0; page-break-after: always; }
+    textarea.write, input.write { border: none !important; background: transparent !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="window.print()" style="padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px;">طباعة المحضر</button>
+</div>
+
+<div class="page-container">
+  <h2>الصفحة الأولى - بيانات المعاينة</h2>
+  <!-- حقول الصفحة الأولى إذا وجدت -->
+</div>
+
+<div class="page-container" style="position: relative;">
+  <h2>الصفحة الثانية - المحضر والبنود</h2>
+  
+  <!-- الحقول المرتبطة بالإحداثيات المضبطة بدقة -->
+  <textarea class="write" data-key="details" placeholder="الوصف التفصيلي للمخالفة..."></textarea>
+  <textarea class="write" data-key="damages" placeholder="الأضرار الناتجة..."></textarea>
+  <textarea class="write" data-key="documents" placeholder="المستندات..."></textarea>
+  <textarea class="write" data-key="requests" placeholder="الطلبات..."></textarea>
+  <textarea class="write" data-key="defense" placeholder="الدفوع..."></textarea>
+</div>
+
+</body>
+</html>
