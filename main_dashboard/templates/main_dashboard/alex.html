@@ -2301,7 +2301,8 @@ async function loadPersisted(){
 }
 function isDone(r){return statusType(v(r,C.status))==='ok';}
 function isNotDone(r){return statusType(v(r,C.status))==='bad';}
-function filteredRows(){const q=norm(document.getElementById('q').value),b=document.getElementById('branch').value,t=document.getElementById('type').value,s=document.getElementById('status').value,quick=document.getElementById('quick').value;return rows.filter(r=>{const hay=norm(Object.values(r).join(' '));let ok=(!q||hay.includes(q))&&(!b||v(r,C.branch)===b)&&(!t||v(r,C.type)===t)&&(!s||v(r,C.status)===s);if(window.activeQuickFilter)ok=ok&&(statusType(v(r,C.status))===window.activeQuickFilter);if(quick==='notdone')ok=ok&&isNotDone(r);if(quick==='done')ok=ok&&isDone(r);if(quick==='repeat')ok=ok&&Number(v(r,C.repeat))>0;if(quick==='today')ok=ok&&v(r,C.date)===todayISO();return ok;});}
+function filteredRows(){const q=norm(document.getElementById('q').value),b=document.getElementById('branch').value,t=document.getElementById('type').value,s=document.getElementById('status').value,quick=document.getElementById('quick').value;return rows.filter(r=>{const hay=norm(Object.values(r).join(' '));let ok=(!q||hay.includes(q))&&(!b||v(r,C.branch)===b)&&(!t||v(r,C.type)===t)&&(!s||v(r,C.status)===s);if(window.activeQuickFilter) ok=ok&&(statusType(v(r,C.status))===window.activeQuickFilter);
+    if(quick==='notdone')ok=ok&&isNotDone(r);if(quick==='done')ok=ok&&isDone(r);if(quick==='repeat')ok=ok&&Number(v(r,C.repeat))>0;if(quick==='today')ok=ok&&v(r,C.date)===todayISO();return ok;});}
 function todayISO(){const d=new Date();return d.toISOString().slice(0,10);}
 let mapDebounceTimer = null;
 function debouncedRenderMap(){
@@ -2344,7 +2345,7 @@ function render(){
 }
 
 function updateStats(passedData){
-  const data = (typeof rows !== "undefined" && rows.length) ? rows : (passedData || filteredRows());
+  const data = (window.rows && window.rows.length) ? window.rows : (passedData || filteredRows());
 
 
   const done=data.filter(isDone).length,
@@ -2417,32 +2418,18 @@ function updateStatusDonut(total,done,notdone,need){
 
 window.activeQuickFilter = null;
 function filterByQuickStatus(st){
-  const map = {'منجزة':'ok', 'غير منجزة':'bad', 'تحتاج متابعة':'warn'};
-  const target = map[st] || st;
+  var map = {'منجزة':'ok', 'غير منجزة':'bad', 'تحتاج متابعة':'warn'};
+  var target = map[st] || st;
   window.activeQuickFilter = (window.activeQuickFilter === target) ? null : target;
-
-  document.querySelectorAll('.sera-cyber-card').forEach(c => {
-    c.style.outline = 'none';
-    c.style.boxShadow = '';
-  });
-  if(window.activeQuickFilter){
-    const colors = {'ok':'#10b981', 'bad':'#ef4444', 'warn':'#f59e0b'};
-    const card = document.querySelector();
-    if(card){
-      card.style.outline = ;
-      card.style.boxShadow = ;
-    }
-  }
   render();
 }
 
 function clearFilters(){
   window.activeQuickFilter = null;
-  document.querySelectorAll('.sera-cyber-card').forEach(c => {
-    c.style.outline = 'none';
-    c.style.boxShadow = '';
+  ['q','branch','type','status','quick'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
   });
-  ['q','branch','type','status','quick'].forEach(id=>document.getElementById(id).value='');
   render();
 }
 function coordsFor(r){const lat=parseFloat(v(r,'خط العرض')),lng=parseFloat(v(r,'خط الطول'));if(Number.isFinite(lat)&&Number.isFinite(lng))return [lat,lng];const s=v(r,C.location);for(const key of Object.keys(cityCoords))if(s.includes(key))return cityCoords[key];for(const reg of regions)if(s.includes(reg[0].replace('ال','')))return [reg[1],reg[2]];const br=v(r,C.branch);const found=regions.find(x=>x[0]===br);return found?[found[1],found[2]]:[24.2,45.0];}
