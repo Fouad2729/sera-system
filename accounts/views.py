@@ -1,15 +1,61 @@
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
 import secrets
 import time
+import os
+import urllib.request
 
 User = get_user_model()
 reset_codes = {}
 login_otps = {}
+
+def send_via_https_api(recipient, subject, code):
+    """إرسال الإيميل مباشرة عبر HTTPS Port 443 لتجاوز حظر منافذ SMTP في Render"""
+    api_key = os.environ.get('EMAIL_API_KEY', '').strip()
+    sender_email = os.environ.get('EMAIL_HOST_USER', 'asrciee@gmail.com').strip()
+    
+    if not api_key:
+        print("API KEY MISSING: Please set EMAIL_API_KEY in Render environment.")
+        return False
+
+    html_content = f"""
+    <div style="font-family: Arial, sans-serif; direction: rtl; text-align: right; background: #071317; color: #e2e8f0; padding: 25px; border-radius: 18px; max-width: 500px; margin: auto; border: 1px solid #18bf72;">
+        <h2 style="color: #00e699; margin-top: 0;">نظام SERA لإدارة المخالفات</h2>
+        <p style="font-size: 15px; color: #cbd5e1;">رمز التحقق الأمني الخاص بك لتسجيل الدخول هو:</p>
+        <div style="font-size: 34px; font-weight: 900; letter-spacing: 6px; color: #00e699; background: #0b1c22; padding: 16px; border-radius: 12px; text-align: center; border: 1.5px solid rgba(0, 230, 153, 0.4); margin: 20px 0;">
+            {code}
+        </div>
+        <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">صلاحية هذا الرمز 10 دقائق فقط للاستخدام لمرة واحدة.<br>إذا لم تكن أنت من طلب هذا الرمز، يمكنك تجاهل هذه الرسالة بأمان.</p>
+        <hr style="border: 0; border-top: 1px solid #1a3832; margin: 20px 0;">
+        <small style="color: #64748b;">منصة SERA الذكية — نظام أمني متقدم</small>
+    </div>
+    """
+
+    # دعم Brevo API المباشر عبر المنفذ 443
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "api-key": api_key,
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "SERA-Platform/1.0"
+    }
+    payload = {
+        "sender": {"name": "نظام SERA الذكي", "email": sender_email},
+        "to": [{"email": recipient}],
+        "subject": subject,
+        "htmlContent": html_content
+    }
+
+    try:
+        req = urllib.request.Request(url, data=json.dumps(payload).encode('utf-8'), headers=headers)
+        with urllib.request.urlopen(req, timeout=6) as response:
+            return response.status in (200, 201)
+    except Exception as e:
+        print(f"HTTPS API EMAIL ERROR: {e}")
+        return False
 
 @csrf_exempt
 def request_reset(request):
@@ -27,20 +73,7 @@ def request_reset(request):
 
     code = str(secrets.randbelow(900000) + 100000)
     reset_codes[email] = code
-
-    try:
-        from_email = getattr(settings, 'EMAIL_HOST_USER', None)
-        if from_email:
-            send_mail(
-                "رمز استعادة كلمة المرور - SERA",
-                f"رمز استعادة كلمة المرور الخاص بك هو: {code}\n\nصلاحية الرمز 10 دقائق.",
-                from_email,
-                [email],
-                fail_silently=True,
-            )
-    except Exception as e:
-        print(f"RESET EMAIL ERROR: {e}")
-
+    send_via_https_api(email, "رمز استعادة كلمة المرور - SERA", code)
     return JsonResponse({"ok": True})
 
 @csrf_exempt
@@ -91,36 +124,14 @@ def send_login_otp(request):
         "name": name
     }
 
-    from_email = getattr(settings, 'EMAIL_HOST_USER', '').strip()
-    email_sent = False
-    error_detail = None
-
-    if from_email:
-        email_body = (
-            "مرحباً بك في منصة SERA لإدارة المخالفات.\n\n"
-            f"رمز التحقق الخاص بك لتسجيل الدخول هو: {code}\n\n"
-            "صلاحية الرمز 10 دقائق.\n"
-            "إذا لم تطلب هذا الرمز، يرجى تجاهل هذه الرسالة."
-        )
-        try:
-            send_mail(
-                "رمز التحقق لمنصة المخالفات - SERA",
-                email_body,
-                from_email,
-                [email],
-                fail_silently=False,
-            )
-            email_sent = True
-        except Exception as e:
-            error_detail = str(e)
-            print(f"SMTP ERROR: {repr(e)}")
-    else:
-        error_detail = "بيانات EMAIL_HOST_USER غير موجودة بعد في السيرفر"
+    # الإرسال المباشر عبر HTTPS
+    email_sent = send_via_https_api(email, "رمز التحقق لمنصة المخالفات - SERA", code)
+    has_key = bool(os.environ.get('EMAIL_API_KEY', ''))
 
     return JsonResponse({
         "ok": True,
         "email_sent": email_sent,
-        "error_detail": error_detail,
+        "error_detail": "يرجى ضبط EMAIL_API_KEY في Render" if not has_key else ("تعذر التسليم عبر Brevo" if not email_sent else None),
         "code": code if not email_sent else None
     })
 
