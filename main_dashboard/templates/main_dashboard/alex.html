@@ -5425,93 +5425,56 @@ function minutesPage1(o){
   const factsHtml = esc(o.facts || '').replace(/\n/g, '<br>');
 
   return `
-  <div class="minutes-print-page sera-exact-page">
-    <!-- الترويسة العلوية المطابقة تماماً للصورة 2 -->
-    <div class="ex-header">
-      <div class="ex-hdr-right">
-        <div style="font-weight:700;font-size:12px;color:#000;">المملكة العربية السعودية</div>
-        <div style="font-size:9.5px;color:#475569;direction:ltr;text-align:right;">Kingdom of Saudi Arabia</div>
-        <div style="margin-top:6px;font-weight:800;color:#006837;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
-        <div style="font-size:9px;color:#006837;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
-      </div>
+  <div class="a4-overlay-sheet">
+    <!-- صورة قالب الصفحة الأولى الأصلية كخلفية ثابتة 100% -->
+    <img class="a4-bg-layer" src="/static/main_dashboard/forms/sera_minutes_page1.jpg" alt="قالب المحضر الرسمي">
 
-      <div class="ex-hdr-center">
-        <div class="ex-basmalah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
-        <svg width="48" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
-  <path d="M52 2 C68 18, 92 36, 86 64 C80 88, 52 105, 28 96 C10 88, 4 66, 16 46 C26 30, 46 18, 52 2 Z" fill="url(#sera_real_grad)"/>
-  <path d="M46 20 C56 32, 72 44, 68 64 C64 80, 44 90, 30 84 C18 78, 14 64, 22 50 C28 38, 40 30, 46 20 Z" fill="#ffffff" opacity="0.32"/>
-  <defs>
-    <linearGradient id="sera_real_grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00e699"/>
-      <stop offset="45%" stop-color="#10b981"/>
-      <stop offset="100%" stop-color="#006837"/>
-    </linearGradient>
-  </defs>
-</svg>
-        <div class="ex-report-no">${displayShortNo}</div>
-      </div>
-
-      <div class="ex-hdr-left"></div>
+    <!-- رقم المحضر الصافي تحت الشعار -->
+    <div class="ov-text" style="top: 35.5mm; right: 88mm; width: 34mm; text-align: center; font-size: 13px; font-weight: 900;">
+      ${displayShortNo}
     </div>
 
-    <!-- الصندوق الأخضر الكبير الممتد على كامل العرض المطابق للصورة 2 -->
-    <div class="ex-main-box">
-      <div class="ex-title-wrap">
-        <div class="ex-title">محضر ضبط مخالفة لأحكام نظام الكهرباء</div>
-        <div class="ex-subtitle">(${displayCode})</div>
-      </div>
-      
-      <div class="ex-badge-label">بيانات المخالفة:</div>
-
-      <table class="ex-table">
-        <tr>
-          <th class="ex-th" style="width:26%;">اسم المنسوب له المخالفة</th>
-          <td class="ex-td" style="width:34%;">${esc(o.name || '')}</td>
-          <th class="ex-th" style="width:18%;">الرقم الموحد</th>
-          <td class="ex-td" style="width:22%;direction:ltr;text-align:center;">${esc(o.unified || '')}</td>
-        </tr>
-        <tr>
-          <th class="ex-th">نوع المخالفة</th>
-          <td class="ex-td">${esc(o.type || '')}</td>
-          <th class="ex-th">موقع المخالفة <br><span style="font-size:8.5px;font-weight:normal;">-إن وجد-</span></th>
-          <td class="ex-td">${esc(o.location || '')}</td>
-        </tr>
-        <tr>
-          <th class="ex-th">يوم وتاريخ ووقت تحرير المحضر</th>
-          <td class="ex-td" style="direction:ltr;text-align:center;">${esc(toWesternDigits(o.datetime || ''))}</td>
-          <th class="ex-th">تاريخ وقوع المخالفة</th>
-          <td class="ex-td" style="direction:ltr;text-align:center;">${esc(toWesternDigits(o.occurrence || ''))}</td>
-        </tr>
-      </table>
-
-      <!-- أولاً: السند النظامي -->
-      <div class="ex-sec-hdr">أولاً: حرر هذا المحضر استناداً على:</div>
-      <div class="ex-text-content ex-basis-content">
-        ${basisHtml}
-      </div>
-
-      <!-- ثانياً: وقائع المخالفة -->
-      <div class="ex-sec-hdr" style="margin-top:6px;">ثانياً: وقائع المخالفة ووصف تفصيلي لها، والأضرار الناتجة عنها (إن وجدت، وأمكن تحديد ذلك):</div>
-      <div class="ex-sub-hdr">أ. وقائع المخالفة:</div>
-      <div class="ex-text-content ex-facts-content">
-        ${factsHtml}
-      </div>
+    <!-- كود المحضر بين القوسين تحت العنوان -->
+    <div class="ov-text" style="top: 67mm; right: 75mm; width: 60mm; text-align: center; font-size: 12px; font-weight: 800; direction: ltr;">
+      (${displayCode})
     </div>
 
-    <!-- التذييل الرسمي السفلي المطابق للصورة 2 -->
-    <div class="ex-footer">
-      <div class="ex-ft-col" style="text-align:left;direction:ltr;">
-        <div>info@sera.gov.sa</div>
-        <div>www.sera.gov.sa</div>
-      </div>
-      <div class="ex-ft-col" style="text-align:center;">
-        <div>المملكة العربية السعودية، ص. ب 4540 الرياض 11412</div>
-        <div style="direction:ltr;">Kingdom of Saudi Arabia, P.O. Box 4540 Riyadh 11412</div>
-      </div>
-      <div class="ex-ft-col" style="text-align:right;">
-        <div style="direction:ltr;text-align:right;">Tel: +966 (11) 201 9000</div>
-        <div>سجل الهيئة: 7001432629</div>
-      </div>
+    <!-- جدول بيانات المخالفة (مسقط بدقة فوق فراغات الجدول) -->
+    <!-- اسم المنسوب له المخالفة -->
+    <div class="ov-text" style="top: 76.5mm; right: 77mm; width: 69mm; height: 11mm; font-size: 10.5px; display: flex; align-items: center; justify-content: center; text-align: center;">
+      ${esc(o.name || '')}
+    </div>
+    <!-- الرقم الموحد -->
+    <div class="ov-text" style="top: 76.5mm; right: 161mm; width: 35mm; height: 11mm; font-size: 11px; display: flex; align-items: center; justify-content: center; text-align: center; direction: ltr;">
+      ${esc(o.unified || '')}
+    </div>
+
+    <!-- نوع المخالفة -->
+    <div class="ov-text" style="top: 89mm; right: 77mm; width: 69mm; height: 15mm; font-size: 9.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25;">
+      ${esc(o.type || '')}
+    </div>
+    <!-- موقع المخالفة -->
+    <div class="ov-text" style="top: 89mm; right: 161mm; width: 35mm; height: 15mm; font-size: 9.5px; display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.25;">
+      ${esc(o.location || '')}
+    </div>
+
+    <!-- يوم وتاريخ ووقت تحرير المحضر -->
+    <div class="ov-text" style="top: 106mm; right: 77mm; width: 69mm; height: 12mm; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; direction: ltr;">
+      ${esc(toWesternDigits(o.datetime || ''))}
+    </div>
+    <!-- تاريخ وقوع المخالفة -->
+    <div class="ov-text" style="top: 106mm; right: 161mm; width: 35mm; height: 12mm; font-size: 10px; display: flex; align-items: center; justify-content: center; text-align: center; direction: ltr;">
+      ${esc(toWesternDigits(o.occurrence || ''))}
+    </div>
+
+    <!-- أولاً: السند النظامي للمخالفة -->
+    <div class="ov-text" style="top: 139mm; right: 18mm; width: 174mm; height: 50mm; font-size: 10px; line-height: 1.6; text-align: justify; overflow: hidden;">
+      ${basisHtml}
+    </div>
+
+    <!-- ثانياً: وقائع المخالفة (أ. وقائع المخالفة) -->
+    <div class="ov-text" style="top: 211mm; right: 18mm; width: 174mm; height: 50mm; font-size: 10px; line-height: 1.6; text-align: justify; overflow: hidden;">
+      ${factsHtml}
     </div>
   </div>`;
 }
@@ -5529,103 +5492,52 @@ function minutesPage2(o){
   const defHtml = esc(o.defense || '').replace(/\n/g, '<br>');
 
   const sigHtml = o.signature
-    ? `<img src="${escMinutes(o.signature)}" class="ex-sig-img" alt="التوقيع">`
-    : `<div style="height:34px;"></div>`;
+    ? `<img src="${escMinutes(o.signature)}" style="max-height: 12mm; max-width: 44mm; object-fit: contain;">`
+    : '';
 
   return `
-  <div class="minutes-print-page sera-exact-page">
-    <!-- الترويسة العلوية الرسمية للصفحة 2 المطابقة للصورة 3 -->
-    <div class="ex-header">
-      <div class="ex-hdr-right">
-        <div style="font-weight:700;font-size:12px;color:#000;">المملكة العربية السعودية</div>
-        <div style="font-size:9.5px;color:#475569;direction:ltr;text-align:right;">Kingdom of Saudi Arabia</div>
-        <div style="margin-top:6px;font-weight:800;color:#006837;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
-        <div style="font-size:9px;color:#006837;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
-      </div>
+  <div class="a4-overlay-sheet">
+    <!-- صورة قالب الصفحة الثانية الأصلية كخلفية ثابتة 100% -->
+    <img class="a4-bg-layer" src="/static/main_dashboard/forms/sera_minutes_page2.jpg" alt="قالب الصفحة الثانية">
 
-      <div class="ex-hdr-center">
-        <div class="ex-basmalah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
-        <svg width="48" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
-  <path d="M52 2 C68 18, 92 36, 86 64 C80 88, 52 105, 28 96 C10 88, 4 66, 16 46 C26 30, 46 18, 52 2 Z" fill="url(#sera_real_grad)"/>
-  <path d="M46 20 C56 32, 72 44, 68 64 C64 80, 44 90, 30 84 C18 78, 14 64, 22 50 C28 38, 40 30, 46 20 Z" fill="#ffffff" opacity="0.32"/>
-  <defs>
-    <linearGradient id="sera_real_grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00e699"/>
-      <stop offset="45%" stop-color="#10b981"/>
-      <stop offset="100%" stop-color="#006837"/>
-    </linearGradient>
-  </defs>
-</svg>
-        <div class="ex-report-no">${displayShortNo}</div>
-      </div>
-
-      <div class="ex-hdr-left"></div>
+    <!-- رقم المحضر في ترويسة الصفحة الثانية -->
+    <div class="ov-text" style="top: 35.5mm; right: 88mm; width: 34mm; text-align: center; font-size: 13px; font-weight: 900;">
+      ${displayShortNo}
     </div>
 
-    <!-- الصندوق الأخضر الكبير للصفحة الثانية المطابق للصورة 3 -->
-    <div class="ex-main-box">
-      <div class="ex-sub-hdr" style="margin-top:0;">ب. الوصف التفصيلي للمخالفة:</div>
-      <div class="ex-text-content" style="min-height:95px;">
-        ${descHtml}
-      </div>
-
-      <div class="ex-sub-hdr">ج. الأضرار الناتجة عن المخالفة (إن وجدت، وأمكن تحديد ذلك):</div>
-      <div class="ex-text-content" style="min-height:48px;">
-        ${damageHtml}
-      </div>
-
-      <div class="ex-sec-hdr" style="margin-top:5px;">ثالثاً: المستندات:</div>
-      <div class="ex-text-content" style="min-height:48px;">
-        ${docsHtml}
-      </div>
-
-      <div class="ex-sec-hdr" style="margin-top:5px;">رابعاً: الطلبات:</div>
-      <div class="ex-text-content" style="min-height:40px;">
-        ${reqHtml}
-      </div>
-
-      <div class="ex-sec-hdr" style="margin-top:5px;">خامساً: الدفوع / أقوال المنسوب له المخالفة:</div>
-      <div class="ex-text-content" style="min-height:55px;">
-        ${defHtml}
-      </div>
-
-      <!-- جدول التواقيع الرسمي الأفقي المطابق تماماً للصورة 3 -->
-      <div class="ex-sig-table-wrap">
-        <table class="ex-sig-table">
-          <tr>
-            <th class="ex-th" style="width:14%;">اسم المفتش</th>
-            <td class="ex-td" style="width:23%;font-weight:800;font-size:11.5px;color:#000;">
-              ${esc(o.inspector || 'حمدان وصل الله الجهني')}
-            </td>
-            <th class="ex-th" style="width:12%;">التوقيع</th>
-            <td class="ex-td" style="width:23%;">
-              ${sigHtml}
-            </td>
-            <th class="ex-th" style="width:12%;">ختم الهيئة</th>
-            <td class="ex-td" style="width:16%;padding:3px;">
-              <div style="display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #006837;border-radius:4px;padding:3px 8px;">
-                <span style="color:#006837;font-size:11px;font-weight:900;">ختم الهيئة</span>
-              </div>
-            </td>
-          </tr>
-        </table>
-      </div>
+    <!-- ب. الوصف التفصيلي للمخالفة -->
+    <div class="ov-text" style="top: 67mm; right: 18mm; width: 174mm; height: 39mm; font-size: 10px; line-height: 1.55; text-align: justify; overflow: hidden;">
+      ${descHtml}
     </div>
 
-    <!-- التذييل الرسمي السفلي للصفحة 2 -->
-    <div class="ex-footer">
-      <div class="ex-ft-col" style="text-align:left;direction:ltr;">
-        <div>info@sera.gov.sa</div>
-        <div>www.sera.gov.sa</div>
-      </div>
-      <div class="ex-ft-col" style="text-align:center;">
-        <div>المملكة العربية السعودية، ص. ب 4540 الرياض 11412</div>
-        <div style="direction:ltr;">Kingdom of Saudi Arabia, P.O. Box 4540 Riyadh 11412</div>
-      </div>
-      <div class="ex-ft-col" style="text-align:right;">
-        <div style="direction:ltr;text-align:right;">Tel: +966 (11) 201 9000</div>
-        <div>سجل الهيئة: 7001432629</div>
-      </div>
+    <!-- ج. الأضرار الناتجة عن المخالفة -->
+    <div class="ov-text" style="top: 115mm; right: 18mm; width: 174mm; height: 19mm; font-size: 10px; line-height: 1.55; text-align: justify; overflow: hidden;">
+      ${damageHtml}
+    </div>
+
+    <!-- ثالثاً: المستندات -->
+    <div class="ov-text" style="top: 143mm; right: 18mm; width: 174mm; height: 19mm; font-size: 10px; line-height: 1.55; text-align: justify; overflow: hidden;">
+      ${docsHtml}
+    </div>
+
+    <!-- رابعاً: الطلبات -->
+    <div class="ov-text" style="top: 171mm; right: 18mm; width: 174mm; height: 15mm; font-size: 10px; line-height: 1.55; text-align: justify; overflow: hidden;">
+      ${reqHtml}
+    </div>
+
+    <!-- خامساً: الدفوع / أقوال المخالف -->
+    <div class="ov-text" style="top: 195mm; right: 18mm; width: 174mm; height: 23mm; font-size: 10px; line-height: 1.55; text-align: justify; overflow: hidden;">
+      ${defHtml}
+    </div>
+
+    <!-- جدول التواقيع السفلي -->
+    <!-- اسم المفتش -->
+    <div class="ov-text" style="top: 228mm; right: 46mm; width: 44mm; height: 12mm; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; text-align: center;">
+      ${esc(o.inspector || 'حمدان وصل الله الجهني')}
+    </div>
+    <!-- توقيع المفتش الإلكتروني -->
+    <div class="ov-text" style="top: 228mm; right: 115mm; width: 46mm; height: 12mm; display: flex; align-items: center; justify-content: center;">
+      ${sigHtml}
     </div>
   </div>`;
 }
@@ -5659,7 +5571,7 @@ async function printMinutes(){
 <title>محضر ضبط مخالفة - ${esc(o.reportNo || '258')}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@700;800&display=swap" rel="stylesheet">
 <style>
   * {
     box-sizing: border-box !important;
@@ -5668,14 +5580,13 @@ async function printMinutes(){
   }
   @page {
     size: A4 portrait !important;
-    margin: 0 !important;
+    margin: 0mm !important;
   }
   html, body {
     margin: 0 !important;
     padding: 0 !important;
-    background: #475569 !important;
-    color: #111827 !important;
-    font-family: 'Cairo', Tahoma, Arial, sans-serif !important;
+    background: #525659 !important;
+    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif !important;
     direction: rtl !important;
     text-align: right !important;
   }
@@ -5684,214 +5595,45 @@ async function printMinutes(){
       background: transparent !important;
       padding: 0 !important;
     }
-    .minutes-print-page {
+    .a4-overlay-sheet {
       margin: 0 auto !important;
       box-shadow: none !important;
       page-break-after: always !important;
       break-after: page !important;
     }
   }
-  .minutes-print-page.sera-exact-page {
+  .a4-overlay-sheet {
     position: relative !important;
     width: 210mm !important;
-    height: 275mm !important;
-    max-height: 275mm !important;
-    margin: 10px auto !important;
-    box-sizing: border-box !important;
-    padding: 6mm 14mm 4mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 15px auto !important;
     background: #ffffff !important;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35) !important;
     overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
     page-break-inside: avoid !important;
+    box-sizing: border-box !important;
   }
-  .minutes-print-page:last-child {
+  .a4-overlay-sheet:last-child {
     page-break-after: auto !important;
     break-after: auto !important;
   }
-
-  /* الترويسة */
-  .ex-header {
-    display: grid !important;
-    grid-template-columns: 1fr auto 1fr !important;
-    align-items: flex-start !important;
-    margin-bottom: 2mm !important;
-  }
-  .ex-hdr-right {
-    font-size: 11.5px !important;
-    line-height: 1.4 !important;
-    color: #000 !important;
-  }
-  .ex-hdr-center {
-    text-align: center !important;
-  }
-  .ex-basmalah {
-    font-family: 'Amiri', serif !important;
-    font-size: 16.5px !important;
-    font-weight: 700 !important;
-    margin-bottom: 2px !important;
-    color: #000 !important;
-  }
-  .ex-report-no {
-    font-size: 13px !important;
-    font-weight: 800 !important;
-    color: #000 !important;
-    margin-top: 1px !important;
-  }
-  .ex-hdr-left {
-    text-align: left !important;
-  }
-
-  /* الصندوق الأخضر الكبير المقوس الممتد بكامل العرض */
-  .ex-main-box {
-    width: 100% !important;
-    border: 1.2px solid #006837 !important;
-    border-radius: 8px !important;
-    padding: 8px 14px 6px !important;
-    background: #ffffff !important;
-    box-sizing: border-box !important;
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    margin-bottom: 1.5mm !important;
-  }
-  .ex-title-wrap {
-    text-align: center !important;
-    margin-bottom: 3px !important;
-  }
-  .ex-title {
-    display: inline-block !important;
-    font-size: 15px !important;
-    font-weight: 900 !important;
-    color: #000 !important;
-    border-bottom: 1.2px solid #000 !important;
-    padding-bottom: 1px !important;
-    letter-spacing: -0.2px !important;
-  }
-  .ex-subtitle {
-    font-size: 13px !important;
-    font-weight: 800 !important;
-    color: #000 !important;
-    margin-top: 2px !important;
-    direction: ltr !important;
-  }
-  .ex-badge-label {
-    font-size: 13px !important;
-    font-weight: 900 !important;
-    color: #000 !important;
-    margin: 4px 0 2px !important;
-  }
-
-  /* الجدول الأخضر الرسمي */
-  .ex-table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    table-layout: fixed !important;
-    border: 1.2px solid #006837 !important;
-    margin-bottom: 6px !important;
-  }
-  .ex-th {
-    background-color: #006837 !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 11px !important;
-    text-align: center !important;
-    border: 1px solid #006837 !important;
-    padding: 5px 6px !important;
-    vertical-align: middle !important;
-  }
-  .ex-td {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    font-weight: 700 !important;
-    font-size: 10.5px !important;
-    text-align: center !important;
-    border: 1px solid #006837 !important;
-    padding: 5px 6px !important;
-    vertical-align: middle !important;
-    word-break: break-word !important;
-    line-height: 1.35 !important;
-  }
-
-  /* العناوين والفقرات النصية */
-  .ex-sec-hdr {
-    font-size: 12px !important;
-    font-weight: 900 !important;
-    color: #000 !important;
-    margin: 5px 0 2px !important;
-  }
-  .ex-sub-hdr {
-    font-size: 11.5px !important;
-    font-weight: 900 !important;
-    color: #000 !important;
-    margin: 3px 0 2px !important;
-  }
-  .ex-text-content {
-    font-size: 10.5px !important;
-    line-height: 1.6 !important;
-    color: #000 !important;
-    text-align: justify !important;
-  }
-  .ex-basis-content {
-    min-height: 105px !important;
-  }
-  .ex-facts-content {
-    min-height: 90px !important;
-  }
-
-  /* جدول التواقيع في الصفحة 2 */
-  .ex-sig-table-wrap {
-    margin-top: auto !important;
-    padding-top: 5px !important;
-  }
-  .ex-sig-table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-    border: 1.2px solid #006837 !important;
-    table-layout: fixed !important;
-  }
-  .ex-sig-table th {
-    background-color: #006837 !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 11px !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    border: 1px solid #006837 !important;
-    padding: 5px !important;
-  }
-  .ex-sig-table td {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    border: 1px solid #006837 !important;
-    padding: 4px !important;
-  }
-  .ex-sig-img {
-    max-height: 36px !important;
-    max-width: 90% !important;
-    object-fit: contain !important;
+  .a4-bg-layer {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    object-fit: fill !important;
+    z-index: 1 !important;
     display: block !important;
-    margin: 0 auto !important;
   }
-
-  /* التذييل الرسمي السفلي */
-  .ex-footer {
-    display: grid !important;
-    grid-template-columns: 1fr 1.6fr 1fr !important;
-    align-items: center !important;
-    border-top: 1px solid #94a3b8 !important;
-    padding-top: 2px !important;
-    margin-top: 1mm !important;
-    font-size: 8px !important;
-    color: #475569 !important;
-    font-weight: 600 !important;
-    line-height: 1.35 !important;
-  }
-  .ex-ft-col {
+  .ov-text {
+    position: absolute !important;
+    z-index: 2 !important;
+    color: #000000 !important;
+    box-sizing: border-box !important;
+    font-family: 'Cairo', 'Tajawal', Tahoma, Arial, sans-serif !important;
+    font-weight: 700 !important;
     word-break: break-word !important;
   }
 </style>
@@ -5906,6 +5648,14 @@ async function printMinutes(){
     if(document.fonts && document.fonts.ready){
       await document.fonts.ready;
     }
+    const imgs = [...document.querySelectorAll('.a4-bg-layer')];
+    await Promise.all(imgs.map(img => {
+      if(img.complete) return Promise.resolve();
+      return new Promise(res => {
+        img.addEventListener('load', res, {once:true});
+        img.addEventListener('error', res, {once:true});
+      });
+    }));
     setTimeout(() => {
       window.focus();
       window.print();
