@@ -289,39 +289,50 @@ def _ar(text):
 def export_violation_official_pdf(request, pk):
     import os
     import io
-    import pymupdf as fitz
+    import textwrap
     import arabic_reshaper
     from bidi.algorithm import get_display
+
     from django.http import HttpResponse, Http404
     from django.conf import settings
     from .models import Violation
+
+    from pypdf import PdfReader, PdfWriter
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.pagesizes import A4
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
 
     try:
         violation = Violation.objects.get(pk=pk)
     except Violation.DoesNotExist:
         raise Http404("المخالفة غير موجودة")
 
-    # مسار قالب المحضر الأساسي
+    # 1. تحديد مسار القالب الثابت الأساسي
     template_paths = [
         os.path.join(settings.BASE_DIR, 'main_dashboard', 'reports', 'sera_template.pdf'),
         os.path.join(settings.BASE_DIR, 'assets', 'pdf_templates', 'sera_template.pdf')
     ]
     template_path = next((p for p in template_paths if os.path.exists(p)), None)
     if not template_path:
-        return HttpResponse("خطأ: قالب المحضر غير موجود", status=500)
+        return HttpResponse("خطأ: ملف قالب المحضر غير موجود", status=500)
 
-    # مسارات الخطوط العربية الرسمية المعتمدة
-    font_candidates = [
+    # 2. تسجيل الخط العربي المعتمد في ReportLab
+    font_paths = [
         os.path.join(settings.BASE_DIR, 'main_dashboard', 'static', 'main_dashboard', 'fonts', 'Amiri-Regular.ttf'),
-        os.path.join(settings.BASE_DIR, 'assets', 'fonts', 'Amiri-Regular.ttf'),
-        os.path.join(settings.BASE_DIR, 'main_dashboard', 'static', 'main_dashboard', 'fonts', 'Cairo-Regular.ttf'),
-        os.path.join(settings.BASE_DIR, 'assets', 'fonts', 'Cairo-Regular.ttf')
+        os.path.join(settings.BASE_DIR, 'assets', 'fonts', 'Amiri-Regular.ttf')
     ]
-    font_path = next((f for f in font_candidates if os.path.exists(f)), None)
+    font_path = next((f for f in font_paths if os.path.exists(f)), None)
+    if font_path:
+        try:
+            pdfmetrics.registerFont(TTFont('ArabicAmiri', font_path))
+            font_name = 'ArabicAmiri'
+        except Exception:
+            font_name = 'Helvetica'
+    else:
+        font_name = 'Helvetica'
 
-    doc = fitz.open(template_path)
-
-    # معالجة النصوص العربية: إعادة التشكيل وضبط الاتجاه من اليمين إلى اليسار
+    # دالة ضبط التشكيل واتجاه النص العربي
     def _ar(txt):
         if not txt:
             return ""
@@ -331,78 +342,98 @@ def export_violation_official_pdf(request, pk):
         except Exception:
             return str(txt)
 
-    def write_in_field(page, rect, text, fontsize=9.5, align=fitz.TEXT_ALIGN_CENTER, color=(0,0,0)):
+    def draw_multiline(can, text, x_right, y_top, max_chars=75, leading=14):
+        """كتابة نصوص متعددة الأسطر مضبوطة من اليمين لليسار دون تداخل"""
         if not text:
             return
-        # حماية الفراغ وكتابة النص العربي بخط Amiri المعتمد
-        clean_rect = fitz.Rect(rect.x0 + 1.0, rect.y0 + 1.0, rect.x1 - 1.0, rect.y1 - 1.0)
-        page.draw_rect(clean_rect, color=None, fill=(1, 1, 1))
-        page.insert_textbox(
-            clean_rect,
-            _ar(text),
-            fontsize=fontsize,
-            fontname="amiri",
-            fontfile=font_path,
-            color=color,
-            align=align
-        )
+        for paragraph in str(text).split('
+'):
+            if not paragraph.strip():
+                continue
+            for line in textwrap.wrap(paragraph, width=max_chars):
+                can.drawRightString(x_right, y_top, _ar(line))
+                y_top -= leading
 
-    # ------------------ الصفحة الأولى (Page 1) ------------------
-    if len(doc) >= 1:
-        p1 = doc[0]
-        # إجبار الصفحة على الوضع الرأسي الطبيعي (Portrait 0°) ومنع أي انقلاب أو دوران
-        p1.set_rotation(0)
-        if font_path:
-            p1.insert_font(fontname="amiri", fontfile=font_path)
+    # ==================== الصفحة الأولى (Overlay Page 1) ====================
+    packet1 = io.BytesIO()
+    can1 = canvas.Canvas(packet1, pagesize=A4)
+    can1.setFont(font_name, 9.5)
 
-        # رقم المخالفة (أعلى اليمين تحت الترويسة)
-        if getattr(violation, 'violation_number', None):
-            write_in_field(p1, fitz.Rect(460, 148, 540, 168), str(violation.violation_number), fontsize=10.5)
+    # رقم المخالفة (أعلى اليمين)
+    if getattr(violation, 'violation_number', None):
+        can1.drawCentredString(500, 684, str(violation.violation_number))
+        can1.drawCentredString(298, 632, f"({violation.violation_number})")
 
-        # جدول بيانات المخالفة (إسقاط داخل الفراغات البيضاء المخصصة فقط)
-        # اسم المنسوب له المخالفة
-        write_in_field(p1, fitz.Rect(246, 222, 388, 256), getattr(violation, 'attributed_person', '') or "", fontsize=9)
-        # الرقم الموحد
-        write_in_field(p1, fitz.Rect(46, 222, 142, 256), str(getattr(violation, 'unified_number', '') or ""), fontsize=9.5)
-        # نوع المخالفة
-        write_in_field(p1, fitz.Rect(246, 263, 388, 301), getattr(violation, 'violation_type', '') or "", fontsize=8.5)
-        # موقع المخالفة
-        write_in_field(p1, fitz.Rect(46, 263, 142, 301), getattr(violation, 'violation_location', '') or "", fontsize=8.5)
-        # تاريخ ووقت تحرير المحضر
-        write_in_field(p1, fitz.Rect(246, 307, 388, 345), getattr(violation, 'report_date', '') or "", fontsize=8.5)
-        # تاريخ وقوع المخالفة
-        write_in_field(p1, fitz.Rect(46, 307, 142, 345), str(getattr(violation, 'incident_date', '') or ""), fontsize=8.5)
+    # جدول بيانات المخالفة - الإسقاط في الفراغات المخصصة فقط:
+    # الصف 1
+    can1.drawRightString(384, 598, _ar(getattr(violation, 'attributed_person', '') or ""))
+    can1.drawCentredString(95, 598, str(getattr(violation, 'unified_number', '') or ""))
+    # الصف 2
+    can1.drawRightString(384, 556, _ar(getattr(violation, 'violation_type', '') or ""))
+    can1.drawCentredString(95, 556, _ar(getattr(violation, 'violation_location', '') or ""))
+    # الصف 3
+    can1.drawRightString(384, 514, _ar(getattr(violation, 'report_date', '') or ""))
+    can1.drawCentredString(95, 514, str(getattr(violation, 'incident_date', '') or ""))
 
-        # وقائع المخالفة (أسفل أولاً في المساحة المخصصة لها دون لمس النصوص الثابتة)
-        facts = getattr(violation, 'facts', '') or getattr(violation, 'transaction_status', '') or ""
-        if facts:
-            write_in_field(p1, fitz.Rect(48, 705, 552, 805), facts, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
+    # وقائع المخالفة (تحت أولاً في المساحة المخصصة)
+    facts = getattr(violation, 'facts', '') or getattr(violation, 'transaction_status', '') or ""
+    if facts:
+        draw_multiline(can1, facts, x_right=545, y_top=225, max_chars=75, leading=13)
 
-    # ------------------ الصفحة الثانية (Page 2) ------------------
-    if len(doc) >= 2:
-        p2 = doc[1]
-        p2.set_rotation(0)  # ضبط الصفحة الثانية لتكون Portrait معتدلة
-        if font_path:
-            p2.insert_font(fontname="amiri", fontfile=font_path)
+    can1.save()
+    packet1.seek(0)
 
-        # تفاصيل المخالفة
-        details = getattr(violation, 'details', '') or getattr(violation, 'description', '') or ""
-        if details:
-            write_in_field(p2, fitz.Rect(48, 220, 552, 320), details, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
+    # ==================== الصفحة الثانية (Overlay Page 2) ====================
+    packet2 = io.BytesIO()
+    can2 = canvas.Canvas(packet2, pagesize=A4)
+    can2.setFont(font_name, 9.5)
 
-        # الأضرار
-        damages = getattr(violation, 'damages', '') or getattr(violation, 'damage', '') or ""
-        if damages:
-            write_in_field(p2, fitz.Rect(48, 415, 552, 470), damages, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
+    # رقم المخالفة في الصفحة الثانية
+    if getattr(violation, 'violation_number', None):
+        can2.drawCentredString(500, 684, str(violation.violation_number))
 
-        # اسم المفتش (فوق خانة التوقيع والختم)
-        inspector = getattr(violation, 'inspector_name', '') or getattr(violation, 'report_editor', '') or ""
-        if inspector:
-            write_in_field(p2, fitz.Rect(328, 686, 476, 728), inspector, fontsize=10)
+    # الوصف التفصيلي للمخالفة
+    details = getattr(violation, 'details', '') or getattr(violation, 'description', '') or ""
+    if details:
+        draw_multiline(can2, details, x_right=545, y_top=620, max_chars=75, leading=13)
 
-    pdf_bytes = doc.tobytes()
-    doc.close()
+    # الأضرار الناتجة عن المخالفة
+    damages = getattr(violation, 'damages', '') or getattr(violation, 'damage', '') or ""
+    if damages:
+        draw_multiline(can2, damages, x_right=545, y_top=470, max_chars=75, leading=13)
 
-    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    # اسم المفتش (في خانته الرسمية فوق التذييل)
+    inspector = getattr(violation, 'inspector_name', '') or getattr(violation, 'report_editor', '') or ""
+    if inspector:
+        can2.drawCentredString(400, 132, _ar(inspector))
+
+    can2.save()
+    packet2.seek(0)
+
+    # ==================== دمج الطبقات الشفافة مع القالب الأصلي ====================
+    template_reader = PdfReader(template_path)
+    overlay1 = PdfReader(packet1).pages[0]
+    overlay2 = PdfReader(packet2).pages[0]
+
+    output_writer = PdfWriter()
+
+    # دمج الصفحة 1
+    page1 = template_reader.pages[0]
+    page1.merge_page(overlay1)
+    page1.rotation = 0  # ضمان الوضع الرأسي الطبيعي Portrait 0°
+    output_writer.add_page(page1)
+
+    # دمج الصفحة 2 (إن وجدت)
+    if len(template_reader.pages) > 1:
+        page2 = template_reader.pages[1]
+        page2.merge_page(overlay2)
+        page2.rotation = 0  # ضمان الوضع الرأسي الطبيعي Portrait 0°
+        output_writer.add_page(page2)
+
+    output_buffer = io.BytesIO()
+    output_writer.write(output_buffer)
+    output_buffer.seek(0)
+
+    response = HttpResponse(output_buffer.getvalue(), content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="sera_report_{violation.violation_number or pk}.pdf"'
     return response
