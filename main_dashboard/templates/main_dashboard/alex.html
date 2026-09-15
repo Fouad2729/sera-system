@@ -641,6 +641,176 @@ body.dark .minutes-preview{
   margin-top: 3px;
 }
 
+
+/* ===== SERA PURE VECTOR A4 REPORT SHEET ===== */
+.sera-vpage {
+  position: relative !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+  box-sizing: border-box !important;
+  padding: 8mm 12mm 6mm !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  font-family: 'Cairo', 'Tajawal', Arial, Tahoma, sans-serif !important;
+  direction: rtl !important;
+  text-align: right !important;
+  overflow: hidden !important;
+  page-break-after: always !important;
+  break-after: page !important;
+}
+.sera-vpage .v-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 2px solid #006837;
+  outline: 1px solid #d4af37;
+  outline-offset: -3px;
+  padding: 6mm 8mm 4mm;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.sera-vpage .v-header {
+  display: grid;
+  grid-template-columns: 1.2fr auto 1.2fr;
+  align-items: center;
+  margin-bottom: 4px;
+}
+.sera-vpage .v-hdr-right {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #111827;
+}
+.sera-vpage .v-hdr-center {
+  text-align: center;
+}
+.sera-vpage .v-hdr-left {
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+}
+.sera-vpage .v-title-box {
+  text-align: center;
+  margin: 3px 0 6px;
+}
+.sera-vpage .v-title-text {
+  display: inline-block;
+  background: #006837;
+  color: #ffffff;
+  padding: 3px 24px;
+  font-size: 14.5px;
+  font-weight: 800;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.sera-vpage .v-table-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #006837;
+  margin-bottom: 2px;
+}
+.sera-vpage .v-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 6px;
+  table-layout: fixed;
+}
+.sera-vpage .v-table th,
+.sera-vpage .v-table td {
+  border: 1px solid #006837;
+  padding: 3px 5px;
+  font-size: 10.5px;
+  height: 26px;
+  vertical-align: middle;
+}
+.sera-vpage .v-table th {
+  background: #006837;
+  color: #ffffff;
+  font-weight: 800;
+  text-align: center;
+}
+.sera-vpage .v-table td {
+  background: #ffffff;
+  color: #0f172a;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-word;
+}
+.sera-vpage .v-sec-title {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #111827;
+  margin: 3px 0 2px;
+}
+.sera-vpage .v-sec-subtitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: #006837;
+  margin: 2px 0;
+}
+.sera-vpage .v-sec-box {
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: #ffffff;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #1e293b;
+  overflow: hidden;
+  text-align: justify;
+}
+.sera-vpage .v-basis-box {
+  height: 135px;
+}
+.sera-vpage .v-facts-box {
+  height: 120px;
+}
+.sera-vpage .v-sigs-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 4px;
+}
+.sera-vpage .v-sig-box {
+  border: 1px solid #006837;
+  border-radius: 4px;
+  overflow: hidden;
+  text-align: center;
+  background: #ffffff;
+}
+.sera-vpage .v-sig-hdr {
+  background: #006837;
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px;
+}
+.sera-vpage .v-sig-name {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #0f172a;
+  padding: 3px 2px 1px;
+  min-height: 18px;
+}
+.sera-vpage .v-sig-img {
+  max-height: 38px;
+  max-width: 90%;
+  object-fit: contain;
+}
+.sera-vpage .v-footer {
+  border-top: 1px solid #006837;
+  padding-top: 2px;
+  margin-top: auto;
+  font-size: 8.5px;
+  color: #64748b;
+  text-align: center;
+  font-weight: 600;
+}
+
 </style>
 
 
@@ -5245,108 +5415,158 @@ function fitMinutesText(root){
 
 
 function minutesPage1(o){
+  o = o || {};
+  const reportNoStr = o.reportNo ? ('(' + esc(o.reportNo) + ')') : '';
+  const basisHtml = esc(o.basis || '').replace(/\n/g, '<br>');
+  const factsHtml = esc(o.facts || '').replace(/\n/g, '<br>');
 
-  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static "main_dashboard/forms/sera_minutes_page1.jpg" %}" alt="">'+
+  return `
+  <div class="minutes-print-page sera-vpage">
+    <div class="v-frame">
+      <div class="v-header">
+        <div class="v-hdr-right">
+          <div>المملكة العربية السعودية</div>
+          <div style="font-size:8.5px;color:#555;">Kingdom of Saudi Arabia</div>
+          <div style="color:#006837;font-weight:800;margin-top:1px;">الهيئة السعودية لتنظيم الكهرباء</div>
+          <div style="font-size:8.5px;color:#006837;font-weight:700;">Saudi Electricity Regulatory Authority</div>
+        </div>
+        <div class="v-hdr-center">
+          <div style="font-size:12px;font-weight:700;margin-bottom:2px;">بسم الله الرحمن الرحيم</div>
+          <img src="/static/main_dashboard/images/sera_logo.png" onerror="this.src='/static/main_dashboard/images/logo.png';this.onerror=null;" style="height:46px;object-fit:contain;" alt="SERA">
+          <div style="font-size:11px;font-weight:800;color:#006837;margin-top:1px;">${reportNoStr}</div>
+        </div>
+        <div class="v-hdr-left">
+          <div>الصفحة: <b>1 من 2</b></div>
+        </div>
+      </div>
 
-  /* رقم المحضر: داخل القوسين تحت العنوان مباشرة */
-  mt(
-    o.reportNo,
-    'top:232px;left:250px;width:220px;height:24px;font-size:12.5px;text-align:center;font-weight:700;'
-  )+
+      <div class="v-title-box">
+        <div class="v-title-text">محضر ضبط مخالفة لأحكام نظام الكهرباء</div>
+      </div>
 
-  /* الصف الأول: اسم المنسوب له (يمين) + الرقم الموحد (يسار) */
-  mt(
-    o.name,
-    'top:258px;right:252px;width:178px;height:38px;font-size:12.5px;text-align:center;display:flex;align-items:center;justify-content:center;'
-  )+
-  mt(
-    o.unified,
-    'top:258px;left:52px;width:123px;height:38px;font-size:13px;text-align:center;direction:ltr;display:flex;align-items:center;justify-content:center;'
-  )+
+      <div class="v-table-label">بيانات المخالفة:</div>
+      <table class="v-table">
+        <tr>
+          <th style="width:25%;">اسم المنسوب له المخالفة</th>
+          <td style="width:35%;">${esc(o.name || '')}</td>
+          <th style="width:18%;">الرقم الموحد</th>
+          <td style="width:22%;direction:ltr;text-align:center;">${esc(o.unified || '')}</td>
+        </tr>
+        <tr>
+          <th>نوع المخالفة</th>
+          <td>${esc(o.type || '')}</td>
+          <th>موقع المخالفة <span style="font-size:8.5px;font-weight:normal;">-إن وجد-</span></th>
+          <td>${esc(o.location || '')}</td>
+        </tr>
+        <tr>
+          <th>يوم وتاريخ ووقت تحرير المحضر</th>
+          <td style="direction:ltr;text-align:center;">${esc(toWesternDigits(o.datetime || ''))}</td>
+          <th>تاريخ وقوع المخالفة</th>
+          <td style="direction:ltr;text-align:center;">${esc(toWesternDigits(o.occurrence || ''))}</td>
+        </tr>
+      </table>
 
-  /* الصف الثاني: نوع المخالفة (يمين) + موقع المخالفة (يسار) */
-  mt(
-    o.type,
-    'top:302px;right:252px;width:178px;height:56px;font-size:11.5px;text-align:center;display:flex;align-items:center;justify-content:center;'
-  )+
-  mt(
-    o.location,
-    'top:302px;left:52px;width:123px;height:56px;font-size:11.5px;text-align:center;display:flex;align-items:center;justify-content:center;'
-  )+
+      <div class="v-sec-title">أولاً: حرر هذا المحضر استناداً على:</div>
+      <div class="v-sec-box v-basis-box">
+        ${basisHtml}
+      </div>
 
-  /* الصف الثالث: يوم ووقت التحرير (يمين) + تاريخ وقوع المخالفة (يسار) */
-  mt(
-    toWesternDigits(o.datetime),
-    'top:362px;right:252px;width:178px;height:42px;font-size:11.5px;text-align:center;direction:ltr;display:flex;align-items:center;justify-content:center;'
-  )+
-  mt(
-    toWesternDigits(o.occurrence),
-    'top:362px;left:52px;width:123px;height:42px;font-size:11.5px;text-align:center;direction:ltr;display:flex;align-items:center;justify-content:center;'
-  )+
+      <div class="v-sec-title" style="margin-top:4px;">ثانياً: وقائع المخالفة:</div>
+      <div class="v-sec-subtitle">أ. وقائع المخالفة:</div>
+      <div class="v-sec-box v-facts-box">
+        ${factsHtml}
+      </div>
 
-  /* أولاً: حرر هذا المحضر استناداً على (تحت العنوان مباشرة في الفراغ الصافي) */
-  mt(
-    o.basis,
-    'top:505px;right:58px;width:602px;height:180px;font-size:13px;justify-content:flex-start;text-align:right;padding:4px 8px;line-height:1.45;'
-  )+
-
-  /* ثانياً: وقائع المخالفة (تحت عنوان أ. وقائع المخالفة) */
-  mt(
-    o.facts,
-    'top:765px;right:58px;width:602px;height:175px;font-size:13px;justify-content:flex-start;text-align:right;padding:4px 8px;line-height:1.45;'
-  )+
-
-  '</div>';
+      <div class="v-footer">
+        <div>محضر ضبط مخالفة رسمي — صفحة (1 من 2) — الهيئة السعودية لتنظيم الكهرباء</div>
+      </div>
+    </div>
+  </div>`;
 }
 
-
 function minutesPage2(o){
+  o = o || {};
+  const descHtml = esc(o.description || '').replace(/\n/g, '<br>');
+  const damageHtml = esc(o.damage || '').replace(/\n/g, '<br>');
+  const docsHtml = esc(o.documents || '').replace(/\n/g, '<br>');
+  const reqHtml = esc(o.requests || '').replace(/\n/g, '<br>');
+  const defHtml = esc(o.defense || '').replace(/\n/g, '<br>');
 
-  return '<div class="minutes-print-page"><img class="minutes-template-bg" src="{% static "main_dashboard/forms/sera_minutes_page2.jpg" %}" alt="">'+
+  const sigHtml = o.signature
+    ? `<img src="${escMinutes(o.signature)}" class="v-sig-img" alt="التوقيع">`
+    : `<div style="height:36px;"></div>`;
 
-  /* ب. الوصف التفصيلي للمخالفة: تحت العنوان المطبوع عند 210px */
-  mt(
-    o.description,
-    'top:235px;right:55px;width:610px;height:155px;font-size:13.5px;text-align:right;padding:4px 8px;justify-content:flex-start;line-height:1.4;'
-  )+
+  return `
+  <div class="minutes-print-page sera-vpage">
+    <div class="v-frame">
+      <div class="v-header" style="border-bottom:1.5px solid #006837;padding-bottom:4px;margin-bottom:4px;">
+        <div class="v-hdr-right">
+          <b style="color:#006837;">الهيئة السعودية لتنظيم الكهرباء</b><br>
+          <span style="font-size:9.5px;">محضر ضبط مخالفة لأحكام نظام الكهرباء (تابع)</span>
+        </div>
+        <div class="v-hdr-center">
+          <span style="font-size:14px;font-weight:900;color:#006837;">SERA</span>
+        </div>
+        <div class="v-hdr-left">
+          <div>الصفحة: <b>2 من 2</b></div>
+        </div>
+      </div>
 
-  /* ج. الأضرار الناتجة عن المخالفة: تحت العنوان المطبوع عند 400px */
-  mt(
-    o.damage,
-    'top:425px;right:55px;width:610px;height:65px;font-size:13.5px;text-align:right;padding:4px 8px;justify-content:flex-start;line-height:1.4;'
-  )+
+      <div class="v-sec-subtitle">ب. الوصف التفصيلي للمخالفة:</div>
+      <div class="v-sec-box" style="height:88px;">
+        ${descHtml}
+      </div>
 
-  /* ثالثاً: المستندات: تحت العنوان المطبوع عند 500px */
-  mt(
-    o.documents,
-    'top:525px;right:55px;width:610px;height:85px;font-size:13.5px;text-align:right;padding:4px 8px;justify-content:flex-start;line-height:1.4;'
-  )+
+      <div class="v-sec-subtitle">ج. الأضرار الناتجة عن المخالفة إن وجدت، وأساس تحديد ذلك:</div>
+      <div class="v-sec-box" style="height:55px;">
+        ${damageHtml}
+      </div>
 
-  /* رابعاً: الطلبات: تحت العنوان المطبوع عند 625px */
-  mt(
-    o.requests,
-    'top:645px;right:55px;width:610px;height:45px;font-size:13.5px;text-align:right;padding:4px 8px;justify-content:flex-start;line-height:1.4;'
-  )+
+      <div class="v-sec-title">ثالثاً: المستندات:</div>
+      <div class="v-sec-box" style="height:55px;">
+        ${docsHtml}
+      </div>
 
-  /* خامساً: الدفوع: تحت العنوان المطبوع عند 700px */
-  mt(
-    o.defense,
-    'top:725px;right:55px;width:610px;height:90px;font-size:13.5px;text-align:right;padding:4px 8px;justify-content:flex-start;line-height:1.4;'
-  )+
+      <div class="v-sec-title">رابعاً: الطلبات:</div>
+      <div class="v-sec-box" style="height:48px;">
+        ${reqHtml}
+      </div>
 
-  /* اسم المفتش: في جدول التوقيع السفلي عند 820px */
-  mt(o.inspector, 'top:827px;right:148px;width:160px;height:42px;font-size:13px;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;white-space:nowrap!important;line-height:1;margin:0;padding:0;')+
+      <div class="v-sec-title">خامساً: أقوال ودفاع المنسوب له المخالفة:</div>
+      <div class="v-sec-box" style="height:65px;">
+        ${defHtml}
+      </div>
 
-  /* التوقيع: في جدول التوقيع السفلي عند 820px */
-  (
-    o.signature
-    ? '<img class="minutes-signature-image" '+
-      'src="'+escMinutes(o.signature)+'" alt="" '+
-      'style="position:absolute;top:820px;left:236px;width:104px;height:46px;object-fit:contain;z-index:10;">'
-    : ''
-  )+
+      <div class="v-sec-title">سادساً: التواقيع والاعتمادات الرسمية:</div>
+      <div class="v-sigs-wrap">
+        <div class="v-sig-box">
+          <div class="v-sig-hdr">اسم المفتش</div>
+          <div class="v-sig-name">${esc(o.inspector || '')}</div>
+          <div style="height:38px;display:flex;align-items:center;justify-content:center;">
+            ${sigHtml}
+          </div>
+        </div>
+        <div class="v-sig-box">
+          <div class="v-sig-hdr">المنسوب له المخالفة</div>
+          <div class="v-sig-name">${esc(o.name || '')}</div>
+          <div style="height:38px;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:9.5px;">
+            التوقيع أو إثبات الامتناع
+          </div>
+        </div>
+        <div class="v-sig-box">
+          <div class="v-sig-hdr">اعتماد الإدارة</div>
+          <div class="v-sig-name">مدير إدارة الرقابة والتفتيش</div>
+          <div style="height:38px;display:flex;align-items:center;justify-content:center;color:#64748b;font-size:9.5px;">
+            الختم الرسمي والاعتماد
+          </div>
+        </div>
+      </div>
 
-  '</div>';
+      <div class="v-footer">
+        <div>وثيقة رسمية صادرة ومعتمدة من الهيئة السعودية لتنظيم الكهرباء — صفحة (2 من 2)</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 
