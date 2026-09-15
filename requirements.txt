@@ -16,7 +16,6 @@ sqlparse==0.6.0
 whitenoise==6.12.0
 arabic-reshaper==3.0.1
 python-bidi==0.6.11
-
 PyMuPDF
 reportlab
 pypdf

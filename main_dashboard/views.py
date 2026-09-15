@@ -308,7 +308,7 @@ def export_violation_official_pdf(request, pk):
     except Violation.DoesNotExist:
         raise Http404("المخالفة غير موجودة")
 
-    # 1. تحديد مسار القالب الثابت الأساسي
+    # تحديد مسار القالب الثابت الأساسي
     template_paths = [
         os.path.join(settings.BASE_DIR, 'main_dashboard', 'reports', 'sera_template.pdf'),
         os.path.join(settings.BASE_DIR, 'assets', 'pdf_templates', 'sera_template.pdf')
@@ -317,22 +317,20 @@ def export_violation_official_pdf(request, pk):
     if not template_path:
         return HttpResponse("خطأ: ملف قالب المحضر غير موجود", status=500)
 
-    # 2. تسجيل الخط العربي المعتمد في ReportLab
+    # تسجيل الخط العربي Amiri
     font_paths = [
         os.path.join(settings.BASE_DIR, 'main_dashboard', 'static', 'main_dashboard', 'fonts', 'Amiri-Regular.ttf'),
         os.path.join(settings.BASE_DIR, 'assets', 'fonts', 'Amiri-Regular.ttf')
     ]
     font_path = next((f for f in font_paths if os.path.exists(f)), None)
+    font_name = 'Helvetica'
     if font_path:
         try:
             pdfmetrics.registerFont(TTFont('ArabicAmiri', font_path))
             font_name = 'ArabicAmiri'
         except Exception:
             font_name = 'Helvetica'
-    else:
-        font_name = 'Helvetica'
 
-    # دالة ضبط التشكيل واتجاه النص العربي
     def _ar(txt):
         if not txt:
             return ""
@@ -343,10 +341,89 @@ def export_violation_official_pdf(request, pk):
             return str(txt)
 
     def draw_multiline(can, text, x_right, y_top, max_chars=75, leading=14):
-        """كتابة نصوص متعددة الأسطر مضبوطة من اليمين لليسار دون تداخل"""
+        """كتابة نصوص متعددة الأسطر مضبوطة من اليمين لليسار دون رموز كسر"""
         if not text:
             return
-        for paragraph in str(text).split('
+        for paragraph in str(text).splitlines():
+            if not paragraph.strip():
+                continue
+            for line in textwrap.wrap(paragraph, width=max_chars):
+                can.drawRightString(x_right, y_top, _ar(line))
+                y_top -= leading
+
+    # ==================== الصفحة الأولى (Overlay Page 1) ====================
+    packet1 = io.BytesIO()
+    can1 = canvas.Canvas(packet1, pagesize=A4)
+    can1.setFont(font_name, 9.5)
+
+    if getattr(violation, 'violation_number', None):
+        can1.drawCentredString(500, 684, str(violation.violation_number))
+        can1.drawCentredString(298, 632, f"({violation.violation_number})")
+
+    # جدول بيانات المخالفة - إسقاط داخل الفراغات
+    can1.drawRightString(384, 598, _ar(getattr(violation, 'attributed_person', '') or ""))
+    can1.drawCentredString(95, 598, str(getattr(violation, 'unified_number', '') or ""))
+    can1.drawRightString(384, 556, _ar(getattr(violation, 'violation_type', '') or ""))
+    can1.drawCentredString(95, 556, _ar(getattr(violation, 'violation_location', '') or ""))
+    can1.drawRightString(384, 514, _ar(getattr(violation, 'report_date', '') or ""))
+    can1.drawCentredString(95, 514, str(getattr(violation, 'incident_date', '') or ""))
+
+    # وقائع المخالفة
+    facts = getattr(violation, 'facts', '') or getattr(violation, 'transaction_status', '') or ""
+    if facts:
+        draw_multiline(can1, facts, x_right=545, y_top=225, max_chars=75, leading=13)
+
+    can1.save()
+    packet1.seek(0)
+
+    # ==================== الصفحة الثانية (Overlay Page 2) ====================
+    packet2 = io.BytesIO()
+    can2 = canvas.Canvas(packet2, pagesize=A4)
+    can2.setFont(font_name, 9.5)
+
+    if getattr(violation, 'violation_number', None):
+        can2.drawCentredString(500, 684, str(violation.violation_number))
+
+    details = getattr(violation, 'details', '') or getattr(violation, 'description', '') or ""
+    if details:
+        draw_multiline(can2, details, x_right=545, y_top=620, max_chars=75, leading=13)
+
+    damages = getattr(violation, 'damages', '') or getattr(violation, 'damage', '') or ""
+    if damages:
+        draw_multiline(can2, damages, x_right=545, y_top=470, max_chars=75, leading=13)
+
+    inspector = getattr(violation, 'inspector_name', '') or getattr(violation, 'report_editor', '') or ""
+    if inspector:
+        can2.drawCentredString(400, 132, _ar(inspector))
+
+    can2.save()
+    packet2.seek(0)
+
+    # ==================== دمج الطبقات مع تثبيت الاتجاه الرأسي 0° ====================
+    template_reader = PdfReader(template_path)
+    overlay1 = PdfReader(packet1).pages[0]
+    overlay2 = PdfReader(packet2).pages[0]
+
+    output_writer = PdfWriter()
+
+    page1 = template_reader.pages[0]
+    page1.merge_page(overlay1)
+    page1.rotation = 0
+    output_writer.add_page(page1)
+
+    if len(template_reader.pages) > 1:
+        page2 = template_reader.pages[1]
+        page2.merge_page(overlay2)
+        page2.rotation = 0
+        output_writer.add_page(page2)
+
+    output_buffer = io.BytesIO()
+    output_writer.write(output_buffer)
+    output_buffer.seek(0)
+
+    response = HttpResponse(output_buffer.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="sera_report_{violation.violation_number or pk}.pdf"'
+    return response
 '):
             if not paragraph.strip():
                 continue
