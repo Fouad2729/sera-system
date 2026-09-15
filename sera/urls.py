@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path
 from main_dashboard.views import (
+    export_violation_official_pdf,
     home, add_violation, edit_violation, geocode_search,
     api_violations, api_violation_create, api_violation_update,
     api_violation_delete, api_sync_check
@@ -13,6 +14,7 @@ urlpatterns = [
     path("edit/<int:pk>/", edit_violation, name="edit_violation"),
     path("api/geocode/", geocode_search, name="geocode_search"),
     path("api/violations/", api_violations, name="api_violations"),
+    path("api/violations/<int:pk>/pdf/", export_violation_official_pdf, name="export_violation_official_pdf"),
     path("api/violations/sync-check/", api_sync_check, name="api_sync_check"),
     path("api/violations/create/", api_violation_create, name="api_violation_create"),
     path("api/violations/<int:pk>/", api_violation_update, name="api_violation_update"),

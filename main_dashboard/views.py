@@ -270,3 +270,92 @@ def api_sync_check(request):
         })
     except Exception as exc:
         return JsonResponse({"ok": False, "error": str(exc)}, status=500)
+
+
+# ==========================================================
+# دالة توليد محضر SERA الرسمي فائق النقاء (Backend PDF Engine)
+# ==========================================================
+def _ar(text):
+    if not text:
+        return ""
+    try:
+        import arabic_reshaper
+        from bidi.algorithm import get_display
+        reshaped = arabic_reshaper.reshape(str(text))
+        return get_display(reshaped)
+    except Exception:
+        return str(text)
+
+def export_violation_official_pdf(request, pk):
+    import os
+    import io
+    import base64
+    import fitz  # PyMuPDF
+    from django.http import HttpResponse, Http404
+    from django.conf import settings
+    from .models import Violation
+
+    try:
+        violation = Violation.objects.get(pk=pk)
+    except Violation.DoesNotExist:
+        raise Http404("المخالفة غير موجودة")
+
+    template_pdf_path = os.path.join(settings.BASE_DIR, 'main_dashboard', 'reports', 'sera_template.pdf')
+    font_path = os.path.join(settings.BASE_DIR, 'main_dashboard', 'static', 'main_dashboard', 'fonts', 'Tajawal-Regular.ttf')
+
+    if not os.path.exists(template_pdf_path):
+        return HttpResponse(f"تنبيه: يرجى وضع ملف القالب باسم sera_template.pdf داخل المسار: {template_pdf_path}", status=500)
+
+    doc = fitz.open(template_pdf_path)
+    font_file = font_path if os.path.exists(font_path) else None
+
+    def write_field(page, rect, text, fontsize=9.5, align=fitz.TEXT_ALIGN_CENTER, color=(0,0,0)):
+        page.draw_rect(rect, color=None, fill=(1, 1, 1))
+        if text:
+            page.insert_textbox(rect, _ar(text), fontsize=fontsize, fontfile=font_file, color=color, align=align)
+
+    # الصفحة الأولى (Page 1)
+    if len(doc) >= 1:
+        p1 = doc[0]
+        write_field(p1, fitz.Rect(260, 148, 335, 168), violation.violation_number or "258", fontsize=11)
+        write_field(p1, fitz.Rect(230, 186, 365, 206), f"({violation.violation_number or '26/01/12/16'})", fontsize=10.5)
+
+        write_field(p1, fitz.Rect(246, 221, 386, 258), violation.attributed_person or "", fontsize=9.5)
+        write_field(p1, fitz.Rect(44, 221, 144, 258), str(getattr(violation, 'unified_number', '') or "7036280696"), fontsize=10)
+        write_field(p1, fitz.Rect(246, 260, 386, 302), violation.violation_type or "", fontsize=9)
+        write_field(p1, fitz.Rect(44, 260, 144, 302), violation.violation_location or "", fontsize=9)
+        write_field(p1, fitz.Rect(246, 304, 386, 344), violation.report_date or "", fontsize=9.5)
+        write_field(p1, fitz.Rect(44, 304, 144, 344), getattr(violation, 'incident_date', '') or "", fontsize=9.5)
+
+        basis_txt = getattr(violation, 'regulation', '') or getattr(violation, 'regulation_basis', '') or ""
+        write_field(p1, fitz.Rect(45, 415, 550, 545), basis_txt, fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+
+        facts_txt = getattr(violation, 'facts', '') or getattr(violation, 'transaction_status', '') or ""
+        write_field(p1, fitz.Rect(45, 595, 550, 765), facts_txt, fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+
+    # الصفحة الثانية (Page 2)
+    if len(doc) >= 2:
+        p2 = doc[1]
+        write_field(p2, fitz.Rect(260, 148, 335, 168), violation.violation_number or "258", fontsize=11)
+        write_field(p2, fitz.Rect(45, 185, 550, 305), getattr(violation, 'details', '') or getattr(violation, 'description', '') or "", fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+        write_field(p2, fitz.Rect(45, 330, 550, 395), getattr(violation, 'damages', '') or getattr(violation, 'damage', '') or "", fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+        write_field(p2, fitz.Rect(45, 420, 550, 495), getattr(violation, 'documents', '') or "", fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+        write_field(p2, fitz.Rect(45, 520, 550, 565), getattr(violation, 'requests', '') or "", fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+        write_field(p2, fitz.Rect(45, 590, 550, 675), getattr(violation, 'defense', '') or "", fontsize=9.5, align=fitz.TEXT_ALIGN_RIGHT)
+        write_field(p2, fitz.Rect(335, 690, 468, 730), getattr(violation, 'inspector_name', '') or getattr(violation, 'report_editor', '') or "حمدان وصل الله الجهني", fontsize=10.5)
+
+        sig_data = getattr(violation, 'signature', '')
+        if sig_data and 'base64,' in sig_data:
+            try:
+                p2.draw_rect(fitz.Rect(192, 690, 284, 730), color=None, fill=(1, 1, 1))
+                img_bytes = base64.b64decode(sig_data.split('base64,')[1])
+                p2.insert_image(fitz.Rect(192, 690, 284, 730), stream=img_bytes)
+            except Exception:
+                pass
+
+    pdf_bytes = doc.tobytes()
+    doc.close()
+
+    response = HttpResponse(pdf_bytes, content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename="sera_report_{violation.violation_number or pk}.pdf"'
+    return response
