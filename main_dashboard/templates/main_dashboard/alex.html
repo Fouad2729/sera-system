@@ -5600,59 +5600,202 @@ async function printMinutes(){
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title></title>
+<title>محضر ضبط مخالفة - ${esc(o.reportNo || 'طباعة')}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Tajawal:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-  @font-face{
-    font-family:'Tajawal';
-    src:url('/static/main_dashboard/fonts/Tajawal-Regular.ttf') format('truetype');
-    font-weight:normal;
-    font-style:normal;
+  * {
+    box-sizing: border-box !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  *{box-sizing:border-box}
-  html,body{
-    margin:0 !important;
-    padding:0 !important;
-    background:#fff !important;
-    color:#111 !important;
-    font-family:'Tajawal',Arial,Tahoma,sans-serif !important;
+  @page {
+    size: A4 portrait !important;
+    margin: 0 !important;
   }
-  @page{
-    size:A4 portrait;
-    margin:0 !important;
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #525659 !important;
+    color: #111827 !important;
+    font-family: 'Cairo', 'Tajawal', Arial, Tahoma, sans-serif !important;
+    direction: rtl !important;
+    text-align: right !important;
   }
-  .minutes-print-page{
-    position:relative;
-    width:720px;
-    height:1008px;
-    margin:0 auto;
-    overflow:hidden;
-    background:#fff;
-    page-break-after:always;
-    break-after:page;
-    box-sizing:border-box;
+  @media print {
+    body {
+      background: transparent !important;
+    }
+    .minutes-print-page {
+      margin: 0 auto !important;
+      box-shadow: none !important;
+    }
   }
-  .minutes-print-page:last-child{
-    page-break-after:auto;
-    break-after:auto;
+  .minutes-print-page {
+    position: relative !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 20px auto !important;
+    box-sizing: border-box !important;
+    padding: 8mm 12mm 6mm !important;
+    background: #ffffff !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.35) !important;
+    overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
   }
-  .minutes-template-bg{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    display:block;
-    z-index:0;
+  .minutes-print-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
   }
-  .minutes-text{
-    position:absolute;
-    z-index:2;
-    direction:rtl;
-    text-align:right;
-    white-space:pre-wrap;
-    overflow:hidden;
-    font-family:'Tajawal',Arial,Tahoma,sans-serif !important;
-    color:#111;
-    line-height:1.45;
+  .v-frame {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: 2px solid #006837 !important;
+    outline: 1.5px solid #d4af37 !important;
+    outline-offset: -3px !important;
+    padding: 6mm 8mm 4mm !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  .v-header {
+    display: grid !important;
+    grid-template-columns: 1.2fr auto 1.2fr !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+  }
+  .v-hdr-right {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    color: #111827 !important;
+  }
+  .v-hdr-center {
+    text-align: center !important;
+  }
+  .v-hdr-left {
+    text-align: left !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+  }
+  .v-title-box {
+    text-align: center !important;
+    margin: 4px 0 6px !important;
+  }
+  .v-title-text {
+    display: inline-block !important;
+    background: #006837 !important;
+    color: #ffffff !important;
+    padding: 4px 28px !important;
+    font-size: 15px !important;
+    font-weight: 800 !important;
+    border-radius: 4px !important;
+    letter-spacing: 0.3px !important;
+  }
+  .v-table-label {
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    color: #006837 !important;
+    margin-bottom: 2px !important;
+  }
+  .v-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin-bottom: 6px !important;
+    table-layout: fixed !important;
+    border: 1.5px solid #006837 !important;
+  }
+  .v-table th, .v-table td {
+    border: 1px solid #006837 !important;
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+    height: 28px !important;
+    vertical-align: middle !important;
+  }
+  .v-table th {
+    background-color: #006837 !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+  }
+  .v-table td {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    word-break: break-word !important;
+  }
+  .v-sec-title {
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    color: #111827 !important;
+    margin: 4px 0 2px !important;
+  }
+  .v-sec-subtitle {
+    font-size: 11.5px !important;
+    font-weight: 700 !important;
+    color: #006837 !important;
+    margin: 2px 0 !important;
+  }
+  .v-sec-box {
+    border: 1px solid #94a3b8 !important;
+    border-radius: 4px !important;
+    padding: 5px 7px !important;
+    background: #ffffff !important;
+    font-size: 11px !important;
+    line-height: 1.5 !important;
+    color: #1e293b !important;
+    overflow: hidden !important;
+    text-align: justify !important;
+  }
+  .v-basis-box { height: 135px !important; }
+  .v-facts-box { height: 120px !important; }
+  .v-sigs-wrap {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
+    gap: 8px !important;
+    margin-top: 4px !important;
+  }
+  .v-sig-box {
+    border: 1.5px solid #006837 !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    text-align: center !important;
+    background: #ffffff !important;
+  }
+  .v-sig-hdr {
+    background-color: #006837 !important;
+    color: #ffffff !important;
+    font-size: 10.5px !important;
+    font-weight: 800 !important;
+    padding: 3px !important;
+  }
+  .v-sig-name {
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    padding: 3px 2px !important;
+    min-height: 20px !important;
+  }
+  .v-sig-img {
+    max-height: 38px !important;
+    max-width: 90% !important;
+    object-fit: contain !important;
+  }
+  .v-footer {
+    border-top: 1px solid #006837 !important;
+    padding-top: 2px !important;
+    margin-top: auto !important;
+    font-size: 8.5px !important;
+    color: #64748b !important;
+    text-align: center !important;
+    font-weight: 600 !important;
   }
 </style>
 </head>
@@ -5661,28 +5804,20 @@ async function printMinutes(){
     ${page1}
     ${page2}
   </div>
-  <script>
+  <` + `script>
   window.addEventListener('load', async function(){
     if(document.fonts && document.fonts.ready){
       await document.fonts.ready;
     }
-    const imgs = [...document.querySelectorAll('.minutes-template-bg')];
-    await Promise.all(imgs.map(img => {
-      if(img.complete) return Promise.resolve();
-      return new Promise(res => {
-        img.addEventListener('load', res, {once:true});
-        img.addEventListener('error', res, {once:true});
-      });
-    }));
     setTimeout(() => {
       window.focus();
       window.print();
-    }, 400);
+    }, 250);
   });
   window.addEventListener('afterprint', () => {
     setTimeout(() => window.close(), 500);
   });
-  <`+`/script>
+  <` + `/script>
 </body>
 </html>`);
   printWindow.document.close();
