@@ -18,3 +18,5 @@ arabic-reshaper==3.0.1
 python-bidi==0.6.11
 
 PyMuPDF
+reportlab
+pypdf
