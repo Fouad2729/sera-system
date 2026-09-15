@@ -5416,61 +5416,64 @@ function fitMinutesText(root){
 
 function minutesPage1(o){
   o = o || {};
-  const fullCode = o.reportNo ? esc(o.reportNo) : '26/01/12/16';
-  const shortNo = o.reportNo ? (o.reportNo.includes('/') ? o.reportNo.split('/')[0].replace(/[^0-9]/g,'') : o.reportNo) : '258';
+  let rawNo = String(o.reportNo || '258').trim().replace(/^\(+|\)+$/g, '');
+  let displayCode = rawNo.includes('/') ? rawNo : '26/01/12/16';
+  let displayShortNo = rawNo.includes('/') ? rawNo.split('/')[0] : rawNo;
+  if(!displayShortNo) displayShortNo = '258';
+
   const basisHtml = esc(o.basis || '').replace(/\n/g, '<br>');
   const factsHtml = esc(o.facts || '').replace(/\n/g, '<br>');
 
   return `
   <div class="minutes-print-page sera-exact-page">
-    <!-- الترويسة العلوية الرسمية المطابقة للصورة 2 -->
+    <!-- الترويسة العلوية المطابقة تماماً للصورة 2 -->
     <div class="ex-header">
       <div class="ex-hdr-right">
         <div style="font-weight:700;font-size:12px;color:#000;">المملكة العربية السعودية</div>
         <div style="font-size:9.5px;color:#475569;direction:ltr;text-align:right;">Kingdom of Saudi Arabia</div>
-        <div style="margin-top:6px;font-weight:800;color:#0b5738;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
-        <div style="font-size:9px;color:#0b5738;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
+        <div style="margin-top:6px;font-weight:800;color:#006837;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
+        <div style="font-size:9px;color:#006837;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
       </div>
 
       <div class="ex-hdr-center">
         <div class="ex-basmalah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
-        <svg width="46" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
+        <svg width="48" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
   <path d="M52 2 C68 18, 92 36, 86 64 C80 88, 52 105, 28 96 C10 88, 4 66, 16 46 C26 30, 46 18, 52 2 Z" fill="url(#sera_real_grad)"/>
   <path d="M46 20 C56 32, 72 44, 68 64 C64 80, 44 90, 30 84 C18 78, 14 64, 22 50 C28 38, 40 30, 46 20 Z" fill="#ffffff" opacity="0.32"/>
   <defs>
     <linearGradient id="sera_real_grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00e699"/>
-      <stop offset="50%" stop-color="#10b981"/>
-      <stop offset="100%" stop-color="#0b5738"/>
+      <stop offset="45%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#006837"/>
     </linearGradient>
   </defs>
 </svg>
-        <div class="ex-report-no">${shortNo}</div>
+        <div class="ex-report-no">${displayShortNo}</div>
       </div>
 
       <div class="ex-hdr-left"></div>
     </div>
 
-    <!-- الصندوق الأخضر الكبير الممتد المطابق للصورة 2 -->
+    <!-- الصندوق الأخضر الكبير الممتد على كامل العرض المطابق للصورة 2 -->
     <div class="ex-main-box">
       <div class="ex-title-wrap">
         <div class="ex-title">محضر ضبط مخالفة لأحكام نظام الكهرباء</div>
-        <div class="ex-subtitle">(${fullCode})</div>
+        <div class="ex-subtitle">(${displayCode})</div>
       </div>
       
       <div class="ex-badge-label">بيانات المخالفة:</div>
 
       <table class="ex-table">
         <tr>
-          <th class="ex-th" style="width:25%;">اسم المنسوب له المخالفة</th>
-          <td class="ex-td" style="width:35%;">${esc(o.name || '')}</td>
+          <th class="ex-th" style="width:26%;">اسم المنسوب له المخالفة</th>
+          <td class="ex-td" style="width:34%;">${esc(o.name || '')}</td>
           <th class="ex-th" style="width:18%;">الرقم الموحد</th>
           <td class="ex-td" style="width:22%;direction:ltr;text-align:center;">${esc(o.unified || '')}</td>
         </tr>
         <tr>
           <th class="ex-th">نوع المخالفة</th>
           <td class="ex-td">${esc(o.type || '')}</td>
-          <th class="ex-th">موقع المخالفة <span style="font-size:8.5px;font-weight:normal;">-إن وجد-</span></th>
+          <th class="ex-th">موقع المخالفة <br><span style="font-size:8.5px;font-weight:normal;">-إن وجد-</span></th>
           <td class="ex-td">${esc(o.location || '')}</td>
         </tr>
         <tr>
@@ -5495,7 +5498,7 @@ function minutesPage1(o){
       </div>
     </div>
 
-    <!-- التذييل الرسمي السفلي -->
+    <!-- التذييل الرسمي السفلي المطابق للصورة 2 -->
     <div class="ex-footer">
       <div class="ex-ft-col" style="text-align:left;direction:ltr;">
         <div>info@sera.gov.sa</div>
@@ -5515,8 +5518,10 @@ function minutesPage1(o){
 
 function minutesPage2(o){
   o = o || {};
-  const fullCode = o.reportNo ? esc(o.reportNo) : '26/01/12/16';
-  const shortNo = o.reportNo ? (o.reportNo.includes('/') ? o.reportNo.split('/')[0].replace(/[^0-9]/g,'') : o.reportNo) : '258';
+  let rawNo = String(o.reportNo || '258').trim().replace(/^\(+|\)+$/g, '');
+  let displayShortNo = rawNo.includes('/') ? rawNo.split('/')[0] : rawNo;
+  if(!displayShortNo) displayShortNo = '258';
+
   const descHtml = esc(o.description || '').replace(/\n/g, '<br>');
   const damageHtml = esc(o.damage || '').replace(/\n/g, '<br>');
   const docsHtml = esc(o.documents || '').replace(/\n/g, '<br>');
@@ -5529,29 +5534,29 @@ function minutesPage2(o){
 
   return `
   <div class="minutes-print-page sera-exact-page">
-    <!-- الترويسة العلوية الرسمية للصفحة 2 -->
+    <!-- الترويسة العلوية الرسمية للصفحة 2 المطابقة للصورة 3 -->
     <div class="ex-header">
       <div class="ex-hdr-right">
         <div style="font-weight:700;font-size:12px;color:#000;">المملكة العربية السعودية</div>
         <div style="font-size:9.5px;color:#475569;direction:ltr;text-align:right;">Kingdom of Saudi Arabia</div>
-        <div style="margin-top:6px;font-weight:800;color:#0b5738;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
-        <div style="font-size:9px;color:#0b5738;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
+        <div style="margin-top:6px;font-weight:800;color:#006837;font-size:12.5px;">الهيئة السعودية لتنظيم الكهرباء</div>
+        <div style="font-size:9px;color:#006837;font-weight:700;direction:ltr;text-align:right;">Saudi Electricity Regulatory Authority</div>
       </div>
 
       <div class="ex-hdr-center">
         <div class="ex-basmalah">بِسْمِ اللَّـهِ الرَّحْمَـٰنِ الرَّحِيمِ</div>
-        <svg width="46" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
+        <svg width="48" height="52" viewBox="0 0 100 115" fill="none" style="display:block;margin:0 auto;">
   <path d="M52 2 C68 18, 92 36, 86 64 C80 88, 52 105, 28 96 C10 88, 4 66, 16 46 C26 30, 46 18, 52 2 Z" fill="url(#sera_real_grad)"/>
   <path d="M46 20 C56 32, 72 44, 68 64 C64 80, 44 90, 30 84 C18 78, 14 64, 22 50 C28 38, 40 30, 46 20 Z" fill="#ffffff" opacity="0.32"/>
   <defs>
     <linearGradient id="sera_real_grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00e699"/>
-      <stop offset="50%" stop-color="#10b981"/>
-      <stop offset="100%" stop-color="#0b5738"/>
+      <stop offset="45%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#006837"/>
     </linearGradient>
   </defs>
 </svg>
-        <div class="ex-report-no">${shortNo}</div>
+        <div class="ex-report-no">${displayShortNo}</div>
       </div>
 
       <div class="ex-hdr-left"></div>
@@ -5584,22 +5589,22 @@ function minutesPage2(o){
         ${defHtml}
       </div>
 
-      <!-- جدول التواقيع الرسمي الأفقي المطابق للصورة 3 -->
+      <!-- جدول التواقيع الرسمي الأفقي المطابق تماماً للصورة 3 -->
       <div class="ex-sig-table-wrap">
         <table class="ex-sig-table">
           <tr>
             <th class="ex-th" style="width:14%;">اسم المفتش</th>
-            <td class="ex-td" style="width:22%;font-weight:800;font-size:11.5px;color:#000;">
+            <td class="ex-td" style="width:23%;font-weight:800;font-size:11.5px;color:#000;">
               ${esc(o.inspector || 'حمدان وصل الله الجهني')}
             </td>
             <th class="ex-th" style="width:12%;">التوقيع</th>
-            <td class="ex-td" style="width:24%;">
+            <td class="ex-td" style="width:23%;">
               ${sigHtml}
             </td>
             <th class="ex-th" style="width:12%;">ختم الهيئة</th>
             <td class="ex-td" style="width:16%;padding:3px;">
-              <div style="display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #0b5738;border-radius:4px;padding:3px 8px;">
-                <span style="color:#0b5738;font-size:11px;font-weight:900;">ختم الهيئة</span>
+              <div style="display:inline-flex;align-items:center;justify-content:center;border:1.5px solid #006837;border-radius:4px;padding:3px 8px;">
+                <span style="color:#006837;font-size:11px;font-weight:900;">ختم الهيئة</span>
               </div>
             </td>
           </tr>
@@ -5688,10 +5693,9 @@ async function printMinutes(){
   }
   .minutes-print-page.sera-exact-page {
     position: relative !important;
-    width: 100% !important;
-    max-width: 210mm !important;
-    height: 265mm !important;
-    max-height: 265mm !important;
+    width: 210mm !important;
+    height: 275mm !important;
+    max-height: 275mm !important;
     margin: 10px auto !important;
     box-sizing: border-box !important;
     padding: 6mm 14mm 4mm !important;
@@ -5743,7 +5747,7 @@ async function printMinutes(){
   /* الصندوق الأخضر الكبير المقوس الممتد بكامل العرض */
   .ex-main-box {
     width: 100% !important;
-    border: 1.2px solid #0b5738 !important;
+    border: 1.2px solid #006837 !important;
     border-radius: 8px !important;
     padding: 8px 14px 6px !important;
     background: #ffffff !important;
@@ -5785,16 +5789,16 @@ async function printMinutes(){
     width: 100% !important;
     border-collapse: collapse !important;
     table-layout: fixed !important;
-    border: 1.2px solid #0b5738 !important;
+    border: 1.2px solid #006837 !important;
     margin-bottom: 6px !important;
   }
   .ex-th {
-    background-color: #0b5738 !important;
+    background-color: #006837 !important;
     color: #ffffff !important;
     font-weight: 800 !important;
     font-size: 11px !important;
     text-align: center !important;
-    border: 1px solid #0b5738 !important;
+    border: 1px solid #006837 !important;
     padding: 5px 6px !important;
     vertical-align: middle !important;
   }
@@ -5804,7 +5808,7 @@ async function printMinutes(){
     font-weight: 700 !important;
     font-size: 10.5px !important;
     text-align: center !important;
-    border: 1px solid #0b5738 !important;
+    border: 1px solid #006837 !important;
     padding: 5px 6px !important;
     vertical-align: middle !important;
     word-break: break-word !important;
@@ -5845,17 +5849,17 @@ async function printMinutes(){
   .ex-sig-table {
     width: 100% !important;
     border-collapse: collapse !important;
-    border: 1.2px solid #0b5738 !important;
+    border: 1.2px solid #006837 !important;
     table-layout: fixed !important;
   }
   .ex-sig-table th {
-    background-color: #0b5738 !important;
+    background-color: #006837 !important;
     color: #ffffff !important;
     font-weight: 800 !important;
     font-size: 11px !important;
     text-align: center !important;
     vertical-align: middle !important;
-    border: 1px solid #0b5738 !important;
+    border: 1px solid #006837 !important;
     padding: 5px !important;
   }
   .ex-sig-table td {
@@ -5863,7 +5867,7 @@ async function printMinutes(){
     color: #000000 !important;
     text-align: center !important;
     vertical-align: middle !important;
-    border: 1px solid #0b5738 !important;
+    border: 1px solid #006837 !important;
     padding: 4px !important;
   }
   .ex-sig-img {
