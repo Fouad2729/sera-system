@@ -486,49 +486,6 @@ body.dark .minutes-preview{
   pointer-events:auto;
 }
 
-
-/* أنماط التوهج الكامل لبطاقات الإحصائيات والدائرة */
-.sera-cyber-card {
-  cursor: pointer;
-  transition: all 0.28s ease-in-out !important;
-}
-.sera-cyber-card.active-green {
-  border: 1.5px solid #00e699 !important;
-  box-shadow: 0 0 25px rgba(0, 230, 153, 0.45), inset 0 0 15px rgba(0, 230, 153, 0.12) !important;
-  background: rgba(0, 230, 153, 0.08) !important;
-}
-.sera-cyber-card.active-red {
-  border: 1.5px solid #ff2e5b !important;
-  box-shadow: 0 0 25px rgba(255, 46, 91, 0.45), inset 0 0 15px rgba(255, 46, 91, 0.12) !important;
-  background: rgba(255, 46, 91, 0.08) !important;
-}
-.sera-cyber-card.active-amber {
-  border: 1.5px solid #f59e0b !important;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.12) !important;
-  background: rgba(245, 158, 11, 0.08) !important;
-}
-
-
-.sera-cyber-card {
-  cursor: pointer;
-  transition: all 0.25s ease-in-out !important;
-}
-.sera-cyber-card.active-green {
-  border: 1.5px solid #00e699 !important;
-  box-shadow: 0 0 25px rgba(0, 230, 153, 0.45), inset 0 0 15px rgba(0, 230, 153, 0.12) !important;
-  background: rgba(0, 230, 153, 0.08) !important;
-}
-.sera-cyber-card.active-red {
-  border: 1.5px solid #ff2e5b !important;
-  box-shadow: 0 0 25px rgba(255, 46, 91, 0.45), inset 0 0 15px rgba(255, 46, 91, 0.12) !important;
-  background: rgba(255, 46, 91, 0.08) !important;
-}
-.sera-cyber-card.active-amber {
-  border: 1.5px solid #f59e0b !important;
-  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.12) !important;
-  background: rgba(245, 158, 11, 0.08) !important;
-}
-
 </style>
 
 
@@ -2391,11 +2348,8 @@ function updateStats(passedData){
 
 
   const done=data.filter(isDone).length,
-  const baseRows = (typeof rows !== 'undefined' && Array.isArray(rows) && rows.length > 0) ? rows : data;
-  const done = baseRows.filter(isDone).length,
-        not = baseRows.filter(isNotDone).length,
-        need = baseRows.length - done - not;
-
+        not=data.filter(isNotDone).length,
+        need=data.length-done-not;
 
   document.getElementById('total').textContent=data.length.toLocaleString('en-US');
   document.getElementById('done').textContent=done.toLocaleString('en-US');
@@ -3247,62 +3201,6 @@ html,
 
 <script>
 
-
-
-<script>
-(function(){
-  window.currentQuickFilter = null;
-  const origFilter = window.filterByQuickStatus;
-
-  window.filterByQuickStatus = function(status) {
-    const cards = document.querySelectorAll('.sera-cyber-card');
-    const cardDone = cards[0];
-    const cardNotDone = cards[1];
-    const cardNeeds = cards[2];
-    const donut = document.getElementById('statusDonut');
-
-    if (window.currentQuickFilter === status) {
-      window.currentQuickFilter = null;
-      if (cardDone) cardDone.classList.remove('active-green');
-      if (cardNotDone) cardNotDone.classList.remove('active-red');
-      if (cardNeeds) cardNeeds.classList.remove('active-amber');
-      if (donut) donut.style.filter = '';
-
-      const quickEl = document.getElementById('quick');
-      if (quickEl) quickEl.value = '';
-      const statusEl = document.getElementById('status');
-      if (statusEl) statusEl.value = '';
-      if (typeof render === 'function') render();
-      return;
-    }
-
-    window.currentQuickFilter = status;
-    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
-    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
-    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
-
-    if (donut) {
-      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
-      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
-      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
-    }
-
-    if (typeof origFilter === 'function') {
-      origFilter(status);
-    } else {
-      const quickEl = document.getElementById('quick');
-      if (quickEl) {
-        if (status === 'منجزة') quickEl.value = 'done';
-        else if (status === 'غير منجزة') quickEl.value = 'notdone';
-        else quickEl.value = '';
-      }
-      const statusEl = document.getElementById('status');
-      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
-      if (typeof render === 'function') render();
-    }
-  };
-})();
-</script>
 
 </body>
 </html>
@@ -4455,63 +4353,7 @@ function exportPDF(){
           ${rowsHTML}
         </tbody>
       </table>
-    
-<script>
-(function(){
-  window.currentQuickFilter = null;
-  const origFilter = window.filterByQuickStatus;
-
-  window.filterByQuickStatus = function(status) {
-    const cards = document.querySelectorAll('.sera-cyber-card');
-    const cardDone = cards[0];
-    const cardNotDone = cards[1];
-    const cardNeeds = cards[2];
-    const donut = document.getElementById('statusDonut');
-
-    if (window.currentQuickFilter === status) {
-      window.currentQuickFilter = null;
-      if (cardDone) cardDone.classList.remove('active-green');
-      if (cardNotDone) cardNotDone.classList.remove('active-red');
-      if (cardNeeds) cardNeeds.classList.remove('active-amber');
-      if (donut) donut.style.filter = '';
-
-      const quickEl = document.getElementById('quick');
-      if (quickEl) quickEl.value = '';
-      const statusEl = document.getElementById('status');
-      if (statusEl) statusEl.value = '';
-      if (typeof render === 'function') render();
-      return;
-    }
-
-    window.currentQuickFilter = status;
-    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
-    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
-    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
-
-    if (donut) {
-      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
-      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
-      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
-    }
-
-    if (typeof origFilter === 'function') {
-      origFilter(status);
-    } else {
-      const quickEl = document.getElementById('quick');
-      if (quickEl) {
-        if (status === 'منجزة') quickEl.value = 'done';
-        else if (status === 'غير منجزة') quickEl.value = 'notdone';
-        else quickEl.value = '';
-      }
-      const statusEl = document.getElementById('status');
-      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
-      if (typeof render === 'function') render();
-    }
-  };
-})();
-</script>
-
-</body>
+    </body>
     </html>
   `;
 
@@ -5125,62 +4967,6 @@ async function printMinutes(){
     setTimeout(() => window.close(), 500);
   });
   <`+`/script>
-
-<script>
-(function(){
-  window.currentQuickFilter = null;
-  const origFilter = window.filterByQuickStatus;
-
-  window.filterByQuickStatus = function(status) {
-    const cards = document.querySelectorAll('.sera-cyber-card');
-    const cardDone = cards[0];
-    const cardNotDone = cards[1];
-    const cardNeeds = cards[2];
-    const donut = document.getElementById('statusDonut');
-
-    if (window.currentQuickFilter === status) {
-      window.currentQuickFilter = null;
-      if (cardDone) cardDone.classList.remove('active-green');
-      if (cardNotDone) cardNotDone.classList.remove('active-red');
-      if (cardNeeds) cardNeeds.classList.remove('active-amber');
-      if (donut) donut.style.filter = '';
-
-      const quickEl = document.getElementById('quick');
-      if (quickEl) quickEl.value = '';
-      const statusEl = document.getElementById('status');
-      if (statusEl) statusEl.value = '';
-      if (typeof render === 'function') render();
-      return;
-    }
-
-    window.currentQuickFilter = status;
-    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
-    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
-    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
-
-    if (donut) {
-      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
-      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
-      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
-    }
-
-    if (typeof origFilter === 'function') {
-      origFilter(status);
-    } else {
-      const quickEl = document.getElementById('quick');
-      if (quickEl) {
-        if (status === 'منجزة') quickEl.value = 'done';
-        else if (status === 'غير منجزة') quickEl.value = 'notdone';
-        else quickEl.value = '';
-      }
-      const statusEl = document.getElementById('status');
-      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
-      if (typeof render === 'function') render();
-    }
-  };
-})();
-</script>
-
 </body>
 </html>`);
   printWindow.document.close();
@@ -5711,110 +5497,89 @@ init();
 })();
 </script>
 
+</body></html>
+<style>
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 25px rgba(0, 230, 153, 0.45), inset 0 0 15px rgba(0, 230, 153, 0.12) !important;
+  background: rgba(0, 230, 153, 0.08) !important;
+}
+.sera-cyber-card.active-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 25px rgba(255, 46, 91, 0.45), inset 0 0 15px rgba(255, 46, 91, 0.12) !important;
+  background: rgba(255, 46, 91, 0.08) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.12) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+</style>
+
 
 <script>
-(function(){
-  window.currentQuickFilter = null;
-  const origFilter = window.filterByQuickStatus;
+document.addEventListener("DOMContentLoaded", function() {
+  var cachedTotals = null;
+  var isFiltering = false;
 
-  window.filterByQuickStatus = function(status) {
-    const cards = document.querySelectorAll('.sera-cyber-card');
-    const cardDone = cards[0];
-    const cardNotDone = cards[1];
-    const cardNeeds = cards[2];
-    const donut = document.getElementById('statusDonut');
+  // مراقبة الأرقام لمنع تصفيرها وحفظ الإجمالي دائماً
+  var observer = new MutationObserver(function() {
+    var totalEl = document.getElementById("total");
+    var doneEl = document.getElementById("done");
+    var notEl = document.getElementById("notdone");
+    var needEl = document.getElementById("needs");
 
-    if (window.currentQuickFilter === status) {
-      window.currentQuickFilter = null;
-      if (cardDone) cardDone.classList.remove('active-green');
-      if (cardNotDone) cardNotDone.classList.remove('active-red');
-      if (cardNeeds) cardNeeds.classList.remove('active-amber');
-      if (donut) donut.style.filter = '';
+    if (!totalEl || !doneEl || !notEl || !needEl) return;
 
-      const quickEl = document.getElementById('quick');
-      if (quickEl) quickEl.value = '';
-      const statusEl = document.getElementById('status');
-      if (statusEl) statusEl.value = '';
-      if (typeof render === 'function') render();
-      return;
+    var currentTotal = parseInt(totalEl.textContent) || 0;
+
+    if (!cachedTotals && currentTotal > 0) {
+      cachedTotals = {
+        total: totalEl.textContent,
+        done: doneEl.textContent,
+        notdone: notEl.textContent,
+        needs: needEl.textContent
+      };
     }
 
-    window.currentQuickFilter = status;
-    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
-    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
-    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
-
-    if (donut) {
-      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
-      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
-      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+    if (cachedTotals && isFiltering) {
+      if (totalEl.textContent !== cachedTotals.total) totalEl.textContent = cachedTotals.total;
+      if (doneEl.textContent !== cachedTotals.done) doneEl.textContent = cachedTotals.done;
+      if (notEl.textContent !== cachedTotals.notdone) notEl.textContent = cachedTotals.notdone;
+      if (needEl.textContent !== cachedTotals.needs) needEl.textContent = cachedTotals.needs;
     }
+  });
 
-    if (typeof origFilter === 'function') {
-      origFilter(status);
-    } else {
-      const quickEl = document.getElementById('quick');
-      if (quickEl) {
-        if (status === 'منجزة') quickEl.value = 'done';
-        else if (status === 'غير منجزة') quickEl.value = 'notdone';
-        else quickEl.value = '';
+  var dashboardEl = document.getElementById("seraCyberDashboard");
+  if (dashboardEl) {
+    observer.observe(dashboardEl, { childList: true, subtree: true, characterData: true });
+  }
+
+  // تفعيل التوهج اللوني عند النقر على أي بطاقة
+  var cards = document.querySelectorAll(".sera-cyber-card");
+  var classes = ["active-green", "active-red", "active-amber"];
+  var donutColors = ["rgba(0, 230, 153, 0.75)", "rgba(255, 46, 91, 0.75)", "rgba(245, 158, 11, 0.75)"];
+
+  cards.forEach(function(card, idx) {
+    card.addEventListener("click", function() {
+      var alreadyActive = card.classList.contains(classes[idx]);
+
+      cards.forEach(function(c, i) { c.classList.remove(classes[i]); });
+      var donut = document.getElementById("statusDonut");
+
+      if (alreadyActive) {
+        isFiltering = false;
+        if (donut) donut.style.filter = "";
+      } else {
+        isFiltering = true;
+        card.classList.add(classes[idx]);
+        if (donut) donut.style.filter = "drop-shadow(0 0 25px " + donutColors[idx] + ")";
       }
-      const statusEl = document.getElementById('status');
-      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
-      if (typeof render === 'function') render();
-    }
-  };
-})();
-
-
-window.currentQuickFilter = null;
-window.filterByQuickStatus = function(status) {
-  const cards = document.querySelectorAll('.sera-cyber-card');
-  const cardDone = cards[0];
-  const cardNotDone = cards[1];
-  const cardNeeds = cards[2];
-  const donut = document.getElementById('statusDonut');
-
-  if (window.currentQuickFilter === status) {
-    window.currentQuickFilter = null;
-    if (cardDone) cardDone.classList.remove('active-green');
-    if (cardNotDone) cardNotDone.classList.remove('active-red');
-    if (cardNeeds) cardNeeds.classList.remove('active-amber');
-    if (donut) donut.style.filter = '';
-
-    const quickEl = document.getElementById('quick');
-    if (quickEl) quickEl.value = '';
-    const statusEl = document.getElementById('status');
-    if (statusEl) statusEl.value = '';
-    if (typeof render === 'function') render();
-    return;
-  }
-
-  window.currentQuickFilter = status;
-  if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
-  if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
-  if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
-
-  if (donut) {
-    if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
-    else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
-    else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
-  }
-
-  const quickEl = document.getElementById('quick');
-  if (quickEl) {
-    if (status === 'منجزة') quickEl.value = 'done';
-    else if (status === 'غير منجزة') quickEl.value = 'notdone';
-    else quickEl.value = '';
-  }
-  const statusEl = document.getElementById('status');
-  if (statusEl) {
-    if (status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
-    else statusEl.value = '';
-  }
-  if (typeof render === 'function') render();
-};
-
+    });
+  });
+});
 </script>
-
-</body></html>
