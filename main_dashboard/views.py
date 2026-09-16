@@ -287,15 +287,12 @@ def _ar(text):
     except Exception:
         return str(text)
 
+from django.views.decorators.clickjacking import xframe_options_sameorigin
+
 @xframe_options_sameorigin
-
 def export_violation_official_pdf(request, pk):
-    import os
-    import io
-    import pymupdf as fitz
-    import arabic_reshaper
+    import os, io, pymupdf as fitz, arabic_reshaper
     from bidi.algorithm import get_display
-
     from django.http import HttpResponse, Http404
     from django.conf import settings
     from .models import Violation
@@ -329,15 +326,7 @@ def export_violation_official_pdf(request, pk):
     def write_box(page, rect, text, fontsize=9.5, align=fitz.TEXT_ALIGN_CENTER, color=(0,0,0)):
         if not text:
             return
-        page.insert_textbox(
-            rect,
-            _ar(text),
-            fontsize=fontsize,
-            fontname="amiri",
-            fontfile=font_path,
-            color=color,
-            align=align
-        )
+        page.insert_textbox(rect, _ar(text), fontsize=fontsize, fontname="amiri", fontfile=font_path, color=color, align=align)
 
     # Page 1
     page1 = doc.new_page(width=A4_RECT.width, height=A4_RECT.height)
@@ -401,3 +390,4 @@ def export_violation_official_pdf(request, pk):
     response = HttpResponse(pdf_bytes, content_type='application/pdf')
     response['Content-Disposition'] = f'inline; filename="sera_report_{violation.violation_number or pk}.pdf"'
     return response
+
