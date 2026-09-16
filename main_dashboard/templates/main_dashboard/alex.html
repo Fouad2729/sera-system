@@ -2099,9 +2099,20 @@ body:not(.dark) .sera-orb-rail {
       <div class="minutes-form">
 
         <!-- الصفحة الأولى -->
-        <div class="minutes-field">
+                <div class="minutes-field">
           <label>رقم المحضر</label>
-          <input id="m_reportNo" placeholder="أدخل رقم المحضر">
+          <div class="num-mask" id="m_reportNo_mask" style="display: flex; align-items: center; justify-content: center; gap: 8px; direction: ltr; padding: 8px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px;">
+            <span style="color: #94a3b8; font-size: 1.3rem; font-weight: bold;">(</span>
+            <input class="num-seg m-report-seg" data-seg="0" maxlength="2" inputmode="numeric" style="width: 48px; height: 42px; text-align: center; font-size: 1.15rem; font-weight: bold; background: #0b1412; border: 1px solid #1f302b; border-radius: 8px; color: #fff;">
+            <span style="color: #94a3b8; font-size: 1.2rem;">/</span>
+            <input class="num-seg m-report-seg" data-seg="1" maxlength="2" inputmode="numeric" value="12" style="width: 48px; height: 42px; text-align: center; font-size: 1.15rem; font-weight: bold; background: #0b1412; border: 1px solid #1f302b; border-radius: 8px; color: #fff;">
+            <span style="color: #94a3b8; font-size: 1.2rem;">/</span>
+            <input class="num-seg m-report-seg" data-seg="2" maxlength="2" inputmode="numeric" value="01" style="width: 48px; height: 42px; text-align: center; font-size: 1.15rem; font-weight: bold; background: #0b1412; border: 1px solid #1f302b; border-radius: 8px; color: #fff;">
+            <span style="color: #94a3b8; font-size: 1.2rem;">/</span>
+            <input class="num-seg m-report-seg" data-seg="3" maxlength="2" inputmode="numeric" value="26" style="width: 48px; height: 42px; text-align: center; font-size: 1.15rem; font-weight: bold; background: #0b1412; border: 1px solid #1f302b; border-radius: 8px; color: #fff;">
+            <span style="color: #94a3b8; font-size: 1.3rem; font-weight: bold;">)</span>
+          </div>
+          <input type="hidden" id="m_reportNo" class="numHidden" value="(26/01/12/16)">
         </div>
 
         <div class="minutes-field">
@@ -4463,7 +4474,36 @@ const MINUTES_KEY = 'sera_minutes_v2';
 const MINUTE_FIELDS = ['reportNo','name','unified','type','location','datetime','occurrence','basis','facts','description','damage','documents','requests','defense','inspector','signature','signatureImage'];
 let minutesSignatureImage='';
 function minutesGet(id){const el=document.getElementById('m_'+id);return el?el.value:'';}
-function minutesSet(id,val){const el=document.getElementById('m_'+id);if(el)el.value=val??'';}
+
+function syncReportNoSegments(val) {
+  if (!val) val = "";
+  var raw = String(val).replace(/[()]/g, "").trim();
+  var parts = raw.split("/");
+  var segs = document.querySelectorAll(".m-report-seg");
+  if (segs.length >= 4) {
+    segs[0].value = parts[0] || "";
+    segs[1].value = parts[1] || "12";
+    segs[2].value = parts[2] || "01";
+    segs[3].value = parts[3] || "26";
+  }
+}
+
+document.addEventListener("input", function(e) {
+  if (e.target.classList && e.target.classList.contains("m-report-seg")) {
+    var segs = Array.from(document.querySelectorAll(".m-report-seg")).map(function(s) {
+      return s.value.replace(/[^0-9]/g, "");
+    });
+    var hidden = document.getElementById("m_reportNo");
+    if (hidden) {
+      hidden.value = "(" + segs.join("/") + ")";
+      if (typeof renderMinutesPreview === "function") {
+        renderMinutesPreview();
+      }
+    }
+  }
+});
+
+function minutesSet(id,val){const el=document.getElementById('m_'+id);if(el)el.value=val??'';if(id==='reportNo')syncReportNoSegments(val);}
 function openMinutesEditor(){
  const modal=document.getElementById('minutesModal'); if(!modal)return alert('تعذر فتح محرر المحضر.');
  modal.classList.add('show'); modal.setAttribute('aria-hidden','false');
@@ -4471,7 +4511,7 @@ function openMinutesEditor(){
  if(raw){try{const obj=JSON.parse(raw);MINUTE_FIELDS.forEach(k=>minutesSet(k,obj[k]));}catch(e){}}
  else newMinutes();
  renderMinutesPreview();
-
+ syncReportNoSegments(document.getElementById('m_reportNo') ? document.getElementById('m_reportNo').value : '');
  setTimeout(()=>{
    setupMinutesSignature();
  },100);
