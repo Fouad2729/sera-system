@@ -288,6 +288,7 @@ def _ar(text):
         return str(text)
 
 @xframe_options_sameorigin
+
 def export_violation_official_pdf(request, pk):
     import os
     import io
@@ -304,14 +305,9 @@ def export_violation_official_pdf(request, pk):
     except Violation.DoesNotExist:
         raise Http404("المخالفة غير موجودة")
 
-    # مسارات الصور المعتمدة كخلفية ثابتة للقالب
     p1_img = os.path.join(settings.BASE_DIR, 'main_dashboard', 'reports', 'page_1.png')
     p2_img = os.path.join(settings.BASE_DIR, 'main_dashboard', 'reports', 'page_2.png')
-    if not os.path.exists(p1_img):
-        p1_img = os.path.join(settings.BASE_DIR, 'assets', 'images', 'page_1.png')
-        p2_img = os.path.join(settings.BASE_DIR, 'assets', 'images', 'page_2.png')
 
-    # مسار الخط العربي
     font_paths = [
         os.path.join(settings.BASE_DIR, 'main_dashboard', 'static', 'main_dashboard', 'fonts', 'Amiri-Regular.ttf'),
         os.path.join(settings.BASE_DIR, 'assets', 'fonts', 'Amiri-Regular.ttf'),
@@ -319,7 +315,6 @@ def export_violation_official_pdf(request, pk):
     ]
     font_path = next((f for f in font_paths if os.path.exists(f)), None)
 
-    # إنشاء ملف PDF رأسي أصلي A4 Portrait
     doc = fitz.open()
     A4_RECT = fitz.Rect(0, 0, 595.28, 841.89)
 
@@ -344,18 +339,16 @@ def export_violation_official_pdf(request, pk):
             align=align
         )
 
-    # ==================== الصفحة الأولى (Page 1) ====================
+    # Page 1
     page1 = doc.new_page(width=A4_RECT.width, height=A4_RECT.height)
     if os.path.exists(p1_img):
         page1.insert_image(A4_RECT, filename=p1_img)
     if font_path:
         page1.insert_font(fontname="amiri", fontfile=font_path)
 
-    # رقم المخالفة في الأعلى
     if getattr(violation, 'violation_number', None):
         write_box(page1, fitz.Rect(210, 202, 385, 218), f"({violation.violation_number})", fontsize=10)
 
-    # جدول بيانات المخالفة في الفراغات المخصصة فقط
     write_box(page1, fitz.Rect(248, 222, 384, 256), getattr(violation, 'attributed_person', '') or "", fontsize=9)
     write_box(page1, fitz.Rect(46, 222, 140, 256), str(getattr(violation, 'unified_number', '') or ""), fontsize=9.5)
     write_box(page1, fitz.Rect(248, 264, 384, 300), getattr(violation, 'violation_type', '') or "", fontsize=8.5)
@@ -363,49 +356,41 @@ def export_violation_official_pdf(request, pk):
     write_box(page1, fitz.Rect(248, 308, 384, 344), getattr(violation, 'report_date', '') or "", fontsize=8.5)
     write_box(page1, fitz.Rect(46, 308, 140, 344), str(getattr(violation, 'incident_date', '') or ""), fontsize=8.5)
 
-    # أولاً: السند النظامي
     regulation = getattr(violation, 'regulation', '') or getattr(violation, 'regulation_basis', '') or ""
     if regulation:
         write_box(page1, fitz.Rect(46, 395, 550, 560), regulation, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # ثانياً: وقائع المخالفة
     facts = getattr(violation, 'facts', '') or getattr(violation, 'transaction_status', '') or ""
     if facts:
         write_box(page1, fitz.Rect(46, 715, 550, 810), facts, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # ==================== الصفحة الثانية (Page 2) ====================
+    # Page 2
     page2 = doc.new_page(width=A4_RECT.width, height=A4_RECT.height)
     if os.path.exists(p2_img):
         page2.insert_image(A4_RECT, filename=p2_img)
     if font_path:
         page2.insert_font(fontname="amiri", fontfile=font_path)
 
-    # ب. الوصف التفصيلي للمخالفة
     details = getattr(violation, 'details', '') or getattr(violation, 'description', '') or ""
     if details:
         write_box(page2, fitz.Rect(46, 215, 550, 335), details, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # ج. الأضرار الناتجة
     damages = getattr(violation, 'damages', '') or getattr(violation, 'damage', '') or ""
     if damages:
         write_box(page2, fitz.Rect(46, 385, 550, 445), damages, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # ثالثاً: المستندات
     documents = getattr(violation, 'documents', '') or ""
     if documents:
         write_box(page2, fitz.Rect(46, 485, 550, 555), documents, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # رابعاً: الطلبات
     requests = getattr(violation, 'requests', '') or ""
     if requests:
         write_box(page2, fitz.Rect(46, 595, 550, 645), requests, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # خامساً: الدفوع
     defense = getattr(violation, 'defense', '') or ""
     if defense:
         write_box(page2, fitz.Rect(46, 685, 550, 755), defense, fontsize=9, align=fitz.TEXT_ALIGN_RIGHT)
 
-    # اسم المفتش في خانته البيضاء المخصصة بالجدول السفلي
     inspector = getattr(violation, 'inspector_name', '') or getattr(violation, 'report_editor', '') or ""
     if inspector:
         write_box(page2, fitz.Rect(328, 775, 472, 815), inspector, fontsize=10)
