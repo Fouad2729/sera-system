@@ -1,3 +1,12 @@
+
+def clean_en_date(txt):
+    if not txt:
+        return ""
+    s = str(txt).strip().replace("،", " ").replace("م", "PM").replace("ص", "AM")
+    import re
+    s = re.sub(r'\s+', ' ', s)
+    return s
+
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.shortcuts import get_object_or_404, render
 from django.db import connection
@@ -342,7 +351,7 @@ def export_violation_official_pdf(request, pk):
     write_box(page1, fitz.Rect(46, 222, 140, 256), str(getattr(violation, 'unified_number', '') or ""), fontsize=9.5)
     write_box(page1, fitz.Rect(248, 264, 384, 300), getattr(violation, 'violation_type', '') or "", fontsize=8.5)
     write_box(page1, fitz.Rect(46, 264, 140, 300), getattr(violation, 'violation_location', '') or "", fontsize=8.5)
-    write_box(page1, fitz.Rect(248, 308, 384, 344), getattr(violation, 'report_date', '') or "", fontsize=8.5)
+    write_box(page1, fitz.Rect(248, 308, 384, 344), clean_en_date(getattr(violation, "report_date", "") or ""), fontsize=8.5)
     write_box(page1, fitz.Rect(46, 308, 140, 344), str(getattr(violation, 'incident_date', '') or ""), fontsize=8.5)
 
     regulation = getattr(violation, 'regulation', '') or getattr(violation, 'regulation_basis', '') or ""
