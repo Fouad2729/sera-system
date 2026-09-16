@@ -2124,7 +2124,13 @@ body:not(.dark) .sera-orb-rail {
           <textarea id="m_location" class="minutes-multiline" rows="3"></textarea>
         </div>
 
-        <div class="minutes-field">
+        
+        <div style="margin-bottom: 14px; text-align: right;">
+          <button type="button" onclick="fillTestReportData()" style="background: #f59e0b; color: #111827; border: none; padding: 8px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);">
+            ⚡ تعبئة بيانات تجريبية للمحضر
+          </button>
+        </div>
+<div class="minutes-field">
           <label>يوم وتاريخ ووقت تحرير المحضر</label>
           <input id="m_datetime" style="direction:ltr; text-align:center; font-family:monospace, sans-serif; font-size:13px;">
         </div>
@@ -5817,3 +5823,48 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+
+
+<script id="sera-test-fill-script">
+function fillTestReportData() {
+  var now = new Date();
+  var dateStr = typeof formatEnglishDateTime === "function" ? formatEnglishDateTime(now) : now.toISOString().slice(0, 19).replace('T', ' ');
+
+  var mock = {
+    datetime: dateStr,
+    occurrence: "15 اغسطس 2023 م",
+    reportNo: "258",
+    unifiedNo: "7036280696",
+    entity: "شركة أمالا المستدامة للطاقة (ASCE)",
+    name: "شركة أمالا المستدامة للطاقة (ASCE)",
+    type: "القيام بنشاط كهربائي دون الحصول على رخصة أو إعفاء (إنشاء محطة توليد)",
+    location: "شركة أمالا المستدامة للطاقة (ASCE) تبوك - الوجه",
+    basis: "1- الفقرة (2) من المادة (5) من نظام الكهرباء الصادر بالمرسوم الملكي ذي الرقم (م/44) والتاريخ 1442/05/16هـ.\n2- الفقرة (1) من المادة (17) من نظام الكهرباء المشار إليه أعلاه.\n3- الفقرة (6) من المادة (19) من نظام الكهرباء المشار إليه أعلاه.\n4- الفقرة (1) من المادة (6) من اللائحة التنفيذية لنظام الكهرباء الخاصة بمهام الهيئة الصادرة بقرار مجلس إدارة الهيئة ذي الرقم (43/02) والتاريخ 1443/04/13هـ.\n5- المادة (46) من اللائحة التنفيذية لنظام الكهرباء الخاصة بمهام الهيئة الصادرة بقرار مجلس إدارة الهيئة ذي الرقم (43/02) والتاريخ 1443/04/13هـ.",
+    facts: "ورد طلب من المنسوب له المخالفة بشأن الإفادة بمتطلبات التقدم للحصول على رخصة توليد الطاقة الكهربائية من قبل الهيئة وتبين خلال الزيارة بوجود محطة توليد يتم تشغيلها عن طريق مصدرين الأول الطاقة متجددة (بالألواح الشمسية) بسعة إجمالية 248 ميجاوات بتيار مستمر (DC) / 165.2 ميجاوات بتيار متردد (AC) والمصدر الثاني مولدات تعمل بالوقود الحيوي (Biofuel) بعدد 6 مولدات وبسعة إجمالية 52.4 ميجاوات، تم إنشاؤها لتغذية مشروع أمالا بالبحر الاحمر الواقع بمحافظة الوجه، دون الحصول على ترخيص أو إعفاء من الهيئة.",
+    details: "ثبت للمفتش بموجب تقرير الشخوص بتاريخ 16 أبريل 2026م، قيام المنسوب له المخالفة بإنشاء محطة توليد عبر الطاقة متجددة (بالألواح الشمسية) بسعة إجمالية 248 ميجاوات بتيار مستمر (DC) / 165.2 ميجاوات بتيار متردد (AC) وإنشاء مولدات تعمل بالوقود الحيوي (Biofuel) بعدد 6 مولدات وبسعة إجمالية 52.4 ميجاوات دون الحصول على ترخيص نظامي صادر من الهيئة.\nوتبين أن المحطة المشار إليها أعلاه تم إنشاؤها لتغذية موقعين مختلفين لمشروع أمالا وهي موقع قرية الموظفين وتبعد عن المحطة 12كم - وموقع تربل باي (Triple Bay) وتبعد عن المحطة 18كم.",
+    damages: "قد يترتب على هذه المخالفة مخاطر فنية وتشغيلية تتعلق بسلامة الشبكة الكهربائية، إضافة إلى الأضرار المادية والإخلال بمتطلبات التنظيم والرقابة.",
+    documents: "- تقرير رصد المخالفة.\n- السجل التجاري.\n- عقد الاتفاقية.\n- العرض المرئي من قبل المنسوب له المخالفة.",
+    requests: "- إكمال متطلبات استخراج التراخيص المتعلقة بنشاط التوليد.",
+    defense: "يجب تزويد الهيئة كتابة بما لديكم من دفوع مؤيدة بالأدلة حيال المخالفة الموضحة بياناتها أعلاه، وذلك خلال خمسة (5) أيام عمل من تاريخ هذا الإشعار، وسيتم إحالة هذه المخالفة إلى لجنة النظر والفصل في مخالفات أحكام نظام الكهرباء، بعد انتهاء المهلة المحددة للرد.",
+    inspector: "حمدان وصل الله الجهني",
+    inspector_name: "حمدان وصل الله الجهني",
+    editor: "حمدان وصل الله الجهني"
+  };
+
+  for (var k in mock) {
+    if (typeof minutesSet === "function") {
+      minutesSet(k, mock[k]);
+    }
+    var el = document.getElementById("m_" + k) || document.getElementById(k);
+    if (el) {
+      el.value = mock[k];
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      el.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+  }
+
+  if (typeof renderMinutesPreview === "function") {
+    renderMinutesPreview();
+  }
+}
+</script>
