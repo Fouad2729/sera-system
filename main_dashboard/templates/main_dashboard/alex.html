@@ -1887,6 +1887,45 @@ body:not(.dark) .sera-orb-rail {
 }
 </style>
 
+
+<style id="sera-glow-full-edges">
+#seraCyberDashboard {
+  transition: all 0.3s ease-in-out !important;
+}
+#seraCyberDashboard.glow-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 35px rgba(0, 230, 153, 0.4), inset 0 0 20px rgba(0, 230, 153, 0.08) !important;
+}
+#seraCyberDashboard.glow-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 35px rgba(255, 46, 91, 0.4), inset 0 0 20px rgba(255, 46, 91, 0.08) !important;
+}
+#seraCyberDashboard.glow-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.08) !important;
+}
+
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 2px solid #00e699 !important;
+  box-shadow: 0 0 30px rgba(0, 230, 153, 0.65), inset 0 0 18px rgba(0, 230, 153, 0.2), 0 0 10px #00e699 !important;
+  background: rgba(0, 230, 153, 0.12) !important;
+}
+.sera-cyber-card.active-red {
+  border: 2px solid #ff2e5b !important;
+  box-shadow: 0 0 30px rgba(255, 46, 91, 0.65), inset 0 0 18px rgba(255, 46, 91, 0.2), 0 0 10px #ff2e5b !important;
+  background: rgba(255, 46, 91, 0.12) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.65), inset 0 0 18px rgba(245, 158, 11, 0.2), 0 0 10px #f59e0b !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+}
+</style>
+
 </head>
 <body>
 <div class="login" id="loginScreen" style="visibility:hidden;">
@@ -1944,7 +1983,7 @@ body:not(.dark) .sera-orb-rail {
     <span id="needsDonut" style="display:none">0</span>
 
     <div id="seraCyberDashboard">
-      <div class="sera-cyber-badge">📊 DASHBOARD</div>
+      <div class="sera-cyber-badge">📊 SERA DASHBOARD</div>
 
       <!-- البطاقات الثلاث اليسرى -->
       <div class="sera-cyber-cards">
@@ -2396,8 +2435,13 @@ function updateStatusDonut(total,done,notdone,need){
 
   // تحديث أقواس النيون بنسبها الحقيقية المتناسقة
   if(arcGreen){
-    arcGreen.style.strokeDasharray = `${Math.max(0, doneLen - 3)} ${C}`;
-    arcGreen.style.strokeDashoffset = '0';
+    if(done <= 0 || window.currentSelectedStatus === 'غير منجزة' || window.currentSelectedStatus === 'تحتاج متابعة'){
+      arcGreen.style.display = 'none';
+    } else {
+      arcGreen.style.display = 'block';
+      arcGreen.style.strokeDasharray = `${Math.max(0, doneLen - 3)} ${C}`;
+      arcGreen.style.strokeDashoffset = '0';
+    }
   }
   if(arcAmber){
     arcAmber.style.strokeDasharray = `${Math.max(0, needLen - 3)} ${C}`;
@@ -4330,6 +4374,45 @@ function exportPDF(){
 
 </style>
 
+
+<style id="sera-glow-full-edges">
+#seraCyberDashboard {
+  transition: all 0.3s ease-in-out !important;
+}
+#seraCyberDashboard.glow-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 35px rgba(0, 230, 153, 0.4), inset 0 0 20px rgba(0, 230, 153, 0.08) !important;
+}
+#seraCyberDashboard.glow-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 35px rgba(255, 46, 91, 0.4), inset 0 0 20px rgba(255, 46, 91, 0.08) !important;
+}
+#seraCyberDashboard.glow-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.08) !important;
+}
+
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 2px solid #00e699 !important;
+  box-shadow: 0 0 30px rgba(0, 230, 153, 0.65), inset 0 0 18px rgba(0, 230, 153, 0.2), 0 0 10px #00e699 !important;
+  background: rgba(0, 230, 153, 0.12) !important;
+}
+.sera-cyber-card.active-red {
+  border: 2px solid #ff2e5b !important;
+  box-shadow: 0 0 30px rgba(255, 46, 91, 0.65), inset 0 0 18px rgba(255, 46, 91, 0.2), 0 0 10px #ff2e5b !important;
+  background: rgba(255, 46, 91, 0.12) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.65), inset 0 0 18px rgba(245, 158, 11, 0.2), 0 0 10px #f59e0b !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+}
+</style>
+
 </head>
 
     <body>
@@ -4939,6 +5022,45 @@ async function printMinutes(){
     line-height:1.45;
   }
 </style>
+
+<style id="sera-glow-full-edges">
+#seraCyberDashboard {
+  transition: all 0.3s ease-in-out !important;
+}
+#seraCyberDashboard.glow-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 35px rgba(0, 230, 153, 0.4), inset 0 0 20px rgba(0, 230, 153, 0.08) !important;
+}
+#seraCyberDashboard.glow-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 35px rgba(255, 46, 91, 0.4), inset 0 0 20px rgba(255, 46, 91, 0.08) !important;
+}
+#seraCyberDashboard.glow-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.4), inset 0 0 20px rgba(245, 158, 11, 0.08) !important;
+}
+
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 2px solid #00e699 !important;
+  box-shadow: 0 0 30px rgba(0, 230, 153, 0.65), inset 0 0 18px rgba(0, 230, 153, 0.2), 0 0 10px #00e699 !important;
+  background: rgba(0, 230, 153, 0.12) !important;
+}
+.sera-cyber-card.active-red {
+  border: 2px solid #ff2e5b !important;
+  box-shadow: 0 0 30px rgba(255, 46, 91, 0.65), inset 0 0 18px rgba(255, 46, 91, 0.2), 0 0 10px #ff2e5b !important;
+  background: rgba(255, 46, 91, 0.12) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 2px solid #f59e0b !important;
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.65), inset 0 0 18px rgba(245, 158, 11, 0.2), 0 0 10px #f59e0b !important;
+  background: rgba(245, 158, 11, 0.12) !important;
+}
+</style>
+
 </head>
 <body>
   <div id="pages">
@@ -5578,6 +5700,127 @@ document.addEventListener("DOMContentLoaded", function() {
         isFiltering = true;
         card.classList.add(classes[idx]);
         if (donut) donut.style.filter = "drop-shadow(0 0 25px " + donutColors[idx] + ")";
+      }
+    });
+  });
+});
+</script>
+
+
+<script id="sera-exclusive-glow-script">
+document.addEventListener("DOMContentLoaded", function() {
+  window.currentSelectedStatus = null;
+
+  var cards = document.querySelectorAll(".sera-cyber-card");
+  var dashboard = document.getElementById("seraCyberDashboard");
+  var donut = document.getElementById("statusDonut");
+  var slider = document.getElementById("seraSliderBar");
+
+  var arcRed = document.getElementById("seraArcRed");
+  var arcGreen = document.getElementById("seraArcGreen");
+  var arcAmber = document.getElementById("seraArcAmber");
+
+  var C = 2 * Math.PI * 76; // ~477.5
+
+  function applyDonutColor(status) {
+    if (!status) {
+      if (donut) donut.style.filter = "";
+      if (dashboard) {
+        dashboard.classList.remove("glow-green", "glow-red", "glow-amber");
+      }
+      if (slider) {
+        slider.style.background = "";
+        slider.style.boxShadow = "";
+      }
+      if (arcGreen) arcGreen.style.display = "";
+      if (arcRed) arcRed.style.display = "";
+      if (arcAmber) arcAmber.style.display = "";
+      if (typeof updateStatusDonut === "function") {
+        var tot = parseInt(document.getElementById("total").textContent) || 0;
+        var d = parseInt(document.getElementById("done").textContent) || 0;
+        var n = parseInt(document.getElementById("notdone").textContent) || 0;
+        var nd = parseInt(document.getElementById("needs").textContent) || 0;
+        updateStatusDonut(tot, d, n, nd);
+      }
+      return;
+    }
+
+    if (status === "منجزة") {
+      if (dashboard) {
+        dashboard.classList.remove("glow-red", "glow-amber");
+        dashboard.classList.add("glow-green");
+      }
+      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(0, 230, 153, 0.95))";
+      if (slider) {
+        slider.style.background = "#00e699";
+        slider.style.boxShadow = "0 0 15px #00e699";
+      }
+      if (arcGreen) {
+        arcGreen.style.display = "block";
+        arcGreen.style.stroke = "#00e699";
+        arcGreen.style.strokeDasharray = C + " " + C;
+        arcGreen.style.strokeDashoffset = "0";
+      }
+      if (arcRed) arcRed.style.display = "none";
+      if (arcAmber) arcAmber.style.display = "none";
+    } 
+    else if (status === "غير منجزة") {
+      if (dashboard) {
+        dashboard.classList.remove("glow-green", "glow-amber");
+        dashboard.classList.add("glow-red");
+      }
+      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(255, 46, 91, 0.95))";
+      if (slider) {
+        slider.style.background = "#ff2e5b";
+        slider.style.boxShadow = "0 0 15px #ff2e5b";
+      }
+      if (arcRed) {
+        arcRed.style.display = "block";
+        arcRed.style.stroke = "#ff2e5b";
+        arcRed.style.strokeDasharray = C + " " + C;
+        arcRed.style.strokeDashoffset = "0";
+      }
+      if (arcGreen) arcGreen.style.display = "none";
+      if (arcAmber) arcAmber.style.display = "none";
+    } 
+    else if (status === "تحتاج متابعة") {
+      if (dashboard) {
+        dashboard.classList.remove("glow-green", "glow-red");
+        dashboard.classList.add("glow-amber");
+      }
+      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(245, 158, 11, 0.95))";
+      if (slider) {
+        slider.style.background = "#f59e0b";
+        slider.style.boxShadow = "0 0 15px #f59e0b";
+      }
+      if (arcAmber) {
+        arcAmber.style.display = "block";
+        arcAmber.style.stroke = "#f59e0b";
+        arcAmber.style.strokeDasharray = C + " " + C;
+        arcAmber.style.strokeDashoffset = "0";
+      }
+      if (arcGreen) arcGreen.style.display = "none";
+      if (arcRed) arcRed.style.display = "none";
+    }
+  }
+
+  var statuses = ["منجزة", "غير منجزة", "تحتاج متابعة"];
+  var classes = ["active-green", "active-red", "active-amber"];
+
+  cards.forEach(function(card, idx) {
+    card.addEventListener("click", function() {
+      var status = statuses[idx];
+      var isAlready = (window.currentSelectedStatus === status);
+
+      cards.forEach(function(c, i) { c.classList.remove(classes[i]); });
+
+      if (isAlready) {
+        window.currentSelectedStatus = null;
+        applyDonutColor(null);
+      } else {
+        window.currentSelectedStatus = status;
+        card.classList.add(classes[idx]);
+        applyDonutColor(status);
       }
     });
   });
