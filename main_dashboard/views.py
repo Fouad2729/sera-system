@@ -345,7 +345,7 @@ def export_violation_official_pdf(request, pk):
         page1.insert_font(fontname="amiri", fontfile=font_path)
 
     if getattr(violation, 'violation_number', None):
-        write_box(page1, fitz.Rect(210, 202, 385, 218), f"({violation.violation_number})", fontsize=10)
+        write_box(page1, fitz.Rect(210, 186, 385, 204), f"({violation.violation_number})", fontsize=10)
 
     write_box(page1, fitz.Rect(248, 222, 384, 256), getattr(violation, 'attributed_person', '') or "", fontsize=9)
     write_box(page1, fitz.Rect(46, 222, 140, 256), str(getattr(violation, 'unified_number', '') or ""), fontsize=9.5)
