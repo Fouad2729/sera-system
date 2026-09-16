@@ -486,6 +486,28 @@ body.dark .minutes-preview{
   pointer-events:auto;
 }
 
+
+/* أنماط التوهج الكامل لبطاقات الإحصائيات والدائرة */
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.28s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 25px rgba(0, 230, 153, 0.45), inset 0 0 15px rgba(0, 230, 153, 0.12) !important;
+  background: rgba(0, 230, 153, 0.08) !important;
+}
+.sera-cyber-card.active-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 25px rgba(255, 46, 91, 0.45), inset 0 0 15px rgba(255, 46, 91, 0.12) !important;
+  background: rgba(255, 46, 91, 0.08) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.12) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+
 </style>
 
 
@@ -1955,10 +1977,8 @@ body:not(.dark) .sera-orb-rail {
           <div class="sera-card-label">منجزة</div>
           <div class="sera-card-icon">
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <circle cx="17" cy="17" r="14" stroke="#00e699" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="3 3"/>
-              <circle cx="17" cy="17" r="9.5" stroke="#00e699" stroke-width="1.5" stroke-opacity="0.65"/>
-              <circle cx="17" cy="17" r="5" stroke="#00e699" stroke-width="2"/>
-              <circle cx="17" cy="17" r="2.5" fill="#00e699" filter="drop-shadow(0 0 4px #00e699)"/>
+              <circle cx="17" cy="17" r="13" stroke="#00e699" stroke-width="1.8" stroke-linecap="round" filter="drop-shadow(0 0 4px #00e699)"/>
+              <polyline points="12 17 15 20 22 13" stroke="#00e699" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 3px #00e699)"/>
             </svg>
           </div>
         </div>
@@ -1985,8 +2005,10 @@ body:not(.dark) .sera-orb-rail {
           <div class="sera-card-label">تحتاج متابعة</div>
           <div class="sera-card-icon">
             <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <circle cx="17" cy="17" r="13" stroke="#f59e0b" stroke-width="1.8" stroke-dasharray="60 25" stroke-linecap="round" filter="drop-shadow(0 0 4px #f59e0b)"/>
-              <polyline points="12 17 15 20 22 13" stroke="#f59e0b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 3px #f59e0b)"/>
+              <circle cx="17" cy="17" r="14" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.35" stroke-dasharray="3 3"/>
+              <circle cx="17" cy="17" r="9.5" stroke="#f59e0b" stroke-width="1.5" stroke-opacity="0.65"/>
+              <circle cx="17" cy="17" r="5" stroke="#f59e0b" stroke-width="2"/>
+              <circle cx="17" cy="17" r="2.5" fill="#f59e0b" filter="drop-shadow(0 0 4px #f59e0b)"/>
             </svg>
           </div>
         </div>
@@ -2348,8 +2370,11 @@ function updateStats(passedData){
 
 
   const done=data.filter(isDone).length,
-        not=data.filter(isNotDone).length,
-        need=data.length-done-not;
+  const baseRows = (typeof rows !== 'undefined' && Array.isArray(rows) && rows.length > 0) ? rows : data;
+  const done = baseRows.filter(isDone).length,
+        not = baseRows.filter(isNotDone).length,
+        need = baseRows.length - done - not;
+
 
   document.getElementById('total').textContent=data.length.toLocaleString('en-US');
   document.getElementById('done').textContent=done.toLocaleString('en-US');
@@ -3201,6 +3226,62 @@ html,
 
 <script>
 
+
+
+<script>
+(function(){
+  window.currentQuickFilter = null;
+  const origFilter = window.filterByQuickStatus;
+
+  window.filterByQuickStatus = function(status) {
+    const cards = document.querySelectorAll('.sera-cyber-card');
+    const cardDone = cards[0];
+    const cardNotDone = cards[1];
+    const cardNeeds = cards[2];
+    const donut = document.getElementById('statusDonut');
+
+    if (window.currentQuickFilter === status) {
+      window.currentQuickFilter = null;
+      if (cardDone) cardDone.classList.remove('active-green');
+      if (cardNotDone) cardNotDone.classList.remove('active-red');
+      if (cardNeeds) cardNeeds.classList.remove('active-amber');
+      if (donut) donut.style.filter = '';
+
+      const quickEl = document.getElementById('quick');
+      if (quickEl) quickEl.value = '';
+      const statusEl = document.getElementById('status');
+      if (statusEl) statusEl.value = '';
+      if (typeof render === 'function') render();
+      return;
+    }
+
+    window.currentQuickFilter = status;
+    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
+    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
+    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
+
+    if (donut) {
+      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
+      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
+      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+    }
+
+    if (typeof origFilter === 'function') {
+      origFilter(status);
+    } else {
+      const quickEl = document.getElementById('quick');
+      if (quickEl) {
+        if (status === 'منجزة') quickEl.value = 'done';
+        else if (status === 'غير منجزة') quickEl.value = 'notdone';
+        else quickEl.value = '';
+      }
+      const statusEl = document.getElementById('status');
+      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
+      if (typeof render === 'function') render();
+    }
+  };
+})();
+</script>
 
 </body>
 </html>
@@ -4353,7 +4434,63 @@ function exportPDF(){
           ${rowsHTML}
         </tbody>
       </table>
-    </body>
+    
+<script>
+(function(){
+  window.currentQuickFilter = null;
+  const origFilter = window.filterByQuickStatus;
+
+  window.filterByQuickStatus = function(status) {
+    const cards = document.querySelectorAll('.sera-cyber-card');
+    const cardDone = cards[0];
+    const cardNotDone = cards[1];
+    const cardNeeds = cards[2];
+    const donut = document.getElementById('statusDonut');
+
+    if (window.currentQuickFilter === status) {
+      window.currentQuickFilter = null;
+      if (cardDone) cardDone.classList.remove('active-green');
+      if (cardNotDone) cardNotDone.classList.remove('active-red');
+      if (cardNeeds) cardNeeds.classList.remove('active-amber');
+      if (donut) donut.style.filter = '';
+
+      const quickEl = document.getElementById('quick');
+      if (quickEl) quickEl.value = '';
+      const statusEl = document.getElementById('status');
+      if (statusEl) statusEl.value = '';
+      if (typeof render === 'function') render();
+      return;
+    }
+
+    window.currentQuickFilter = status;
+    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
+    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
+    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
+
+    if (donut) {
+      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
+      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
+      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+    }
+
+    if (typeof origFilter === 'function') {
+      origFilter(status);
+    } else {
+      const quickEl = document.getElementById('quick');
+      if (quickEl) {
+        if (status === 'منجزة') quickEl.value = 'done';
+        else if (status === 'غير منجزة') quickEl.value = 'notdone';
+        else quickEl.value = '';
+      }
+      const statusEl = document.getElementById('status');
+      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
+      if (typeof render === 'function') render();
+    }
+  };
+})();
+</script>
+
+</body>
     </html>
   `;
 
@@ -4967,6 +5104,62 @@ async function printMinutes(){
     setTimeout(() => window.close(), 500);
   });
   <`+`/script>
+
+<script>
+(function(){
+  window.currentQuickFilter = null;
+  const origFilter = window.filterByQuickStatus;
+
+  window.filterByQuickStatus = function(status) {
+    const cards = document.querySelectorAll('.sera-cyber-card');
+    const cardDone = cards[0];
+    const cardNotDone = cards[1];
+    const cardNeeds = cards[2];
+    const donut = document.getElementById('statusDonut');
+
+    if (window.currentQuickFilter === status) {
+      window.currentQuickFilter = null;
+      if (cardDone) cardDone.classList.remove('active-green');
+      if (cardNotDone) cardNotDone.classList.remove('active-red');
+      if (cardNeeds) cardNeeds.classList.remove('active-amber');
+      if (donut) donut.style.filter = '';
+
+      const quickEl = document.getElementById('quick');
+      if (quickEl) quickEl.value = '';
+      const statusEl = document.getElementById('status');
+      if (statusEl) statusEl.value = '';
+      if (typeof render === 'function') render();
+      return;
+    }
+
+    window.currentQuickFilter = status;
+    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
+    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
+    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
+
+    if (donut) {
+      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
+      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
+      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+    }
+
+    if (typeof origFilter === 'function') {
+      origFilter(status);
+    } else {
+      const quickEl = document.getElementById('quick');
+      if (quickEl) {
+        if (status === 'منجزة') quickEl.value = 'done';
+        else if (status === 'غير منجزة') quickEl.value = 'notdone';
+        else quickEl.value = '';
+      }
+      const statusEl = document.getElementById('status');
+      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
+      if (typeof render === 'function') render();
+    }
+  };
+})();
+</script>
+
 </body>
 </html>`);
   printWindow.document.close();
@@ -5494,6 +5687,62 @@ init();
 
   // نبض صامت خفيف كل 3.5 ثوانٍ
   setInterval(checkLiveSync, 3500);
+})();
+</script>
+
+
+<script>
+(function(){
+  window.currentQuickFilter = null;
+  const origFilter = window.filterByQuickStatus;
+
+  window.filterByQuickStatus = function(status) {
+    const cards = document.querySelectorAll('.sera-cyber-card');
+    const cardDone = cards[0];
+    const cardNotDone = cards[1];
+    const cardNeeds = cards[2];
+    const donut = document.getElementById('statusDonut');
+
+    if (window.currentQuickFilter === status) {
+      window.currentQuickFilter = null;
+      if (cardDone) cardDone.classList.remove('active-green');
+      if (cardNotDone) cardNotDone.classList.remove('active-red');
+      if (cardNeeds) cardNeeds.classList.remove('active-amber');
+      if (donut) donut.style.filter = '';
+
+      const quickEl = document.getElementById('quick');
+      if (quickEl) quickEl.value = '';
+      const statusEl = document.getElementById('status');
+      if (statusEl) statusEl.value = '';
+      if (typeof render === 'function') render();
+      return;
+    }
+
+    window.currentQuickFilter = status;
+    if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
+    if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
+    if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
+
+    if (donut) {
+      if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
+      else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
+      else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+    }
+
+    if (typeof origFilter === 'function') {
+      origFilter(status);
+    } else {
+      const quickEl = document.getElementById('quick');
+      if (quickEl) {
+        if (status === 'منجزة') quickEl.value = 'done';
+        else if (status === 'غير منجزة') quickEl.value = 'notdone';
+        else quickEl.value = '';
+      }
+      const statusEl = document.getElementById('status');
+      if (statusEl && status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
+      if (typeof render === 'function') render();
+    }
+  };
 })();
 </script>
 
