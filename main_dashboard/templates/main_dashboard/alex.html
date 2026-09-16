@@ -5648,38 +5648,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var cachedTotals = null;
   var isFiltering = false;
 
-  // مراقبة الأرقام لمنع تصفيرها وحفظ الإجمالي دائماً
-  var observer = new MutationObserver(function() {
-    var totalEl = document.getElementById("total");
-    var doneEl = document.getElementById("done");
-    var notEl = document.getElementById("notdone");
-    var needEl = document.getElementById("needs");
-
-    if (!totalEl || !doneEl || !notEl || !needEl) return;
-
-    var currentTotal = parseInt(totalEl.textContent) || 0;
-
-    if (!cachedTotals && currentTotal > 0) {
-      cachedTotals = {
-        total: totalEl.textContent,
-        done: doneEl.textContent,
-        notdone: notEl.textContent,
-        needs: needEl.textContent
-      };
-    }
-
-    if (cachedTotals && isFiltering) {
-      if (totalEl.textContent !== cachedTotals.total) totalEl.textContent = cachedTotals.total;
-      if (doneEl.textContent !== cachedTotals.done) doneEl.textContent = cachedTotals.done;
-      if (notEl.textContent !== cachedTotals.notdone) notEl.textContent = cachedTotals.notdone;
-      if (needEl.textContent !== cachedTotals.needs) needEl.textContent = cachedTotals.needs;
-    }
-  });
-
-  var dashboardEl = document.getElementById("seraCyberDashboard");
-  if (dashboardEl) {
-    observer.observe(dashboardEl, { childList: true, subtree: true, characterData: true });
-  }
+  
 
   // تفعيل التوهج اللوني عند النقر على أي بطاقة
   var cards = document.querySelectorAll(".sera-cyber-card");
@@ -5708,11 +5677,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
-<script id="sera-exclusive-glow-script">
-document.addEventListener("DOMContentLoaded", function() {
-  window.currentSelectedStatus = null;
 
-  var cards = document.querySelectorAll(".sera-cyber-card");
+<script id="sera-exclusive-glow-script">
+window.currentSelectedStatus = null;
+
+function applyDonutColor(status) {
+  var allList = (typeof rows !== "undefined" && Array.isArray(rows)) ? rows : [];
+  var tot = allList.length;
+  var d = (typeof isDone === "function") ? allList.filter(isDone).length : 0;
+  var n = (typeof isNotDone === "function") ? allList.filter(isNotDone).length : 0;
+  var nd = tot - d - n;
+
+  var totalEl = document.getElementById("statusDonutTotal");
+  var sphereLabel = document.querySelector(".sera-glass-sphere span") || document.querySelector("#statusDonut span");
   var dashboard = document.getElementById("seraCyberDashboard");
   var donut = document.getElementById("statusDonut");
   var slider = document.getElementById("seraSliderBar");
@@ -5721,110 +5698,55 @@ document.addEventListener("DOMContentLoaded", function() {
   var arcGreen = document.getElementById("seraArcGreen");
   var arcAmber = document.getElementById("seraArcAmber");
 
-  var totalEl = document.getElementById("statusDonutTotal");
-  var sphereLabel = document.querySelector(".sera-glass-sphere span") || document.querySelector("#statusDonut span");
-
   var C = 2 * Math.PI * 76; // ~477.5
 
-  function applyDonutColor(status) {
-    if (!status) {
-      if (donut) donut.style.filter = "";
-      if (dashboard) {
-        dashboard.classList.remove("glow-green", "glow-red", "glow-amber");
-      }
-      if (slider) {
-        slider.style.background = "";
-        slider.style.boxShadow = "";
-      }
-      if (arcGreen) arcGreen.style.display = "";
-      if (arcRed) arcRed.style.display = "";
-      if (arcAmber) arcAmber.style.display = "";
+  if (!status) {
+    if (totalEl) totalEl.textContent = tot.toLocaleString("en-US");
+    if (sphereLabel) sphereLabel.textContent = "إجمالي";
+    if (donut) donut.style.filter = "";
+    if (dashboard) dashboard.classList.remove("glow-green", "glow-red", "glow-amber");
+    if (slider) { slider.style.background = ""; slider.style.boxShadow = ""; }
 
-      var fullTot = document.getElementById("total") ? document.getElementById("total").textContent : "70";
-      if (totalEl) totalEl.textContent = fullTot;
-      if (sphereLabel) sphereLabel.textContent = "إجمالي";
-
-      if (typeof updateStatusDonut === "function") {
-        var tot = parseInt(fullTot) || 0;
-        var d = parseInt(document.getElementById("done").textContent) || 0;
-        var n = parseInt(document.getElementById("notdone").textContent) || 0;
-        var nd = parseInt(document.getElementById("needs").textContent) || 0;
-        updateStatusDonut(tot, d, n, nd);
-      }
-      return;
+    if (typeof updateStatusDonut === "function") {
+      updateStatusDonut(tot, d, n, nd);
     }
-
-    if (status === "منجزة") {
-      var doneVal = document.getElementById("done") ? document.getElementById("done").textContent : "14";
-      if (totalEl) totalEl.textContent = doneVal;
-      if (sphereLabel) sphereLabel.textContent = "منجزة";
-
-      if (dashboard) {
-        dashboard.classList.remove("glow-red", "glow-amber");
-        dashboard.classList.add("glow-green");
-      }
-      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(0, 230, 153, 0.95))";
-      if (slider) {
-        slider.style.background = "#00e699";
-        slider.style.boxShadow = "0 0 15px #00e699";
-      }
-      if (arcGreen) {
-        arcGreen.style.display = "block";
-        arcGreen.style.stroke = "#00e699";
-        arcGreen.style.strokeDasharray = C + " " + C;
-        arcGreen.style.strokeDashoffset = "0";
-      }
-      if (arcRed) arcRed.style.display = "none";
-      if (arcAmber) arcAmber.style.display = "none";
-    } 
-    else if (status === "غير منجزة") {
-      var notDoneVal = document.getElementById("notdone") ? document.getElementById("notdone").textContent : "54";
-      if (totalEl) totalEl.textContent = notDoneVal;
-      if (sphereLabel) sphereLabel.textContent = "غير منجزة";
-
-      if (dashboard) {
-        dashboard.classList.remove("glow-green", "glow-amber");
-        dashboard.classList.add("glow-red");
-      }
-      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(255, 46, 91, 0.95))";
-      if (slider) {
-        slider.style.background = "#ff2e5b";
-        slider.style.boxShadow = "0 0 15px #ff2e5b";
-      }
-      if (arcRed) {
-        arcRed.style.display = "block";
-        arcRed.style.stroke = "#ff2e5b";
-        arcRed.style.strokeDasharray = C + " " + C;
-        arcRed.style.strokeDashoffset = "0";
-      }
-      if (arcGreen) arcGreen.style.display = "none";
-      if (arcAmber) arcAmber.style.display = "none";
-    } 
-    else if (status === "تحتاج متابعة") {
-      var needsVal = document.getElementById("needs") ? document.getElementById("needs").textContent : "2";
-      if (totalEl) totalEl.textContent = needsVal;
-      if (sphereLabel) sphereLabel.textContent = "تحتاج متابعة";
-
-      if (dashboard) {
-        dashboard.classList.remove("glow-green", "glow-red");
-        dashboard.classList.add("glow-amber");
-      }
-      if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(245, 158, 11, 0.95))";
-      if (slider) {
-        slider.style.background = "#f59e0b";
-        slider.style.boxShadow = "0 0 15px #f59e0b";
-      }
-      if (arcAmber) {
-        arcAmber.style.display = "block";
-        arcAmber.style.stroke = "#f59e0b";
-        arcAmber.style.strokeDasharray = C + " " + C;
-        arcAmber.style.strokeDashoffset = "0";
-      }
-      if (arcGreen) arcGreen.style.display = "none";
-      if (arcRed) arcRed.style.display = "none";
-    }
+    return;
   }
 
+  if (status === "منجزة") {
+    if (totalEl) totalEl.textContent = d.toLocaleString("en-US");
+    if (sphereLabel) sphereLabel.textContent = "منجزة";
+    if (dashboard) { dashboard.classList.remove("glow-red", "glow-amber"); dashboard.classList.add("glow-green"); }
+    if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(0, 230, 153, 0.95))";
+    if (slider) { slider.style.background = "#00e699"; slider.style.boxShadow = "0 0 15px #00e699"; }
+    if (arcGreen) { arcGreen.style.display = "block"; arcGreen.style.stroke = "#00e699"; arcGreen.style.strokeDasharray = C + " " + C; arcGreen.style.strokeDashoffset = "0"; }
+    if (arcRed) arcRed.style.display = "none";
+    if (arcAmber) arcAmber.style.display = "none";
+  }
+  else if (status === "غير منجزة") {
+    if (totalEl) totalEl.textContent = n.toLocaleString("en-US");
+    if (sphereLabel) sphereLabel.textContent = "غير منجزة";
+    if (dashboard) { dashboard.classList.remove("glow-green", "glow-amber"); dashboard.classList.add("glow-red"); }
+    if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(255, 46, 91, 0.95))";
+    if (slider) { slider.style.background = "#ff2e5b"; slider.style.boxShadow = "0 0 15px #ff2e5b"; }
+    if (arcRed) { arcRed.style.display = "block"; arcRed.style.stroke = "#ff2e5b"; arcRed.style.strokeDasharray = C + " " + C; arcRed.style.strokeDashoffset = "0"; }
+    if (arcGreen) arcGreen.style.display = "none";
+    if (arcAmber) arcAmber.style.display = "none";
+  }
+  else if (status === "تحتاج متابعة") {
+    if (totalEl) totalEl.textContent = nd.toLocaleString("en-US");
+    if (sphereLabel) sphereLabel.textContent = "تحتاج متابعة";
+    if (dashboard) { dashboard.classList.remove("glow-green", "glow-red"); dashboard.classList.add("glow-amber"); }
+    if (donut) donut.style.filter = "drop-shadow(0 0 30px rgba(245, 158, 11, 0.95))";
+    if (slider) { slider.style.background = "#f59e0b"; slider.style.boxShadow = "0 0 15px #f59e0b"; }
+    if (arcAmber) { arcAmber.style.display = "block"; arcAmber.style.stroke = "#f59e0b"; arcAmber.style.strokeDasharray = C + " " + C; arcAmber.style.strokeDashoffset = "0"; }
+    if (arcGreen) arcGreen.style.display = "none";
+    if (arcRed) arcRed.style.display = "none";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  var cards = document.querySelectorAll(".sera-cyber-card");
   var statuses = ["منجزة", "غير منجزة", "تحتاج متابعة"];
   var classes = ["active-green", "active-red", "active-amber"];
 
@@ -5847,4 +5769,5 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 </script>
+
 
