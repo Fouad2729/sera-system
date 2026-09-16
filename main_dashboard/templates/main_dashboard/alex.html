@@ -2385,11 +2385,11 @@ function updateStats(passedData){
   const data = passedData || filteredRows();
 
 
-  const done=data.filter(isDone).length,
-        not=data.filter(isNotDone).length,
-        need=data.length-done-not;
+  const done=(typeof rows !== "undefined" ? rows : data).filter(isDone).length,
+        not=(typeof rows !== "undefined" ? rows : data).filter(isNotDone).length,
+        need=(typeof rows !== "undefined" ? rows : data).length - done - not;
 
-  document.getElementById('total').textContent=data.length.toLocaleString('en-US');
+  document.getElementById("total").textContent = (typeof rows !== "undefined" ? rows : data).length.toLocaleString('en-US');
   document.getElementById('done').textContent=done.toLocaleString('en-US');
   document.getElementById('notdone').textContent=not.toLocaleString('en-US');
   document.getElementById('needs').textContent=need.toLocaleString('en-US');
@@ -5678,6 +5678,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 
+
 <script id="sera-exclusive-glow-script">
 window.currentSelectedStatus = null;
 
@@ -5707,6 +5708,10 @@ function applyDonutColor(status) {
     if (dashboard) dashboard.classList.remove("glow-green", "glow-red", "glow-amber");
     if (slider) { slider.style.background = ""; slider.style.boxShadow = ""; }
 
+    if (arcGreen) arcGreen.style.display = (d > 0) ? "block" : "none";
+    if (arcRed) arcRed.style.display = (n > 0) ? "block" : "none";
+    if (arcAmber) arcAmber.style.display = (nd > 0) ? "block" : "none";
+
     if (typeof updateStatusDonut === "function") {
       updateStatusDonut(tot, d, n, nd);
     }
@@ -5722,7 +5727,7 @@ function applyDonutColor(status) {
     if (arcGreen) { arcGreen.style.display = "block"; arcGreen.style.stroke = "#00e699"; arcGreen.style.strokeDasharray = C + " " + C; arcGreen.style.strokeDashoffset = "0"; }
     if (arcRed) arcRed.style.display = "none";
     if (arcAmber) arcAmber.style.display = "none";
-  }
+  } 
   else if (status === "غير منجزة") {
     if (totalEl) totalEl.textContent = n.toLocaleString("en-US");
     if (sphereLabel) sphereLabel.textContent = "غير منجزة";
@@ -5732,7 +5737,7 @@ function applyDonutColor(status) {
     if (arcRed) { arcRed.style.display = "block"; arcRed.style.stroke = "#ff2e5b"; arcRed.style.strokeDasharray = C + " " + C; arcRed.style.strokeDashoffset = "0"; }
     if (arcGreen) arcGreen.style.display = "none";
     if (arcAmber) arcAmber.style.display = "none";
-  }
+  } 
   else if (status === "تحتاج متابعة") {
     if (totalEl) totalEl.textContent = nd.toLocaleString("en-US");
     if (sphereLabel) sphereLabel.textContent = "تحتاج متابعة";
@@ -5769,5 +5774,6 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 </script>
+
 
 
