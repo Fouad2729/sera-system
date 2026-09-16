@@ -17,3 +17,7 @@ PY
 FINAL_BACKUP_*/
 *BACKUP*
 *BACKUP_*
+
+*.zip
+*.sqlite3
+test_highres.pdf

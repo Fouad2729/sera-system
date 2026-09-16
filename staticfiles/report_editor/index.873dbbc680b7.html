@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>محضر ضبط مخالفة رسمي - SERA</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* ==========================================================
+   إعدادات الورقة A4 والطباعة المعيارية
+   ========================================================== */
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+
+body {
+  margin: 0;
+  padding: 20px 0 60px;
+  background: #475569;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+  color: #0f172a;
+  direction: rtl;
+}
+
+/* شريط الأدوات العلوي */
+.toolbar {
+  width: 210mm;
+  margin: 0 auto 16px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.toolbar button {
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toolbar button:hover {
+  background: #0f4c3a;
+  color: #ffffff;
+  border-color: #0f4c3a;
+}
+.toolbar .btn-print-main {
+  background: #0f4c3a;
+  color: #ffffff;
+  border-color: #0f4c3a;
+  margin-right: auto;
+}
+.toolbar .btn-print-main:hover {
+  background: #15803d;
+}
+.toolbar span {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* هيكل ورقة A4 */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  height: 297mm;
+  margin: 0 auto 25px;
+  background: #ffffff;
+  padding: 16mm 18mm 14mm;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* الإطار الملكي المزدوج للصفحة */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 7mm;
+  border: 2px solid #0f4c3a;
+  outline: 1px solid #d4af37;
+  outline-offset: -4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ==========================================================
+   الترويسة الرسمية (Header)
+   ========================================================== */
+.report-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-bottom: 2px solid #0f4c3a;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+.hdr-right {
+  text-align: right;
+  font-size: 11.5px;
+  line-height: 1.5;
+  font-weight: 700;
+  color: #1e293b;
+}
+.hdr-right b {
+  color: #0f4c3a;
+  font-size: 12.5px;
+  display: block;
+}
+.hdr-center {
+  text-align: center;
+  padding: 0 10px;
+}
+.hdr-logo-badge {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  font-weight: 900;
+  color: #0f4c3a;
+  letter-spacing: 1px;
+}
+.hdr-logo-img {
+  height: 52px;
+  max-width: 140px;
+  object-fit: contain;
+}
+.hdr-left {
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.hdr-left .meta-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+}
+.hdr-left .meta-row b {
+  color: #0f4c3a;
+}
+
+/* حقل رقم المحضر */
+.report-number-input {
+  width: 90px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  color: #0f4c3a;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 2px 4px;
+  text-align: center;
+  background: #f8fafc;
+}
+
+/* العنوان الرئيسي */
+.main-title-wrap {
+  text-align: center;
+  margin: 6px 0 10px;
+}
+.main-title-badge {
+  display: inline-block;
+  background: #0f4c3a;
+  color: #ffffff;
+  padding: 4px 34px;
+  font-size: 17px;
+  font-weight: 900;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* جداول البيانات */
+.sec-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #0f4c3a;
+  margin: 6px 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sec-title::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 12px;
+  background: #d4af37;
+  border-radius: 2px;
+}
+
+.official-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 8px;
+}
+.official-table th, 
+.official-table td {
+  border: 1px solid #94a3b8;
+  padding: 4px 6px;
+  font-size: 11.5px;
+}
+.official-table th {
+  background: #f1f5f9;
+  color: #0f4c3a;
+  font-weight: 800;
+  text-align: right;
+  width: 18%;
+}
+.official-table td {
+  background: #ffffff;
+}
+
+/* الحقول القابلة للكتابة */
+.write {
+  width: 100%;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif !important;
+  color: #0f172a;
+  font-weight: 600;
+  border: 0;
+  outline: none;
+  background: transparent;
+  resize: none;
+}
+.write:focus {
+  background: #f8fafc;
+}
+
+.table-field {
+  min-height: 24px;
+  line-height: 1.35;
+}
+
+/* صناديق الأقسام النصية */
+.official-box {
+  border: 1px solid #94a3b8;
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+  position: relative;
+}
+.official-box textarea {
+  line-height: 1.5;
+  font-size: 12px;
+}
+
+/* التواقيع */
+.sigs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-top: 8px;
+}
+.sig-cell {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  text-align: center;
+  background: #ffffff;
+  font-size: 10.5px;
+}
+.sig-cell .role {
+  font-weight: 800;
+  color: #0f4c3a;
+  margin-bottom: 4px;
+}
+.sig-canvas-wrap {
+  position: relative;
+  display: inline-block;
+  margin-top: 4px;
+}
+.sig-cell canvas.sig {
+  border: 1px dashed #cbd5e1;
+  border-radius: 4px;
+  background: #fafafa;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+/* تذييل الصفحة */
+.page-footer {
+  border-top: 1px solid #0f4c3a;
+  padding-top: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9.5px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* قواعد الطباعة الصارمة */
+@media print {
+  body {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  .toolbar {
+    display: none !important;
+  }
+  .page {
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button onclick="setSize(12)">12</button>
+  <button onclick="setSize(14)">14</button>
+  <button onclick="setSize(16)">16</button>
+  <button onclick="toggleBold()">عريض</button>
+  <button onclick="alignText('right')">يمين</button>
+  <button onclick="alignText('center')">وسط</button>
+  <button onclick="clearSignature()">مسح التوقيع</button>
+  <span>| انقر فوق أي حقل لتعديله مباشرة</span>
+  <button class="btn-print-main" onclick="window.print()">🖨️ طباعة المحضر / حفظ PDF</button>
+</div>
+
+<!-- ========================= الصفحة الأولى (A4) ========================= -->
+<div class="page">
+  <div class="page-body">
+    <!-- الترويسة -->
+    <header class="report-header">
+      <div class="hdr-right">
+        المملكة العربية السعودية<br>
+        <b>الهيئة السعودية لتنظيم الكهرباء</b>
+        الإدارة العامة للرقابة والتفتيش
+      </div>
+      <div class="hdr-center">
+        <div class="hdr-logo-badge">
+          <img src="/static/main_dashboard/images/sera_logo.png" onerror="this.style.display='none'" class="hdr-logo-img" alt="SERA">
+          <span style="font-size:18px;font-weight:900;color:#0f4c3a;">SERA</span>
+        </div>
+      </div>
+      <div class="hdr-left">
+        <div class="meta-row">
+          <span>رقم المحضر:</span>
+          <input class="write report-number-input" data-key="reportNo" placeholder="رقم المحضر">
+        </div>
+        <div class="meta-row">
+          <span>تاريخ التحرير:</span>
+          <span style="color:#0f4c3a;font-weight:700;">المرفق في الجدول أدناه</span>
+        </div>
+        <div class="meta-row">
+          <span>الصفحة:</span>
+          <b>1 من 2</b>
+        </div>
+      </div>
+    </header>
+
+    <!-- العنوان -->
+    <div class="main-title-wrap">
+      <div class="main-title-badge">محضر ضبط مخالفة</div>
+    </div>
+
+    <!-- جدول بيانات المخالفة -->
+    <div class="sec-title">بيانات المنشأة والواقعة</div>
+    <table class="official-table">
+      <tr>
+        <th>المنسوب له المخالفة</th>
+        <td><textarea class="write table-field multiline-enter-field" data-key="entity" placeholder="اسم المنشأة أو الشخص..."></textarea></td>
+        <th>الرقم الموحد / السجل</th>
+        <td><textarea class="write table-field" data-key="unifiedNo" placeholder="700..."></textarea></td>
+      </tr>
+      <tr>
+        <th>نوع المخالفة</th>
+        <td><textarea class="write table-field multiline-enter-field" data-key="type" placeholder="نوع المخالفة..."></textarea></td>
+        <th>موقع المخالفة</th>
+        <td><textarea class="write table-field multiline-enter-field" data-key="location" placeholder="المدينة / المنطقة..."></textarea></td>
+      </tr>
+      <tr>
+        <th>تاريخ تحرير المحضر</th>
+        <td><textarea class="write table-field" data-key="reportDate" placeholder="YYYY-MM-DD"></textarea></td>
+        <th>تاريخ وقوع المخالفة</th>
+        <td><textarea class="write table-field multiline-enter-field" data-key="incidentDate" placeholder="YYYY-MM-DD"></textarea></td>
+      </tr>
+    </table>
+
+    <!-- أولاً: الأساس النظامي -->
+    <div class="sec-title">أولاً: الأساس والسند النظامي للمخالفة</div>
+    <div class="official-box" style="height: 120px;">
+      <textarea class="write basis-field" data-key="basis" style="height:100%;" placeholder="استناداً إلى أحكام نظام الكهرباء ولائحته التنفيذية..."></textarea>
+    </div>
+
+    <!-- ثانياً: وقائع المخالفة -->
+    <div class="sec-title">ثانياً / أ. وقائع وضبط المخالفة</div>
+    <div class="official-box" style="height: 130px;">
+      <textarea class="write" data-key="facts" style="height:100%;" placeholder="أثناء قيام المفتش بجولته التفتيشية تبين الآتي..."></textarea>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <div>محضر رسمي صادر من منصة SERA الذكية — لا يعتد به في حال الكشط أو التعديل</div>
+    <div>الصفحة 1 من 2</div>
+  </footer>
+</div>
+
+<!-- ========================= الصفحة الثانية (A4) ========================= -->
+<div class="page">
+  <div class="page-body">
+    <!-- ترويسة مصغرة -->
+    <header class="report-header" style="padding-bottom: 6px; margin-bottom: 6px;">
+      <div class="hdr-right">
+        <b>الهيئة السعودية لتنظيم الكهرباء</b>
+        محضر ضبط مخالفة (تابع)
+      </div>
+      <div class="hdr-center">
+        <span style="font-size:16px;font-weight:900;color:#0f4c3a;">SERA</span>
+      </div>
+      <div class="hdr-left">
+        <div>الصفحة: <b>2 من 2</b></div>
+      </div>
+    </header>
+
+    <!-- ب. الوصف التفصيلي -->
+    <div class="sec-title">ب. الوصف التفصيلي للمخالفة</div>
+    <div class="official-box" style="height: 95px;">
+      <textarea class="write" data-key="details" style="height:100%;" placeholder="الوصف التفصيلي للأعمال والمخالفة المضبوطة..."></textarea>
+    </div>
+
+    <!-- ج. الأضرار -->
+    <div class="sec-title">ج. الأضرار والآثار الناتجة</div>
+    <div class="official-box" style="height: 65px;">
+      <textarea class="write" data-key="damages" style="height:100%;" placeholder="الأضرار المترتبة على المخالفة إن وجدت..."></textarea>
+    </div>
+
+    <!-- ثالثاً: المستندات والقرائن -->
+    <div class="sec-title">ثالثاً: المستندات والوثائق والقرائن المضبوطة</div>
+    <div class="official-box" style="height: 65px;">
+      <textarea class="write" data-key="documents" style="height:100%;" placeholder="الصور والمستندات والتقارير المرفقة بالمحضر..."></textarea>
+    </div>
+
+    <!-- رابعاً: الطلبات والإجراءات -->
+    <div class="sec-title">رابعاً: الطلبات والإجراءات المتخذة</div>
+    <div class="official-box" style="height: 60px;">
+      <textarea class="write" data-key="requests" style="height:100%;" placeholder="إشعار المنشأة، الإحالة للجنة النظر..."></textarea>
+    </div>
+
+    <!-- خامساً: أقوال/دفوع -->
+    <div class="sec-title">خامساً: أقوال وإفادة المنسوب له المخالفة / الممثل</div>
+    <div class="official-box" style="height: 80px;">
+      <textarea class="write" data-key="defense" style="height:100%;" placeholder="أفاد ممثل المنشأة بالآتي..."></textarea>
+    </div>
+
+    <!-- سادساً: التواقيع والاعتمادات -->
+    <div class="sec-title">سادساً: التواقيع والاعتمادات الرسمية</div>
+    <div class="sigs-grid">
+      <!-- المفتش -->
+      <div class="sig-cell">
+        <div class="role">محرر المحضر (المفتش)</div>
+        <div style="margin-bottom:4px;">
+          <input class="write" data-key="inspector" placeholder="اسم المفتش" style="text-align:center;border-bottom:1px solid #cbd5e1 !important;font-weight:700;">
+        </div>
+        <div class="sig-canvas-wrap">
+          <canvas id="signature" class="sig" width="180" height="55"></canvas>
+        </div>
+      </div>
+
+      <!-- المنسوب له -->
+      <div class="sig-cell">
+        <div class="role">المنسوب له المخالفة / الممثل</div>
+        <div style="color:#64748b;margin:18px 0;">الاسم والصفة والتوقيع</div>
+        <div style="border-top:1px dotted #94a3b8;padding-top:4px;">التوقيع أو إثبات الامتناع</div>
+      </div>
+
+      <!-- اعتماد الإدارة -->
+      <div class="sig-cell">
+        <div class="role">اعتماد مدير الإدارة</div>
+        <div style="color:#64748b;margin:18px 0;">مدير إدارة الرقابة والتفتيش</div>
+        <div style="border-top:1px dotted #94a3b8;padding-top:4px;">الختم الرسمي والاعتماد</div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="page-footer">
+    <div>وثيقة رسمية معتمدة صادرة آلياً من منصة SERA للمخالفات</div>
+    <div>الصفحة 2 من 2</div>
+  </footer>
+</div>
+
+<script>
+let active = null;
+document.querySelectorAll('.write').forEach(el => {
+  el.addEventListener('focus', () => { active = el; });
+});
+
+function setSize(size){
+  if(!active) return;
+  active.style.fontSize = size + 'px';
+  active.focus();
+}
+
+function toggleBold(){
+  if(!active) return;
+  active.style.fontWeight = active.style.fontWeight === '700' ? '400' : '700';
+  active.focus();
+}
+
+function alignText(v){
+  if(!active) return;
+  active.style.textAlign = v;
+  active.focus();
+}
+
+/* ========================= التوقيع الإلكتروني ========================= */
+const canvas = document.getElementById('signature');
+const ctx = canvas ? canvas.getContext('2d') : null;
+let drawing = false;
+
+if(canvas && ctx){
+  function point(e){
+    const r = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * (canvas.width / r.width),
+      y: (e.clientY - r.top) * (canvas.height / r.height)
+    };
+  }
+
+  canvas.addEventListener('pointerdown', e => {
+    drawing = true;
+    canvas.setPointerCapture(e.pointerId);
+    const p = point(e);
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+  });
+
+  canvas.addEventListener('pointermove', e => {
+    if(!drawing) return;
+    const p = point(e);
+    ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle = '#0b4ea2';
+    ctx.lineWidth = 1.6;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  });
+
+  canvas.addEventListener('pointerup', () => drawing = false);
+  canvas.addEventListener('pointercancel', () => drawing = false);
+}
+
+function clearSignature(){
+  if(canvas && ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+}
+</script>
+
+</body>
+</html>
