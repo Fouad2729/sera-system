@@ -1993,9 +1993,8 @@ body:not(.dark) .sera-orb-rail {
           <div class="sera-card-num" id="done">0</div>
           <div class="sera-card-label">منجزة</div>
           <div class="sera-card-icon">
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <circle cx="17" cy="17" r="13" stroke="#00e699" stroke-width="1.8" stroke-linecap="round" filter="drop-shadow(0 0 4px #00e699)"/>
-              <polyline points="12 17 15 20 22 13" stroke="#00e699" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 3px #00e699)"/>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <polyline points="20 6 9 17 4 12" stroke="#00e699" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="drop-shadow(0 0 6px rgba(0, 230, 153, 0.75))"/>
             </svg>
           </div>
         </div>
@@ -2406,6 +2405,7 @@ function updateStats(passedData){
   updateStatusDonut(data.length,done,not,need);
 }
 function updateStatusDonut(total,done,notdone,need){
+  if (window.currentSelectedStatus) return;
   total = Number(total) || 0;
   done = Number(done) || 0;
   notdone = Number(notdone) || 0;
@@ -5707,6 +5707,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </script>
 
 
+
 <script id="sera-exclusive-glow-script">
 document.addEventListener("DOMContentLoaded", function() {
   window.currentSelectedStatus = null;
@@ -5719,6 +5720,9 @@ document.addEventListener("DOMContentLoaded", function() {
   var arcRed = document.getElementById("seraArcRed");
   var arcGreen = document.getElementById("seraArcGreen");
   var arcAmber = document.getElementById("seraArcAmber");
+
+  var totalEl = document.getElementById("statusDonutTotal");
+  var sphereLabel = document.querySelector(".sera-glass-sphere span") || document.querySelector("#statusDonut span");
 
   var C = 2 * Math.PI * 76; // ~477.5
 
@@ -5735,8 +5739,13 @@ document.addEventListener("DOMContentLoaded", function() {
       if (arcGreen) arcGreen.style.display = "";
       if (arcRed) arcRed.style.display = "";
       if (arcAmber) arcAmber.style.display = "";
+
+      var fullTot = document.getElementById("total") ? document.getElementById("total").textContent : "70";
+      if (totalEl) totalEl.textContent = fullTot;
+      if (sphereLabel) sphereLabel.textContent = "إجمالي";
+
       if (typeof updateStatusDonut === "function") {
-        var tot = parseInt(document.getElementById("total").textContent) || 0;
+        var tot = parseInt(fullTot) || 0;
         var d = parseInt(document.getElementById("done").textContent) || 0;
         var n = parseInt(document.getElementById("notdone").textContent) || 0;
         var nd = parseInt(document.getElementById("needs").textContent) || 0;
@@ -5746,6 +5755,10 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     if (status === "منجزة") {
+      var doneVal = document.getElementById("done") ? document.getElementById("done").textContent : "14";
+      if (totalEl) totalEl.textContent = doneVal;
+      if (sphereLabel) sphereLabel.textContent = "منجزة";
+
       if (dashboard) {
         dashboard.classList.remove("glow-red", "glow-amber");
         dashboard.classList.add("glow-green");
@@ -5765,6 +5778,10 @@ document.addEventListener("DOMContentLoaded", function() {
       if (arcAmber) arcAmber.style.display = "none";
     } 
     else if (status === "غير منجزة") {
+      var notDoneVal = document.getElementById("notdone") ? document.getElementById("notdone").textContent : "54";
+      if (totalEl) totalEl.textContent = notDoneVal;
+      if (sphereLabel) sphereLabel.textContent = "غير منجزة";
+
       if (dashboard) {
         dashboard.classList.remove("glow-green", "glow-amber");
         dashboard.classList.add("glow-red");
@@ -5784,6 +5801,10 @@ document.addEventListener("DOMContentLoaded", function() {
       if (arcAmber) arcAmber.style.display = "none";
     } 
     else if (status === "تحتاج متابعة") {
+      var needsVal = document.getElementById("needs") ? document.getElementById("needs").textContent : "2";
+      if (totalEl) totalEl.textContent = needsVal;
+      if (sphereLabel) sphereLabel.textContent = "تحتاج متابعة";
+
       if (dashboard) {
         dashboard.classList.remove("glow-green", "glow-red");
         dashboard.classList.add("glow-amber");
@@ -5826,3 +5847,4 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 </script>
+
