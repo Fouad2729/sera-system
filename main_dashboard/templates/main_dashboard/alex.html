@@ -508,6 +508,27 @@ body.dark .minutes-preview{
   background: rgba(245, 158, 11, 0.08) !important;
 }
 
+
+.sera-cyber-card {
+  cursor: pointer;
+  transition: all 0.25s ease-in-out !important;
+}
+.sera-cyber-card.active-green {
+  border: 1.5px solid #00e699 !important;
+  box-shadow: 0 0 25px rgba(0, 230, 153, 0.45), inset 0 0 15px rgba(0, 230, 153, 0.12) !important;
+  background: rgba(0, 230, 153, 0.08) !important;
+}
+.sera-cyber-card.active-red {
+  border: 1.5px solid #ff2e5b !important;
+  box-shadow: 0 0 25px rgba(255, 46, 91, 0.45), inset 0 0 15px rgba(255, 46, 91, 0.12) !important;
+  background: rgba(255, 46, 91, 0.08) !important;
+}
+.sera-cyber-card.active-amber {
+  border: 1.5px solid #f59e0b !important;
+  box-shadow: 0 0 25px rgba(245, 158, 11, 0.45), inset 0 0 15px rgba(245, 158, 11, 0.12) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+}
+
 </style>
 
 
@@ -5744,6 +5765,56 @@ init();
     }
   };
 })();
+
+
+window.currentQuickFilter = null;
+window.filterByQuickStatus = function(status) {
+  const cards = document.querySelectorAll('.sera-cyber-card');
+  const cardDone = cards[0];
+  const cardNotDone = cards[1];
+  const cardNeeds = cards[2];
+  const donut = document.getElementById('statusDonut');
+
+  if (window.currentQuickFilter === status) {
+    window.currentQuickFilter = null;
+    if (cardDone) cardDone.classList.remove('active-green');
+    if (cardNotDone) cardNotDone.classList.remove('active-red');
+    if (cardNeeds) cardNeeds.classList.remove('active-amber');
+    if (donut) donut.style.filter = '';
+
+    const quickEl = document.getElementById('quick');
+    if (quickEl) quickEl.value = '';
+    const statusEl = document.getElementById('status');
+    if (statusEl) statusEl.value = '';
+    if (typeof render === 'function') render();
+    return;
+  }
+
+  window.currentQuickFilter = status;
+  if (cardDone) cardDone.classList.toggle('active-green', status === 'منجزة');
+  if (cardNotDone) cardNotDone.classList.toggle('active-red', status === 'غير منجزة');
+  if (cardNeeds) cardNeeds.classList.toggle('active-amber', status === 'تحتاج متابعة');
+
+  if (donut) {
+    if (status === 'منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(0, 230, 153, 0.75))';
+    else if (status === 'غير منجزة') donut.style.filter = 'drop-shadow(0 0 25px rgba(255, 46, 91, 0.75))';
+    else if (status === 'تحتاج متابعة') donut.style.filter = 'drop-shadow(0 0 25px rgba(245, 158, 11, 0.75))';
+  }
+
+  const quickEl = document.getElementById('quick');
+  if (quickEl) {
+    if (status === 'منجزة') quickEl.value = 'done';
+    else if (status === 'غير منجزة') quickEl.value = 'notdone';
+    else quickEl.value = '';
+  }
+  const statusEl = document.getElementById('status');
+  if (statusEl) {
+    if (status === 'تحتاج متابعة') statusEl.value = 'تحتاج متابعة';
+    else statusEl.value = '';
+  }
+  if (typeof render === 'function') render();
+};
+
 </script>
 
 </body></html>
