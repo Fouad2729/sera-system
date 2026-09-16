@@ -3735,6 +3735,81 @@ html,
 <script>
 
 
+
+<!-- BEGIN_SERA_MODAL -->
+<div id="seraPdfModal" style="display:none; position:fixed; z-index:999999; left:0; top:0; width:100%; height:100%; overflow:hidden; background-color:rgba(0,0,0,0.65); backdrop-filter:blur(3px);">
+    <div style="background:#ffffff; margin:1.5% auto; width:92%; max-width:1050px; height:93vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 12px 30px rgba(0,0,0,0.35); overflow:hidden; border:1px solid #d1d5db;">
+        <!-- شريط التحكم العلوي -->
+        <div style="background:#1a4d2e; color:#ffffff; padding:12px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #143d24;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">📄</span>
+                <strong style="font-size:1.1rem; color:#ffffff;">معاينة محضر ضبط المخالفة الرسمي (SERA)</strong>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button type="button" onclick="printSeraIframeDirect()" style="background:#ffffff; color:#1a4d2e; border:none; padding:7px 18px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow:0 2px 5px rgba(0,0,0,0.15);">
+                    🖨️ طباعة المحضر
+                </button>
+                <button type="button" onclick="closeSeraPdfModal()" style="background:rgba(255,255,255,0.2); color:#ffffff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:1rem;">
+                    ✕ إغلاق
+                </button>
+            </div>
+        </div>
+        <!-- الإطار المضمن لعرض الـ PDF بجودة أصلية -->
+        <div style="flex:1; background:#525659; position:relative;">
+            <iframe id="seraModalIframe" src="" width="100%" height="100%" style="border:none; display:block;" title="محضر المخالفة"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSeraPdfModal(pdfUrl) {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal && iframe) {
+        iframe.src = pdfUrl;
+        modal.style.display = 'block';
+    }
+}
+
+function closeSeraPdfModal() {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal) modal.style.display = 'none';
+    if (iframe) iframe.src = '';
+}
+
+function printSeraIframeDirect() {
+    var iframe = document.getElementById('seraModalIframe');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSeraPdfModal();
+});
+
+document.addEventListener('click', function(e) {
+    var el = e.target.closest('a, button');
+    if (!el) return;
+    
+    var href = el.getAttribute('href') || el.getAttribute('onclick') || '';
+    if (href && (href.indexOf('/pdf/') !== -1 || href.indexOf('export_violation') !== -1)) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var match = href.match(/(?:\/api\/violations\/\d+\/pdf\/|https?:\/\/[^\s\'\"]+\/pdf\/)/);
+        var targetUrl = match ? match[0] : (el.getAttribute('href') || href);
+        
+        if (targetUrl && targetUrl !== '#') {
+            openSeraPdfModal(targetUrl);
+        }
+    }
+}, true);
+</script>
+<!-- END_SERA_MODAL -->
+
 </body>
 </html>
   `);
@@ -5019,7 +5094,82 @@ function exportPDF(){
           ${rowsHTML}
         </tbody>
       </table>
-    </body>
+    
+<!-- BEGIN_SERA_MODAL -->
+<div id="seraPdfModal" style="display:none; position:fixed; z-index:999999; left:0; top:0; width:100%; height:100%; overflow:hidden; background-color:rgba(0,0,0,0.65); backdrop-filter:blur(3px);">
+    <div style="background:#ffffff; margin:1.5% auto; width:92%; max-width:1050px; height:93vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 12px 30px rgba(0,0,0,0.35); overflow:hidden; border:1px solid #d1d5db;">
+        <!-- شريط التحكم العلوي -->
+        <div style="background:#1a4d2e; color:#ffffff; padding:12px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #143d24;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">📄</span>
+                <strong style="font-size:1.1rem; color:#ffffff;">معاينة محضر ضبط المخالفة الرسمي (SERA)</strong>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button type="button" onclick="printSeraIframeDirect()" style="background:#ffffff; color:#1a4d2e; border:none; padding:7px 18px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow:0 2px 5px rgba(0,0,0,0.15);">
+                    🖨️ طباعة المحضر
+                </button>
+                <button type="button" onclick="closeSeraPdfModal()" style="background:rgba(255,255,255,0.2); color:#ffffff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:1rem;">
+                    ✕ إغلاق
+                </button>
+            </div>
+        </div>
+        <!-- الإطار المضمن لعرض الـ PDF بجودة أصلية -->
+        <div style="flex:1; background:#525659; position:relative;">
+            <iframe id="seraModalIframe" src="" width="100%" height="100%" style="border:none; display:block;" title="محضر المخالفة"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSeraPdfModal(pdfUrl) {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal && iframe) {
+        iframe.src = pdfUrl;
+        modal.style.display = 'block';
+    }
+}
+
+function closeSeraPdfModal() {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal) modal.style.display = 'none';
+    if (iframe) iframe.src = '';
+}
+
+function printSeraIframeDirect() {
+    var iframe = document.getElementById('seraModalIframe');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSeraPdfModal();
+});
+
+document.addEventListener('click', function(e) {
+    var el = e.target.closest('a, button');
+    if (!el) return;
+    
+    var href = el.getAttribute('href') || el.getAttribute('onclick') || '';
+    if (href && (href.indexOf('/pdf/') !== -1 || href.indexOf('export_violation') !== -1)) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var match = href.match(/(?:\/api\/violations\/\d+\/pdf\/|https?:\/\/[^\s\'\"]+\/pdf\/)/);
+        var targetUrl = match ? match[0] : (el.getAttribute('href') || href);
+        
+        if (targetUrl && targetUrl !== '#') {
+            openSeraPdfModal(targetUrl);
+        }
+    }
+}, true);
+</script>
+<!-- END_SERA_MODAL -->
+
+</body>
     </html>
   `;
 
@@ -6092,5 +6242,80 @@ init();
   setInterval(checkLiveSync, 3500);
 })();
 </script>
+
+
+<!-- BEGIN_SERA_MODAL -->
+<div id="seraPdfModal" style="display:none; position:fixed; z-index:999999; left:0; top:0; width:100%; height:100%; overflow:hidden; background-color:rgba(0,0,0,0.65); backdrop-filter:blur(3px);">
+    <div style="background:#ffffff; margin:1.5% auto; width:92%; max-width:1050px; height:93vh; border-radius:12px; display:flex; flex-direction:column; box-shadow:0 12px 30px rgba(0,0,0,0.35); overflow:hidden; border:1px solid #d1d5db;">
+        <!-- شريط التحكم العلوي -->
+        <div style="background:#1a4d2e; color:#ffffff; padding:12px 22px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #143d24;">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-size:1.3rem;">📄</span>
+                <strong style="font-size:1.1rem; color:#ffffff;">معاينة محضر ضبط المخالفة الرسمي (SERA)</strong>
+            </div>
+            <div style="display:flex; gap:12px;">
+                <button type="button" onclick="printSeraIframeDirect()" style="background:#ffffff; color:#1a4d2e; border:none; padding:7px 18px; border-radius:6px; font-weight:bold; cursor:pointer; font-size:0.95rem; box-shadow:0 2px 5px rgba(0,0,0,0.15);">
+                    🖨️ طباعة المحضر
+                </button>
+                <button type="button" onclick="closeSeraPdfModal()" style="background:rgba(255,255,255,0.2); color:#ffffff; border:none; padding:7px 14px; border-radius:6px; cursor:pointer; font-size:1rem;">
+                    ✕ إغلاق
+                </button>
+            </div>
+        </div>
+        <!-- الإطار المضمن لعرض الـ PDF بجودة أصلية -->
+        <div style="flex:1; background:#525659; position:relative;">
+            <iframe id="seraModalIframe" src="" width="100%" height="100%" style="border:none; display:block;" title="محضر المخالفة"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSeraPdfModal(pdfUrl) {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal && iframe) {
+        iframe.src = pdfUrl;
+        modal.style.display = 'block';
+    }
+}
+
+function closeSeraPdfModal() {
+    var modal = document.getElementById('seraPdfModal');
+    var iframe = document.getElementById('seraModalIframe');
+    if (modal) modal.style.display = 'none';
+    if (iframe) iframe.src = '';
+}
+
+function printSeraIframeDirect() {
+    var iframe = document.getElementById('seraModalIframe');
+    if (iframe && iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeSeraPdfModal();
+});
+
+document.addEventListener('click', function(e) {
+    var el = e.target.closest('a, button');
+    if (!el) return;
+    
+    var href = el.getAttribute('href') || el.getAttribute('onclick') || '';
+    if (href && (href.indexOf('/pdf/') !== -1 || href.indexOf('export_violation') !== -1)) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        var match = href.match(/(?:\/api\/violations\/\d+\/pdf\/|https?:\/\/[^\s\'\"]+\/pdf\/)/);
+        var targetUrl = match ? match[0] : (el.getAttribute('href') || href);
+        
+        if (targetUrl && targetUrl !== '#') {
+            openSeraPdfModal(targetUrl);
+        }
+    }
+}, true);
+</script>
+<!-- END_SERA_MODAL -->
 
 </body></html>

@@ -1,3 +1,4 @@
+from django.views.decorators.clickjacking import xframe_options_sameorigin
 from django.shortcuts import get_object_or_404, render
 from django.db import connection
 from django.http import JsonResponse
@@ -286,6 +287,7 @@ def _ar(text):
     except Exception:
         return str(text)
 
+@xframe_options_sameorigin
 def export_violation_official_pdf(request, pk):
     import os
     import io
