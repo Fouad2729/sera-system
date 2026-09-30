@@ -1926,6 +1926,25 @@ body:not(.dark) .sera-orb-rail {
 }
 </style>
 
+
+<style id="sera-dark-map-tiles">
+body.dark .leaflet-tile-pane,
+body.dark-mode .leaflet-tile-pane,
+body[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(88%) contrast(92%) !important;
+}
+.leaflet-container {
+  background: #101614 !important;
+}
+.leaflet-control-attribution {
+  background: rgba(0,0,0,0.6) !important;
+  color: #94a3b8 !important;
+}
+.leaflet-control-attribution a {
+  color: #00e699 !important;
+}
+</style>
+
 </head>
 <body>
 <div class="login" id="loginScreen" style="visibility:hidden;">
@@ -2500,7 +2519,7 @@ function regionFromRow(r){
   for(const reg of regions){if(s.includes(reg[0]))return reg[0];const short=reg[0].replace(/^ال/,'');if(s.includes(short))return reg[0];}
   return 'أخرى';
 }
-function initMap(){map=L.map('mainMap').setView([24.0,45.0],5.2);L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);if(currentUser&&currentUser.role==='admin')renderMap();}
+function initMap(){map=L.map('mainMap').setView([24.0,45.0],5.2);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);if(currentUser&&currentUser.role==='admin')renderMap();}
 function renderMap(){
   if(!map || !currentUser || currentUser.role!=='admin')return;
   map.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.CircleMarker)map.removeLayer(l);});
@@ -3848,7 +3867,7 @@ if(m){initial=[parseFloat(m[1]),parseFloat(m[2])];zoom=15;}
 
 if(!pickMap){
 pickMap=L.map('pickMap').setView(initial,zoom);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
 maxZoom:19,
 attribution:'© OpenStreetMap'
 }).addTo(pickMap);
