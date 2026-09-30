@@ -59,6 +59,19 @@ UPDATE_FIELDS = CREATE_FIELDS - {"created_by"}
 
 
 def home(request):
+
+    # استعادة البيانات تلقائياً في قاعدة البيانات الجديدة إذا كانت فارغة
+    try:
+        from .models import Violation
+        if Violation.objects.count() == 0:
+            from django.core.management import call_command
+            call_command('migrate')
+            json_path = os.path.join(settings.BASE_DIR, 'main_dashboard', 'initial_violations.json')
+            if os.path.exists(json_path):
+                call_command('loaddata', json_path)
+    except Exception:
+        pass
+
     return render(request, "main_dashboard/alex.html", {"violations": Violation.objects.all()})
 
 
