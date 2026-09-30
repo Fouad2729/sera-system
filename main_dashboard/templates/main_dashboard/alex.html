@@ -1927,23 +1927,33 @@ body:not(.dark) .sera-orb-rail {
 </style>
 
 
-<style id="sera-dark-map-tiles">
-body.dark .leaflet-tile-pane,
-body.dark-mode .leaflet-tile-pane,
-body[data-theme="dark"] .leaflet-tile-pane {
-  filter: invert(100%) hue-rotate(180deg) brightness(88%) contrast(92%) !important;
+
+<style id="sera-theme-map-styles">
+body.dark .leaflet-tile,
+body.dark-mode .leaflet-tile,
+body[data-theme="dark"] .leaflet-tile {
+  filter: brightness(0.65) invert(1) contrast(2.5) hue-rotate(200deg) saturate(0.35) brightness(0.85) !important;
+}
+body:not(.dark):not(.dark-mode):not([data-theme="dark"]) .leaflet-tile {
+  filter: none !important;
 }
 .leaflet-container {
   background: #101614 !important;
 }
-.leaflet-control-attribution {
-  background: rgba(0,0,0,0.6) !important;
-  color: #94a3b8 !important;
+body:not(.dark):not(.dark-mode):not([data-theme="dark"]) .leaflet-container {
+  background: #f1f5f9 !important;
 }
-.leaflet-control-attribution a {
-  color: #00e699 !important;
+.leaflet-control-attribution {
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: #94a3b8 !important;
+  font-size: 10px !important;
+}
+body:not(.dark):not(.dark-mode):not([data-theme="dark"]) .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.7) !important;
+  color: #64748b !important;
 }
 </style>
+
 
 </head>
 <body>
@@ -2519,7 +2529,7 @@ function regionFromRow(r){
   for(const reg of regions){if(s.includes(reg[0]))return reg[0];const short=reg[0].replace(/^ال/,'');if(s.includes(short))return reg[0];}
   return 'أخرى';
 }
-function initMap(){map=L.map('mainMap').setView([24.0,45.0],5.2);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);if(currentUser&&currentUser.role==='admin')renderMap();}
+function initMap(){map=L.map('mainMap').setView([24.0,45.0],5.2);L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,attribution:'© OpenStreetMap contributors'}).addTo(map);if(currentUser&&currentUser.role==='admin')renderMap();}
 function renderMap(){
   if(!map || !currentUser || currentUser.role!=='admin')return;
   map.eachLayer(l=>{if(l instanceof L.Marker||l instanceof L.CircleMarker)map.removeLayer(l);});
@@ -3867,7 +3877,7 @@ if(m){initial=[parseFloat(m[1]),parseFloat(m[2])];zoom=15;}
 
 if(!pickMap){
 pickMap=L.map('pickMap').setView(initial,zoom);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',{
 maxZoom:19,
 attribution:'© OpenStreetMap'
 }).addTo(pickMap);
